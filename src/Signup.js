@@ -26,10 +26,8 @@ class Signup extends React.Component {
     });
     if (this.state.password == e.target.value) {
       this.setState({validated: true,});
-      console.log("YO");
     } else {
       this.setState({validated: false,});
-      console.log("BITCH");
     }
   }
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { setUserSession } from './Utils/Common';
 
 class Login extends React.Component {
   constructor(props) {
@@ -19,7 +20,22 @@ class Login extends React.Component {
   }
 
   onSubmit = () => {
-    alert("Submitted: " + this.state.username + " " + this.state.password);
+    fetch('https://accountant.tubalt.com/api/users/signin', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+            username: this.state.username,
+            password: this.state.password
+        })
+    })
+    .then(response => {
+      setUserSession(response.data.token, response.data.user);
+      this.props.history.push('/');
+    })
+    .catch(error => {
+      if (error.response.status === 401) alert(error.response.data.message);
+      else alert("Oops! Something went wrong");
+    });
   }
 
   render() {
