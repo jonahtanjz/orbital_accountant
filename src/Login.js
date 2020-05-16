@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { setUserSession } from './Utils/Common';
 
 class Login extends React.Component {
@@ -19,7 +20,8 @@ class Login extends React.Component {
     });
   }
 
-  onSubmit = () => {
+  onSubmit = (e) => {
+    e.preventDefault();
     fetch('https://accountant.tubalt.com/api/users/signin', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
@@ -29,12 +31,18 @@ class Login extends React.Component {
         })
     })
     .then(response => {
-      setUserSession(response.data.token, response.data.user);
-      this.props.history.push('/');
+      if (response.status === 401) {
+        response.json().then(res => alert("Username or Password is Wrong."));
+      } else {
+        response.json().then(res => {
+          setUserSession(res.token, res.user);
+          this.props.history.push("/home");
+        });
+      }
     })
     .catch(error => {
-      if (error.response.status === 401) alert(error.response.data.message);
-      else alert("Oops! Something went wrong");
+      console.log(error);
+      alert("Oops! Something went wrong");
     });
   }
 
@@ -61,4 +69,4 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default withRouter(Login);

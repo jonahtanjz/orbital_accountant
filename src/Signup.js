@@ -1,4 +1,6 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
+import { setUserSession } from './Utils/Common';
 
 class Signup extends React.Component {
   constructor(props) {
@@ -24,18 +26,40 @@ class Signup extends React.Component {
     this.setState({
       [e.target.name]: e.target.value,
     });
-    if (this.state.password == e.target.value) {
+    if (this.state.password === e.target.value) {
       this.setState({validated: true,});
     } else {
       this.setState({validated: false,});
     }
   }
 
-  onSubmit = () => {
+  onSubmit = (e) => {
+    e.preventDefault();
     if (this.state.validated) {
-        alert("Submitted: " + this.state.username + " " + this.state.password);
+      fetch('https://accountant.tubalt.com/api/users/signup', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({
+              username: this.state.username,
+              password: this.state.password
+          })
+      })
+      .then(response => {
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            setUserSession(res.token, res.user);
+            this.props.history.push("/home");
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
     } else {
-        alert("f");
+      alert("Password does not match")
     }
   }
 
@@ -60,8 +84,7 @@ class Signup extends React.Component {
             type='password'
             onChange={this.onChangePassword}
             value={this.state.cPassword} /> 
-          <p>{this.state.validated || this.state.cPassword == '' ? "" : "password does not match"}</p>   
-          <p>{this.state.validated.toString()}</p>
+          <p>{this.state.validated || this.state.cPassword === '' ? "" : "Password does not match"}</p>   
           <br />
           <button type="submit">Sign Up</button>
           </form>
@@ -70,4 +93,4 @@ class Signup extends React.Component {
   }
 }
 
-export default Signup;
+export default withRouter(Signup);

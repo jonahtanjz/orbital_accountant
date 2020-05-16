@@ -5,6 +5,8 @@ import PublicRoute from './Utils/PublicRoute';
 import { getToken, removeUserSession, setUserSession } from './Utils/Common';
 import Login from './Login';
 import Home from './Home';
+import Welcome from './Welcome';
+import Signup from './Signup';
 
 class App extends Component {
     componentDidMount() {
@@ -12,12 +14,17 @@ class App extends Component {
         if (!token) {
             return;
         }
-
-        fetch('https://accountant.tubalt.com/api/verifyToken?token=${token}')
+        console.log(token);
+        fetch('https://accountant.tubalt.com/api/verifyToken?token=' + token)
             .then(response => {
-                setUserSession(response.data.token, response.data.user);
+                if (response.status === 401) {
+                  removeUserSession();
+                } else {
+                  response.json().then(res => setUserSession(res.token, res.user));
+                }
             })
             .catch(error => {
+                console.log(error);
                 removeUserSession();
             });
     }
@@ -28,13 +35,16 @@ class App extends Component {
               <BrowserRouter>
                 <div>
                   <div className="header">
-                    <NavLink exact activeClassName="active" to="/">Home</NavLink>
+                    <NavLink exact activeClassName="active" to="/home">Home</NavLink>
                     <NavLink activeClassName="active" to="/login">Login</NavLink>
+                    <NavLink activeClassName="active" to="/signup">Sign Up</NavLink>
                   </div>
                   <div className="content">
                     <Switch>
-                      <PrivateRoute exact path="/" component={Home} />
+                      <Route exact path="/" component={Welcome} />
+                      <PrivateRoute path="/home" component={Home} />
                       <PublicRoute path="/login" component={Login} />
+                      <Route path="/signup" component={Signup} />
                     </Switch>
                   </div>
                 </div>
