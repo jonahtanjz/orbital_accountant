@@ -14,7 +14,7 @@ class App extends Component {
         if (!token) {
             return;
         }
-        console.log(token);
+        console.log(process.env.PUBLIC_URL);
         fetch('https://accountant.tubalt.com/api/verifyToken?token=' + token)
             .then(response => {
                 if (response.status === 401) {
@@ -35,7 +35,7 @@ class App extends Component {
               <BrowserRouter>
                 <div>
                   <div className="header">
-                    <NavLink exact activeClassName="active" to="/home">Home</NavLink>
+                    <NavLink activeClassName="active" to="/home">Home</NavLink>
                     <NavLink activeClassName="active" to="/login">Login</NavLink>
                     <NavLink activeClassName="active" to="/signup">Sign Up</NavLink>
                   </div>
