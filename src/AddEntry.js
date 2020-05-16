@@ -8,46 +8,24 @@ class AddEntry extends React.Component {
     }
     this.onChangePay = this.onChangePay.bind(this);
     this.onChangeConsume = this.onChangeConsume.bind(this);
-    this.removePay = this.removePay.bind(this);
-    this.removeConsume = this.removeConsume.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
 
   }
 
   onChangePay(e) {
-    const theName = e.target.value;
-    var display = this.state.displayPay.slice();
-    if (! display.includes(theName)) {
-      display.push(theName);
-      this.setState({
-        displayPay : display,
-      });
+    let display = [];
+    for (let i = 0; i < e.length; i++) {
+      display.push(e[i].value);
     }
-  }
-  onChangeConsume(e) {
-    const theName = e.target.value;
-    var display = this.state.displayConsume.slice();
-    if (! display.includes(theName)) {
-      display.push(theName);
-      this.setState({
-        displayConsume : display,
-      });
-    }
-  }
-
-  removePay(theName) {
-    var display = this.state.displayPay.slice();
-    const index = display.findIndex((x) => x === theName);
-    display.splice(index,1);
     this.setState({
       displayPay : display,
     });
   }
-
-  removeConsume(theName) {
-    var display = this.state.displayConsume.slice();
-    const index = display.findIndex((x) => x === theName);
-    display.splice(index,1);
+  onChangeConsume(e) {
+    let display = [];
+    for (let i = 0; i < e.length; i++) {
+      display.push(e[i].value);
+    }
     this.setState({
       displayConsume : display,
     });
@@ -70,7 +48,6 @@ class AddEntry extends React.Component {
         />
         <AmountDisplay
         onSubmit = {this.onSubmit}
-        remove = {this.removePay}
         display = {this.state.displayPay}
         type = "pay"
         />
@@ -82,7 +59,6 @@ class AddEntry extends React.Component {
         />
         <AmountDisplay
         onSubmit = {this.onSubmit}
-        remove = {this.removeConsume}
         display = {this.state.displayConsume}
         />
         
@@ -95,67 +71,56 @@ class AddEntry extends React.Component {
 }
 
 class AmountDisplay extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onSubmit = this.onSubmit.bind(this);
-    this.remove = this.remove.bind(this);
-  }
+constructor(props) {
+  super(props);
+  this.onSubmit = this.onSubmit.bind(this);
+}
 
-  onSubmit(e) {
-    this.props.onSubmit(e);
-  }
+onSubmit(e) {
+  this.props.onSubmit(e);
+}
 
-  remove(e) {
-    this.props.remove(e);
-  }
-
-  render() {
-    const listAmounts = this.props.display.map((person) => {
-      return (
-        <div key = {person}>
-        <p>{person}</p>
-        <input
-        type = "number"
-        name = {person + this.props.type} 
-        id = {person + this.props.type} 
-        placeholder = "Input Amount"
-        />
-        <input type = "button" onClick ={ () => {this.remove(person)}} value = "Delete"/>
-        </div>
-      );
-    })
+render() {
+  const listAmounts = this.props.display.map((person) => {
     return (
-      <div>
-        {listAmounts}
+      <div key = {person}>
+      <p>{person}</p>
+      <input
+      type = "number"
+      name = {person + this.props.type} 
+      id = {person + this.props.type} 
+      placeholder = "Input Amount"
+      />
       </div>
     );
-  }
+  })
+  return (
+    <div>
+      {listAmounts}
+    </div>
+  );
+}
 }
 
 class NameList extends React.Component {
-  constructor(props){
-    super(props);
-    this.onChange = this.onChange.bind(this);
+constructor(props){
+  super(props);
+  this.onChange = this.onChange.bind(this);
 
-  }
+}
 
-  onChange(e) {
-    this.props.onChange(e);
-  }
+onChange(e) {
+  this.props.onChange(e);
+}
 
-  render() {
-    const list = this.props.people.map((person) => {
-      return (<option key = {person} value = {person}> {person} </option>);
-    } );
-    return (
-      <div>
-        <select multiple = {true}
-          onChange = {this.onChange}>
-          {list}
-        </select>
-      </div>
-    );
-  }
+render() {
+  const list = this.props.people.map((person) => {
+    return ( { label: person, value: person });
+  } );
+  return (
+    <ReactMultiSelectCheckboxes options = {list} onChange = {this.onChange} />
+  );
+}
 }
 
 export default AddEntry;
