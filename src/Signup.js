@@ -59,7 +59,7 @@ class Signup extends React.Component {
         alert("Oops! Something went wrong");
       });
     } else {
-      alert("Password does not match")
+      alert("Passwords do not match")
     }
   }
 
@@ -84,7 +84,7 @@ class Signup extends React.Component {
             type='password'
             onChange={this.onChangePassword}
             value={this.state.cPassword} /> 
-          <p>{this.state.validated || this.state.cPassword === '' ? "" : "Password does not match"}</p>   
+          <p>{this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}</p>   
           <br />
           <button type="submit">Sign Up</button>
           </form>
