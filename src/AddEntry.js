@@ -5,6 +5,7 @@ class AddEntry extends React.Component {
       people : ["John","Tube","P","Cheow"],
       displayPay : [],
       displayConsume : [],
+      currency : ["SGD","MYR","THB"],
     }
     this.onChangePay = this.onChangePay.bind(this);
     this.onChangeConsume = this.onChangeConsume.bind(this);
@@ -32,11 +33,12 @@ class AddEntry extends React.Component {
   }
 
   onSubmit(e) {
-    alert(e.target.Ppay.value);
+    e.preventDefault();
+    alert(e.target.equal.checked);
   }
 
   render() {
-    const submitButton =  (<input type = "submit" value = "Submit"/> );
+    const submitButton = (<input type = "submit" value = "Submit"/> ) ;
     return (
       <div>
       <div>
@@ -61,13 +63,34 @@ class AddEntry extends React.Component {
         onSubmit = {this.onSubmit}
         display = {this.state.displayConsume}
         />
-        
+        <br/>
+        <CurrencyList currency = {this.state.currency} />
+        <br/>
+        <br/>
+        <input type = "checkbox" id="equal" /> 
+        <lable>Equal</lable>
+        <br/>
+        <input type="text" id="desc" placeholder="Description of Transaction"/>
+        <br/> 
         {submitButton}
       </form>
       </div>
       </div>
     );
   }
+}
+
+class CurrencyList extends React.Component {
+render () {
+  const currencyDisplay = this.props.currency.map((curr) => 
+  <option id = {curr} name = {curr} value = {curr}>{curr}</option>
+  );
+  return (
+    <select id = "curr" className = "css-1r4vtzz">
+      {currencyDisplay}
+    </select>
+  );
+}
 }
 
 class AmountDisplay extends React.Component {
