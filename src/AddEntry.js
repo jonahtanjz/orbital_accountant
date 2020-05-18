@@ -1,3 +1,6 @@
+import React from 'react';
+import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
+
 class AddEntry extends React.Component {
   constructor(props){
     super(props);
