@@ -1,9 +1,12 @@
 import React from 'react';
+import { withRouter } from 'react-router-dom';
+import { getUser } from './Utils/Common';
 
 class AddTrip extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
+        user_id: '',
         currentUsers : [],
         currencies : [],
         currencyNames : [],
@@ -18,6 +21,13 @@ class AddTrip extends React.Component {
       this.enterCheck = this.enterCheck.bind(this);
   
   
+    }
+
+    componentDidMount() {
+        const user = getUser();
+        this.setState({
+            user_id: user.user_id,
+        });
     }
     
     enterCheck(e) {
@@ -75,9 +85,23 @@ class AddTrip extends React.Component {
           tripName: this.state.tripName,
           users: this.state.currentUsers,
           currency: this.state.currencies,
-          user_id: 13,
+          user_id: this.state.user_id,
         })
-      }).then(response => response.json()).then(res => console.log(res.trip_id));
+      })
+      .then(response => {
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            alert("Success");
+            this.props.history.push("/home");
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
   
     }
   
@@ -170,4 +194,4 @@ class AddTrip extends React.Component {
   
   }
 
-  export default AddTrip;
+  export default withRouter(AddTrip);

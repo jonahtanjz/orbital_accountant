@@ -7,6 +7,7 @@ import Login from './Login';
 import Home from './Home';
 import Welcome from './Welcome';
 import Signup from './Signup';
+import AddTrip from './AddTrip';
 
 class App extends Component {
     componentDidMount() {
@@ -14,7 +15,6 @@ class App extends Component {
         if (!token) {
             return;
         }
-        console.log(process.env.PUBLIC_URL);
         fetch('https://accountant.tubalt.com/api/verifyToken?token=' + token)
             .then(response => {
                 if (response.status === 401) {
@@ -43,6 +43,7 @@ class App extends Component {
                     <Switch>
                       <Route exact path="/" component={Welcome} />
                       <PrivateRoute path="/home" component={Home} />
+                      <PrivateRoute path="/addtrip" component={AddTrip} />
                       <PublicRoute path="/login" component={Login} />
                       <Route path="/signup" component={Signup} />
                     </Switch>

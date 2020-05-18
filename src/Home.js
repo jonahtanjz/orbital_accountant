@@ -20,6 +20,10 @@ class Home extends React.Component {
         });
     }
 
+    gotoAddTrip = () => {
+        this.props.history.push('/addtrip');
+    }
+
     handleLogout = () => {    
         removeUserSession();
         this.props.history.push('/');
@@ -29,6 +33,7 @@ class Home extends React.Component {
         return (
             <div>
                 Welcome {this.state.username}!<br /><br />
+                <input type="button" onClick={this.gotoAddTrip} value="Add trip"/><br/>
                 <input type="button" onClick={this.handleLogout} value="Logout" />
             </div>
           );
