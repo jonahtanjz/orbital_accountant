@@ -1,6 +1,7 @@
 import React from 'react';
 import { getUser, removeUserSession } from './Utils/Common';
 import { withRouter } from 'react-router-dom';
+import ViewTrip from './ViewTrips';
  
 class Home extends React.Component {
     constructor(props) {
@@ -33,6 +34,7 @@ class Home extends React.Component {
         return (
             <div>
                 Welcome {this.state.username}!<br /><br />
+                <ViewTrip/>
                 <input type="button" onClick={this.gotoAddTrip} value="Add trip"/><br/>
                 <input type="button" onClick={this.handleLogout} value="Logout" />
             </div>
