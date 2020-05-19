@@ -36,7 +36,6 @@ class ViewTrips extends React.Component {
 
   render() {
       let trips = this.state.trips;
-      console.log(trips);
       let displayActive = trips.filter((trip) => trip[0].ended === 0).map((trip) => {
           return(
               <div>

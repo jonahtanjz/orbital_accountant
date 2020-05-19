@@ -12,6 +12,7 @@ class AddEntry extends React.Component {
       displayConsume : [],
       consume : [],
       currency : [],
+      selectedCurrency : "",
       equal : false,
       desc : "",
       trip : {}
@@ -35,6 +36,7 @@ class AddEntry extends React.Component {
           trip : response.trip[0],
           people : response.users.map((person)=> person.name),
           currency : curr,
+          selectedCurrency : curr[0],
         })
       });
   }
@@ -67,14 +69,14 @@ class AddEntry extends React.Component {
     let pay = this.state.pay.slice();
     for (let i = 0; i < pay.length; i++) {
       if (pay[i][0] == person) {
-        pay[i][1] = value;
+        pay[i][1] = parseFloat(value);
         this.setState({
           pay : pay
         });
         return;
       }
     }
-    pay.push([person,value]);
+    pay.push([person,parseFloat(value)]);
     this.setState({
       pay : pay
     });
@@ -86,15 +88,14 @@ class AddEntry extends React.Component {
     let consume = this.state.consume.slice();
     for (let i = 0; i < consume.length; i++) {
       if (consume[i][0] == person) {
-        consume[i][1] = value;
-        consume.push([person,value]);
+        consume[i][1] = parseFloat(value);
         this.setState({
           consume : consume
         });
         return;
       }
     }
-    consume.push([person,value]);
+    consume.push([person,parseFloat(value)]);
     this.setState({
       consume : consume
     });
@@ -125,13 +126,59 @@ class AddEntry extends React.Component {
     });
   }
 
+  changeCurrency(e) {
+    this.setState({
+      selectedCurrency : e.target.value,
+    });
+  }
+
   onSubmit(e) {
     e.preventDefault();
-    alert(e.target.equal.checked);
+    let consume = [];
+    if (this.state.equal) {
+      let pay = this.state.pay.slice();
+      let displayConsume = this.state.displayConsume.slice();
+      let total = 0;
+      for(let i = 0; i < pay.length; i++) {
+        total = total + pay[i][1];
+      }
+      const ave = (total/displayConsume.length);
+      for (let i = 0; i < displayConsume.length; i++) {
+        consume.push([displayConsume[i],ave]);
+      }
+    } else {
+      consume = this.state.consume;
+    }
+    fetch("https://accountant.tubalt.com/api/addtransaction", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        payees: this.state.pay,
+        payers: consume,
+        trip_id: this.state.trip.trip_id,
+        description : this.state.desc,
+        currency : this.state.selectedCurrency,
+      })
+    })
+    .then(response => {
+      if (response.status === 401) {
+        response.json().then(res => alert(res.message));
+      } else {
+        response.json().then(res => {
+          alert("Success");
+          this.props.history.push("/home");
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Oops! Something went wrong");
+    });
   }
 
   render() {
-    console.log(this.state.currency);
     const submitButton = (<input type = "submit" value = "Submit"/> ) ;
     return (
       <div>
@@ -161,6 +208,7 @@ class AddEntry extends React.Component {
         <br/>
         <CurrencyList 
         currency = {this.state.currency}
+        changeCurrency = {this.changeCurrency}
         />
         <br/>
         <br/>
@@ -200,12 +248,19 @@ class Equals extends React.Component {
 }
 
 class CurrencyList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.changeCurrency = this.changeCurrency.bind(this);
+  }
+  changeCurrency(e) {
+    this.props.changeCurrency(e);
+  }
 render () {
   const currencyDisplay = this.props.currency.map((curr) => 
   <option id = {curr} name = {curr} value = {curr}>{curr}</option>
   );
   return (
-    <select id = "curr" className = "css-1r4vtzz">
+    <select onChange = {this.changeCurrency} id = "curr" className = "css-1r4vtzz">
       {currencyDisplay}
     </select>
   );
