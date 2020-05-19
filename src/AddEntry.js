@@ -24,6 +24,8 @@ class AddEntry extends React.Component {
     this.updateConsume = this.updateConsume.bind(this);
     this.changeEqual = this.changeEqual.bind(this);
     this.updateDesc = this.updateDesc.bind(this);
+    this.changeCurrency = this.changeCurrency.bind(this);
+
   }
 
   componentDidMount() {
@@ -127,9 +129,9 @@ class AddEntry extends React.Component {
   }
 
   changeCurrency(e) {
-    this.setState({
-      selectedCurrency : e.target.value,
-    });
+     this.setState({
+       selectedCurrency : e.target.value
+     });
   }
 
   onSubmit(e) {
