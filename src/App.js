@@ -8,6 +8,7 @@ import Home from './Home';
 import Welcome from './Welcome';
 import Signup from './Signup';
 import AddTrip from './AddTrip';
+import AddEntry from './AddEntry';
 
 class App extends Component {
     componentDidMount() {
@@ -44,6 +45,7 @@ class App extends Component {
                       <Route exact path="/" component={Welcome} />
                       <PrivateRoute path="/home" component={Home} />
                       <PrivateRoute path="/addtrip" component={AddTrip} />
+                      <PrivateRoute path="/addentry" component ={AddEntry} />
                       <PublicRoute path="/login" component={Login} />
                       <Route path="/signup" component={Signup} />
                     </Switch>

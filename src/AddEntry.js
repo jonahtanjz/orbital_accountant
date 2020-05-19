@@ -1,18 +1,20 @@
 import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
+import {withRouter} from 'react-router-dom'
 
 class AddEntry extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      people : ["John","Tube","P","Cheow"],
+      people : [],
       displayPay : [],
       pay : [],
       displayConsume : [],
       consume : [],
-      currency : ["SGD","MYR","THB"],
+      currency : [],
       equal : false,
       desc : "",
+      trip : {}
     }
     this.onChangePay = this.onChangePay.bind(this);
     this.onChangeConsume = this.onChangeConsume.bind(this);
@@ -21,6 +23,20 @@ class AddEntry extends React.Component {
     this.updateConsume = this.updateConsume.bind(this);
     this.changeEqual = this.changeEqual.bind(this);
     this.updateDesc = this.updateDesc.bind(this);
+  }
+
+  componentDidMount() {
+    fetch("https://accountant.tubalt.com/api/gettripinfo?tripid="+this.props.location.state.trip_id)
+      .then(response => response.json())
+      .then(response => {
+        let curr = response.currency.map((currency) => currency.name);
+        curr.push("SGD")
+        this.setState({
+          trip : response.trip[0],
+          people : response.users.map((person)=> person.name),
+          currency : curr,
+        })
+      });
   }
 
   updateDesc(e) {
@@ -115,6 +131,7 @@ class AddEntry extends React.Component {
   }
 
   render() {
+    console.log(this.state.currency);
     const submitButton = (<input type = "submit" value = "Submit"/> ) ;
     return (
       <div>
@@ -254,4 +271,4 @@ render() {
 }
 }
 
-export default AddEntry;
+export default withRouter(AddEntry);
