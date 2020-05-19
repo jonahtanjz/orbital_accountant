@@ -26,7 +26,6 @@ class ViewTrips extends React.Component {
   }
 
   addEntry(e) {
-      alert("need tubals help");
       this.props.history.push("/addentry",{trip_id : e.target.id});
   }
 
