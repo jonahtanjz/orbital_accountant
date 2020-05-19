@@ -154,7 +154,87 @@ class AddTrip extends React.Component {
     }
   
     render() {
-      const displayUsers = this.state.currentUsers.map((user) => {
+
+      return(
+        <form onSubmit = {this.onSubmit} onkeydown = "return event.key != 'Enter'" >
+          <InputTripName enterCheck = {this.enterCheck} updateTripName = {this.updateTripName} tripName = {this.state.tripName} />
+          <br/>
+          <InputUsers addUser = {this.addUser} enterCheck = {this.enterCheck} />
+          <DisplayUsers deleteUser = {this.deleteUser} currentUsers = {this.state.currentUsers} />
+          <br/>
+          <InputCurrency enterCheck = {this.enterCheck} addCurrency = {this.addCurrency} />
+          <DisplayCurrencies currencies = {this.state.currencies} deleteCurrency = {this.deleteCurrency} />
+          <br/>
+          <input type="submit" value = "Submit" />
+        </form>
+      );
+    }
+  }
+  class InputTripName extends React.Component {
+    constructor(props) {
+      super(props);
+      this.updateTripName = this.updateTripName.bind(this);
+      this.enterCheck = this.enterCheck.bind(this);
+    }
+
+    enterCheck(e) {
+      this.props.enterCheck(e);
+    }
+
+    updateTripName(e) {
+      this.props.updateTripName(e);
+    }
+
+    render() {
+      return(
+        <div>
+          <label>Trip Name</label>
+          <input type = "text" id = "tripName" value = {this.props.tripName} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/>
+        </div>
+      );
+    }
+
+  }
+
+  class InputUsers extends React.Component {
+    constructor(props) {
+      super(props);
+      this.enterCheck = this.enterCheck.bind(this);
+      this.addUser = this.addUser.bind(this);
+    }
+
+    addUser(e) {
+      this.props.addUser(e);
+    }
+
+    enterCheck(e) {
+      this.props.enterCheck(e);
+    }
+
+
+    render() {
+      return (
+        <div>
+        <label>Username</label>
+        <input type = "text" name = "username" id = "username" onKeyPress ={this.enterCheck} />
+        <input type = "button" value = "Add User" onClick = {this.addUser}  />
+        </div>
+      );
+    }
+  }
+
+  class DisplayUsers extends React.Component {
+    constructor(props) {
+      super(props);
+      this.deleteUser = this.deleteUser.bind(this);
+    }
+
+    deleteUser(e) {
+      this.props.deleteUser(e);
+    }
+
+    render() {
+      const displayUsers = this.props.currentUsers.map((user) => {
         return (
           <div>
             <p>{user}</p>
@@ -163,7 +243,52 @@ class AddTrip extends React.Component {
   
         );
       });
-      const displayCurrencies = this.state.currencies.map(([name,val]) =>{
+      return(
+        <div>
+          {displayUsers}
+        </div>
+      );
+    }
+  }
+
+  class InputCurrency  extends React.Component {
+    constructor(props) {
+      super(props);
+      this.enterCheck = this.enterCheck.bind(this);
+      this.addCurrency = this.addCurrency.bind(this);
+    }
+
+    enterCheck(e) {
+      this.props.enterCheck(e);
+    }
+
+    addCurrency(e) {
+      this.props.addCurrency(e);
+    }
+
+    render() {
+      return(
+        <div>
+        <label>Currency</label>
+        <input type = "text" name = "currency" id = "currency" placeholder = "Name" onKeyPress ={this.enterCheck}/>
+        <input type = "number" name = "currencyVal" id = "currencyVal" placeholder = "Value" onKeyPress ={this.enterCheck} />
+        <input type = "button" value = "Add Currency" onClick = {this.addCurrency} />
+        </div>
+      );
+    }
+  }
+  class DisplayCurrencies extends React.Component {
+    constructor(props) {
+      super(props);
+      this.deleteCurrency = this.deleteCurrency.bind(this);
+    }
+
+    deleteCurrency(e) {
+      this.props.deleteCurrency(e);
+    }
+
+    render() {
+      const displayCurrencies = this.props.currencies.map(([name,val]) =>{
         return(
         <div>
           <p>{name + " : " + val}</p>
@@ -172,26 +297,12 @@ class AddTrip extends React.Component {
         )
       });
       return(
-        <form onSubmit = {this.onSubmit} onkeydown = "return event.key != 'Enter'" >
-          <label>Trip Name</label>
-          <input type = "text" id = "tripName" value = {this.state.tripName} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/>
-          <br/>
-          <label>Username</label>
-          <input type = "text" name = "username" id = "username" onKeyPress ={this.enterCheck} />
-          <input type = "button" value = "Add User" onClick = {this.addUser}  />
-          {displayUsers}
-          <br/>
-          <label>Currency</label>
-          <input type = "text" name = "currency" id = "currency" placeholder = "Name" onKeyPress ={this.enterCheck}/>
-          <input type = "number" name = "currencyVal" id = "currencyVal" placeholder = "Value" onKeyPress ={this.enterCheck} />
-          <input type = "button" value = "Add Currency" onClick = {this.addCurrency} />
+        <div>
           {displayCurrencies}
-          <br/>
-          <input type="submit" value = "Submit" />
-        </form>
+        </div>
       );
     }
-  
+
   }
 
   export default withRouter(AddTrip);
