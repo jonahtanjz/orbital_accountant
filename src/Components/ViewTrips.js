@@ -1,11 +1,12 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
+import {getUser} from '../Utils/Common';
 
 class ViewTrips extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user_id : 13,
+      user_id : -1,
       trips : []
     }
     this.viewLedger = this.viewLedger.bind(this);
@@ -13,16 +14,18 @@ class ViewTrips extends React.Component {
     this.onSelect = this.onSelect.bind(this);
   }
 
-  componentDidMount() {
-    fetch("https://accountant.tubalt.com/api/gettrips?userid="+this.state.user_id)
+  async componentDidMount() {
+    const user =  getUser().user_id;
+    fetch("https://accountant.tubalt.com/api/gettrips?userid="+ user)
     .then(response => response.json())
     .then(response => this.setState({
-      trips : response.trips
+      trips : response.trips,
+      user_id : user
     }));
   }
 
   viewLedger(e) {
-      alert("No ledger yet");
+      this.props.history.push("/viewledger",{trip_id : e.target.id});
   }
 
   addEntry(e) {
