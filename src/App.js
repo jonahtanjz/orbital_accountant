@@ -3,12 +3,13 @@ import { BrowserRouter, Switch, Route, NavLink } from 'react-router-dom';
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
 import { getToken, removeUserSession, setUserSession } from './Utils/Common';
-import Login from './Login';
-import Home from './Home';
-import Welcome from './Welcome';
-import Signup from './Signup';
-import AddTrip from './AddTrip';
-import AddEntry from './AddEntry';
+import Login from './Screens/Login';
+import Home from './Screens/Home';
+import Welcome from './Screens/Welcome';
+import Signup from './Screens/Signup';
+import AddTrip from './Components/AddTrip';
+import AddEntry from './Components/AddEntry';
+import ViewLedger from './Components/ViewLedger';
 
 class App extends Component {
     componentDidMount() {
@@ -43,6 +44,7 @@ class App extends Component {
                   <div className="content">
                     <Switch>
                       <Route exact path="/" component={Welcome} />
+                      <Route path="/viewledger" component={ViewLedger} />
                       <PrivateRoute path="/home" component={Home} />
                       <PrivateRoute path="/addtrip" component={AddTrip} />
                       <PrivateRoute path="/addentry" component ={AddEntry} />

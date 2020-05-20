@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { getUser } from './Utils/Common';
+import { getUser } from '../Utils/Common';
 
 class AddTrip extends React.Component {
     constructor(props) {
