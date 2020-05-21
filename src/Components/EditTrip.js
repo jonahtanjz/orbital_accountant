@@ -29,6 +29,19 @@ class AddTrip extends React.Component {
         this.setState({
             user_id: user.user_id,
         });
+        fetch("https://accountant.tubalt.com/api/gettripinfo?tripid=" + this.props.location.state.trip_id)
+        .then(response => response.json())
+        .then(response => {
+            this.setState({
+                tripName: response.trip[0].trip_name,
+                currentUsers: response.users.map((person)=>person.name),
+                currencies: response.currency.map(currency=>[currency.value,currency.name]),
+                currencyNames : response.currency.map(currency=>currency.name),
+                //trip_id: response.trip[0].trip_id,
+                //ended: response.trip[0].ended,
+            });
+        })
+
     }
     
     enterCheck(e) {
@@ -77,37 +90,33 @@ class AddTrip extends React.Component {
   
     onSubmit(e) {
       e.preventDefault();
-      let users = this.state.currentUsers;
-      let username = getUser().username
-      if (!users.includes(username)) {
-        users.push(username);
-      }
-      fetch("https://accountant.tubalt.com/api/newtrip", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          tripName: this.state.tripName,
-          users: users,
-          currency: this.state.currencies,
-          user_id: this.state.user_id,
-        })
-      })
-      .then(response => {
-        if (response.status === 401) {
-          response.json().then(res => alert(res.message));
-        } else {
-          response.json().then(res => {
-            alert("Success");
-            this.props.history.push("/home");
-          });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        alert("Oops! Something went wrong");
-      });
+      alert("In Progress");
+    //   fetch("https://accountant.tubalt.com/api/newtrip", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify({
+    //       tripName: this.state.tripName,
+    //       users: this.state.currentUsers,
+    //       currency: this.state.currencies,
+    //       user_id: this.state.user_id,
+    //     })
+    //   })
+    //   .then(response => {
+    //     if (response.status === 401) {
+    //       response.json().then(res => alert(res.message));
+    //     } else {
+    //       response.json().then(res => {
+    //         alert("Success");
+    //         this.props.history.push("/home");
+    //       });
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.log(error);
+    //     alert("Oops! Something went wrong");
+    //   });
   
     }
   
@@ -160,7 +169,6 @@ class AddTrip extends React.Component {
     }
   
     render() {
-
       return(
         <TripForm 
         onSubmit = {this.onSubmit}

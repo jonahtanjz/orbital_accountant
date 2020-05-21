@@ -12,6 +12,7 @@ class ViewTrips extends React.Component {
     this.viewLedger = this.viewLedger.bind(this);
     this.addEntry = this.addEntry.bind(this);
     this.onSelect = this.onSelect.bind(this);
+    this.editTrip = this.editTrip.bind(this);
   }
 
   async componentDidMount() {
@@ -32,8 +33,12 @@ class ViewTrips extends React.Component {
       this.props.history.push("/addentry",{trip_id : e.target.id});
   }
 
-  onSelect(arr) {
-    alert("No Ledger Yet");
+  onSelect(e) {
+    this.props.history.push("/viewledger",{trip_id : e.target.value});  
+  }
+  
+  editTrip(e) {
+    this.props.history.push("/edittrip",{trip_id : e.target.id});  
   }
 
   render() {
@@ -44,6 +49,7 @@ class ViewTrips extends React.Component {
                   <p>{trip[0].trip_name}</p>
                   <button id = {trip[0].trip_id} onClick = {this.viewLedger}>View Ledger</button>
                   <button id = {trip[0].trip_id} onClick = {this.addEntry}>Add Entry</button>
+                  <button id = {trip[0].trip_id} onClick = {this.editTrip}>Edit Trip</button>
               </div>
           );
       });
@@ -54,8 +60,11 @@ class ViewTrips extends React.Component {
       });
       return(
           <div>
+              <h1>Active Trips</h1>
               {displayActive}
-              <select>
+              <h1>Inactive Trips</h1>
+              <select onChange = {this.onSelect}>
+                  <option>Choose a Trip</option>
                   {displayInactive}
               </select>
           </div>
