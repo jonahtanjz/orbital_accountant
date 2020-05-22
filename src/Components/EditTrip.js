@@ -49,6 +49,7 @@ class EditTrip extends React.Component {
 
     setNewTripInfo(response) {
       this.setState({
+        tripName: response.trip[0].trip_name,
         currentUsers: response.users,
         currencies: response.currency.map(currency=>[currency.value,currency.name]),
         currencyNames : response.currency.map(currency=>currency.name),
@@ -228,7 +229,7 @@ class EditTrip extends React.Component {
       return(
       <div>
         <form onSubmit = {this.props.onSubmit} >
-          <InputTripName enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} trip_id = {this.props.trip_id} />
+          <InputTripName enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
           <InputUsers addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
           <DisplayUsers deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} changeUserName = {this.props.changeUserName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
@@ -246,7 +247,8 @@ class EditTrip extends React.Component {
     constructor(props) {
       super(props);
       this.state = {
-        editing : false
+        editing : false,
+        editingText: "",
       }
       this.updateTripName = this.updateTripName.bind(this);
       this.enterCheck = this.enterCheck.bind(this);
@@ -259,11 +261,18 @@ class EditTrip extends React.Component {
     }
 
     updateTripName(e) {
-      this.props.updateTripName(e);
-    }
-    toggleEditing(e) {
+      let newTripName = e.target.value;
       this.setState({
-        editing : true,
+        editingText: newTripName
+      });
+    }
+
+    toggleEditing(e) {
+      let tripName = this.props.tripName;
+      let editState = this.state.editing;
+      this.setState({
+        editing : !editState,
+        editingText: tripName,
       });
     }
     editTripName(e) {
@@ -276,7 +285,7 @@ class EditTrip extends React.Component {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          tripName: this.props.tripName,
+          tripName: this.state.editingText,
           trip_id : this.props.trip_id
         })
       })
@@ -285,6 +294,7 @@ class EditTrip extends React.Component {
           response.json().then(res => alert(res.message));
         } else {
           response.json().then(res => {
+            this.props.setNewTripInfo(res);
             alert("Success");
           });
         }
@@ -302,7 +312,7 @@ class EditTrip extends React.Component {
           <label>Trip Name: </label>
           {(! this.state.editing) 
             ? <div><span>{this.props.tripName}</span> <button type = "button" onClick = {this.toggleEditing}>Edit</button> </div>
-            : <div><input type = "text" id = "tripName" value = {this.props.tripName} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/> <button type = "button" onClick = {this.editTripName}>Done</button></div>
+            : <div><input type = "text" id = "tripName" value = {this.state.editingText} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/> <button type = "button" onClick = {this.editTripName}>Done</button><button type = "button" onClick = {this.toggleEditing}>Cancel</button></div>
           }
         </div>
       );
@@ -369,8 +379,8 @@ class EditTrip extends React.Component {
           response.json().then(res => alert(res.message));
         } else {
           response.json().then(res => {
-            alert("Success");
             this.props.setNewTripInfo(res);
+            alert("Success");
           });
         }
       })
@@ -419,8 +429,8 @@ class EditTrip extends React.Component {
           response.json().then(res => alert(res.message));
         } else {
           response.json().then(res => {
-            alert("Success");
             this.props.setNewTripInfo(res);
+            alert("Success");
           });
         }
       })
