@@ -342,13 +342,13 @@ class EditTrip extends React.Component {
       super(props);
       this.state = {
         editing : {},
+        editingText: {},
       };
       this.deleteUser = this.deleteUser.bind(this);
       this.toggleEditing = this.toggleEditing.bind(this);
       this.submitEditedName = this.submitEditedName.bind(this);
       this.changeUserName = this.changeUserName.bind(this);
     }
-
 
     deleteUser(e) {
       let link_id = e.target.id;
@@ -382,19 +382,27 @@ class EditTrip extends React.Component {
     }
 
     toggleEditing(e) {
-      let temp = {};
-      let newEdit = Object.assign(temp,this.state.editing);
+      let newEdit = {};
+      let newEditText = {};
+      Object.assign(newEdit, this.state.editing);
+      Object.assign(newEditText, this.state.editingText);
       let id = e.target.id;
-      newEdit[id] = ! newEdit[id];
+      newEdit[id] = !newEdit[id];
+      if (newEdit[id]) {
+        newEditText[id] = this.props.currentUsers.filter((user) => user.id == id)[0].name;
+      } else {
+        delete newEditText[id];
+      }
       this.setState({
-        editing : newEdit,
+        editing: newEdit,
+        editingText: newEditText,
       });
     }
 
     submitEditedName(e) {
       this.toggleEditing(e);
       let link_id = e.target.id;
-      let newName = this.props.currentUsers.filter((user) => user.id == link_id)[0].name;
+      let newName = this.state.editingText[link_id];
       fetch("https://accountant.tubalt.com/api/edittripuser", {
         method: "POST",
         headers: {
@@ -423,10 +431,14 @@ class EditTrip extends React.Component {
     }
 
     changeUserName(e) {
-      this.props.changeUserName(e);
+      let newName = e.target.value;
+      let newEditText = {};
+      Object.assign(newEditText, this.state.editingText);
+      newEditText[e.target.id] = newName;
+      this.setState({
+        editingText: newEditText,
+      }); 
     }
-
-    
 
     render() {
       const displayUsers = this.props.currentUsers.filter(user => user.in_trip === 1).map((user) => {
@@ -440,8 +452,9 @@ class EditTrip extends React.Component {
           </div>
           :
           <div>
-            <input type = "text" id = {user.id} value = {user.name} onChange = {this.props.changeUserName}/>
+            <input type = "text" id = {user.id} value = {this.state.editingText[user.id]} onChange = {this.changeUserName}/>
             <button type = "button" id = {user.id} onClick={this.submitEditedName}>Done</button>
+            <button type = "button" id = {user.id} onClick={this.toggleEditing}>Cancel</button>
           </div>
           
         );
