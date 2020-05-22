@@ -1,6 +1,9 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { getUser } from '../Utils/Common';
+import TripForm from './TripForm';
+
+
 
 class AddTrip extends React.Component {
     constructor(props) {
@@ -19,8 +22,6 @@ class AddTrip extends React.Component {
       this.deleteCurrency = this.deleteCurrency.bind(this);
       this.deleteUser = this.deleteUser.bind(this);
       this.enterCheck = this.enterCheck.bind(this);
-  
-  
     }
 
     componentDidMount() {
@@ -76,6 +77,11 @@ class AddTrip extends React.Component {
   
     onSubmit(e) {
       e.preventDefault();
+      let users = this.state.currentUsers;
+      let username = getUser().username
+      if (!users.includes(username)) {
+        users.push(username);
+      }
       fetch("https://accountant.tubalt.com/api/newtrip", {
         method: "POST",
         headers: {
@@ -83,7 +89,7 @@ class AddTrip extends React.Component {
         },
         body: JSON.stringify({
           tripName: this.state.tripName,
-          users: this.state.currentUsers,
+          users: users,
           currency: this.state.currencies,
           user_id: this.state.user_id,
         })
@@ -156,153 +162,19 @@ class AddTrip extends React.Component {
     render() {
 
       return(
-        <form onSubmit = {this.onSubmit} onkeydown = "return event.key != 'Enter'" >
-          <InputTripName enterCheck = {this.enterCheck} updateTripName = {this.updateTripName} tripName = {this.state.tripName} />
-          <br/>
-          <InputUsers addUser = {this.addUser} enterCheck = {this.enterCheck} />
-          <DisplayUsers deleteUser = {this.deleteUser} currentUsers = {this.state.currentUsers} />
-          <br/>
-          <InputCurrency enterCheck = {this.enterCheck} addCurrency = {this.addCurrency} />
-          <DisplayCurrencies currencies = {this.state.currencies} deleteCurrency = {this.deleteCurrency} />
-          <br/>
-          <input type="submit" value = "Submit" />
-        </form>
+        <TripForm 
+        onSubmit = {this.onSubmit}
+        enterCheck = {this.enterCheck}
+        updateTripName = {this.updateTripName}
+        tripName = {this.state.tripName}
+        addUser = {this.addUser}
+        deleteUser = {this.deleteUser}
+        currentUsers = {this.state.currentUsers}
+        addCurrency = {this.addCurrency}
+        currencies = {this.state.currencies}
+        deleteCurrency = {this.deleteCurrency}
+        />
       );
     }
   }
-  class InputTripName extends React.Component {
-    constructor(props) {
-      super(props);
-      this.updateTripName = this.updateTripName.bind(this);
-      this.enterCheck = this.enterCheck.bind(this);
-    }
-
-    enterCheck(e) {
-      this.props.enterCheck(e);
-    }
-
-    updateTripName(e) {
-      this.props.updateTripName(e);
-    }
-
-    render() {
-      return(
-        <div>
-          <label>Trip Name</label>
-          <input type = "text" id = "tripName" value = {this.props.tripName} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/>
-        </div>
-      );
-    }
-
-  }
-
-  class InputUsers extends React.Component {
-    constructor(props) {
-      super(props);
-      this.enterCheck = this.enterCheck.bind(this);
-      this.addUser = this.addUser.bind(this);
-    }
-
-    addUser(e) {
-      this.props.addUser(e);
-    }
-
-    enterCheck(e) {
-      this.props.enterCheck(e);
-    }
-
-
-    render() {
-      return (
-        <div>
-        <label>Username</label>
-        <input type = "text" name = "username" id = "username" onKeyPress ={this.enterCheck} />
-        <input type = "button" value = "Add User" onClick = {this.addUser}  />
-        </div>
-      );
-    }
-  }
-
-  class DisplayUsers extends React.Component {
-    constructor(props) {
-      super(props);
-      this.deleteUser = this.deleteUser.bind(this);
-    }
-
-    deleteUser(e) {
-      this.props.deleteUser(e);
-    }
-
-    render() {
-      const displayUsers = this.props.currentUsers.map((user) => {
-        return (
-          <div>
-            <p>{user}</p>
-            <button type= "button" name = {user} onClick = {this.deleteUser}>Delete</button>
-          </div>
-  
-        );
-      });
-      return(
-        <div>
-          {displayUsers}
-        </div>
-      );
-    }
-  }
-
-  class InputCurrency  extends React.Component {
-    constructor(props) {
-      super(props);
-      this.enterCheck = this.enterCheck.bind(this);
-      this.addCurrency = this.addCurrency.bind(this);
-    }
-
-    enterCheck(e) {
-      this.props.enterCheck(e);
-    }
-
-    addCurrency(e) {
-      this.props.addCurrency(e);
-    }
-
-    render() {
-      return(
-        <div>
-        <label>Currency</label>
-        <input type = "text" name = "currency" id = "currency" placeholder = "Name" onKeyPress ={this.enterCheck}/>
-        <input type = "number" name = "currencyVal" id = "currencyVal" placeholder = "Value" onKeyPress ={this.enterCheck} />
-        <input type = "button" value = "Add Currency" onClick = {this.addCurrency} />
-        </div>
-      );
-    }
-  }
-  class DisplayCurrencies extends React.Component {
-    constructor(props) {
-      super(props);
-      this.deleteCurrency = this.deleteCurrency.bind(this);
-    }
-
-    deleteCurrency(e) {
-      this.props.deleteCurrency(e);
-    }
-
-    render() {
-      const displayCurrencies = this.props.currencies.map(([name,val]) =>{
-        return(
-        <div>
-          <p>{name + " : " + val}</p>
-          <button type ="button"  name = {name} onClick = {this.deleteCurrency}>Delete</button>
-        </div>
-        )
-      });
-      return(
-        <div>
-          {displayCurrencies}
-        </div>
-      );
-    }
-
-  }
-
   export default withRouter(AddTrip);
