@@ -19,9 +19,9 @@ class ViewLedger extends React.Component {
         fetch("https://accountant.tubalt.com/api/getledger?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
-            console.log(response.users);
+            console.log(response);
             this.setState({
-                trip : response.trip ,
+                trip : response.trip[0] ,
                 users :response.users ,
                 transactions : response.transactions,
                 currency : response.currency,
@@ -55,6 +55,8 @@ class ViewLedger extends React.Component {
                 <select id = "nameSelect" onChange = {this.changeSelectedName}>
                     {chooseName}
                 </select>
+                <UndoEndTrip trip = {this.state.trip} history = {this.props.history}/>
+                <SuggestPay users= {this.state.users} transactions = {this.state.transactions} currency = {this.state.currency}/>
                 <Ledger currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} />
             </div>
         );
@@ -78,7 +80,7 @@ class Ledger extends React.Component {
                 return (
                 <div>
                     <h1>Ledger of {personName}</h1>
-                    <Table currency = {this.props.currency} transactions = {entries} />
+                    <Table currency = {this.props.currency} transactions = {entries} self ={this.props.self} />
                 </div>
                 );
             } else {
@@ -102,6 +104,7 @@ class Table extends React.Component {
     }
 
     render() {
+        let total = 0;
         const table = this.props.transactions.map((entry) => {
             let conversion;
             let usedCurrency = this.props.currency.filter((curr) => curr.name === entry.currency);
@@ -110,10 +113,15 @@ class Table extends React.Component {
             } else {
                 conversion = usedCurrency[0].value;
             }
+            let value = (entry.amount/conversion)
+            if (entry.payer == this.props.self) {
+                value = (0 - (entry.amount/conversion))
+            }
+            total = total + value;
             return(
                 <tr>
                     <td>{entry.description}</td>
-                    <td>{(entry.amount/conversion).toFixed(2)}</td>
+                    <td>{value.toFixed(2)}</td>
                     <td>{entry.payee}</td>
                     <td>{entry.payer}</td>
                     <td>{entry.currency}</td>
@@ -121,6 +129,12 @@ class Table extends React.Component {
                 </tr>
             );
         });
+        let desc;
+        if (total > 0) {
+            desc = " To Pay"
+        } else {
+            desc = " To Be Paid"
+        }
         return(
             <table>
                 <tbody>
@@ -131,10 +145,120 @@ class Table extends React.Component {
                         <th>Payer</th>
                     </tr>
                     {table}
+                    <tr>
+                        <td>{"Total" + desc}</td>
+                        <td>{total.toFixed(2)}</td>
+                    </tr>
                 </tbody>
             </table>
         );
     }
 }
 
+class SuggestPay extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            total : {}
+        }
+    }
+
+    render() {
+        let total = {}
+        this.props.users.map((user) => {
+            total[user.name] = 0
+            return user;
+        });
+        this.props.transactions.map((entry) =>{
+            let conversion;
+            let usedCurrency = this.props.currency.filter((curr) => curr.name === entry.currency);
+            if (usedCurrency.length === 0) {
+                conversion = 1;
+            } else {
+                conversion = usedCurrency[0].value;
+            }
+            let value = parseFloat((entry.amount/conversion).toFixed(2));
+            total[entry.payee] = total[entry.payee] - value;
+            total[entry.payer] += value;
+            return entry;
+        });
+        const arr = Object.keys(total).map((key) => [key, total[key]]);
+        let arr2 =arr.sort((c,d) => {
+            let a = c[1];
+            let b = d[1];
+            if (a > 0 && b > 0) {
+                return a  - b;
+            } else if (a < 0 && b < 0) {
+                return -b + a;
+            } else {
+                return -a + b;
+            }
+        })
+        console.log(arr2);
+        let amt = 0;
+        let display = arr2.filter((total) => total[1].toFixed(2) !=0 ).map((total) =>{
+            amt += total[1]
+            
+                if (amt.toFixed(2) != 0) {
+                    return(
+                    <span>{total[0]+ " Pays $" + amt.toFixed(2) + " -> "}</span>
+                    );
+                } else {
+                    return(
+                    <span>{total[0]}</span>
+                    );
+                }
+
+        });
+        return(
+            <div>
+                {display}
+            </div>
+        );
+    }
+}
+
+class UndoEndTrip extends React.Component {
+    constructor(props) {
+      super(props);
+      this.undoEndTrip = this.undoEndTrip.bind(this);
+    }
+    
+    undoEndTrip(e) {
+      fetch("https://accountant.tubalt.com/api/undoendtrip", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          trip_id : this.props.trip.trip_id,
+        })
+      })
+      .then(response => {
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            this.props.history.push("/home");
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
+    } 
+
+    render() {
+        if (this.props.trip.ended == 1) {
+            return(
+            <div>
+                <button type = "button" onClick={this.undoEndTrip}>Restart Trip</button>
+            </div>
+            );
+        } else {
+            return null;
+        }
+    }
+  }
 export default withRouter(ViewLedger);
