@@ -35,10 +35,11 @@ class EditTrip extends React.Component {
         fetch("https://accountant.tubalt.com/api/gettripinfo?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
+          console.log(response.currency);
             this.setState({
                 tripName: response.trip[0].trip_name,
                 currentUsers: response.users,
-                currencies: response.currency.map(currency=>[currency.value,currency.name]),
+                currencies: response.currency.map(currency=>[currency.name,currency.value,currency.in_trip]),
                 currencyNames : response.currency.map(currency=>currency.name),
                 trip_id: this.props.location.state.trip_id,
                 //ended: response.trip[0].ended,
@@ -48,10 +49,11 @@ class EditTrip extends React.Component {
     }
 
     setNewTripInfo(response) {
+      
       this.setState({
         tripName: response.trip[0].trip_name,
         currentUsers: response.users,
-        currencies: response.currency.map(currency=>[currency.value,currency.name]),
+        currencies: response.currency.map(currency=>[currency.name,currency.value,currency.in_trip]),
         currencyNames : response.currency.map(currency=>currency.name),
       });
     }
@@ -74,22 +76,22 @@ class EditTrip extends React.Component {
 
   
     deleteCurrency(e) {
-      e.preventDefault();
-      let name = e.target.name;
-      let currencies = this.state.currencies.slice();
-      let currNames = this.state.currencyNames.slice();
-      for (let i = 0; i < currNames.length; i++) {
-        if (currNames[i] === name) {
-          currNames.splice(i,1);
-        }
-        if (currencies[i][0] === name) {
-          currencies.splice(i,1);
-        }
-      }
-      this.setState({
-        currencies : currencies,
-        currencyNames : currNames,
-      });
+      // e.preventDefault();
+      // let name = e.target.name;
+      // let currencies = this.state.currencies.slice();
+      // let currNames = this.state.currencyNames.slice();
+      // for (let i = 0; i < currNames.length; i++) {
+      //   if (currNames[i] === name) {
+      //     currNames.splice(i,1);
+      //   }
+      //   if (currencies[i][0] === name) {
+      //     currencies.splice(i,1);
+      //   }
+      // }
+      // this.setState({
+      //   currencies : currencies,
+      //   currencyNames : currNames,
+      // });
     }
   
     onSubmit(e) {
@@ -144,13 +146,39 @@ class EditTrip extends React.Component {
       document.getElementById('currency').value = '';
       document.getElementById('currencyVal').value = '';
       let newCurr = [ newCurrencyName, newCurrencyValue]
-      if (currNames.includes(newCurrencyName)){return;}
+      // if (currNames.includes(newCurrencyName)){return;}
       currencies.push(newCurr);
       currNames.push(newCurrencyName);
       this.setState({
         currencyNames : currNames,
         currencies : currencies,
       });
+      fetch("https://accountant.tubalt.com/api/addcurrency", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          currency : newCurr,
+          trip_id : this.state.trip_id,
+        })
+      })
+      .then(response => {
+        console.log("Sent");
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            this.setNewTripInfo(res);
+            alert("Success");
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
+
     }
   
     addUser(e) {
@@ -202,6 +230,7 @@ class EditTrip extends React.Component {
         currentUsers : users,
       });
     }
+
   
     render() {
       return(
@@ -219,6 +248,7 @@ class EditTrip extends React.Component {
         deleteCurrency = {this.deleteCurrency}
         trip_id = {this.state.trip_id}
         setNewTripInfo = {this.setNewTripInfo}
+        history = {this.props.history}
         />
       );
     }
@@ -228,16 +258,16 @@ class EditTrip extends React.Component {
     render(){
       return(
       <div>
-        <form onSubmit = {this.props.onSubmit} >
+        <form >
           <InputTripName enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
           <InputUsers addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
           <DisplayUsers deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} changeUserName = {this.props.changeUserName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
           <InputCurrency enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
-          <DisplayCurrencies currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} setNewTripInfo = {this.props.setNewTripInfo} />
+          <DisplayCurrencies currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} setNewTripInfo = {this.props.setNewTripInfo} trip_id = {this.props.trip_id} />
           <br/>
-          <input type="submit" value = "Submit" />
+          <EndTrip trip_id = {this.props.trip_id} history = {this.props.history} />
         </form>
       </div>
       );
@@ -506,21 +536,145 @@ class EditTrip extends React.Component {
   class DisplayCurrencies extends React.Component {
     constructor(props) {
       super(props);
+      this.state = {
+        editing : {},
+        editingText : {},
+      }
       this.deleteCurrency = this.deleteCurrency.bind(this);
+      this.toggleEditing = this.toggleEditing.bind(this);
+      this.changeCurrencyName = this.changeCurrencyName.bind(this);
+      this.changeCurrencyValue = this.changeCurrencyValue.bind(this);
+      this.submitCurrency = this.submitCurrency.bind(this);
     }
 
     deleteCurrency(e) {
-      this.props.deleteCurrency(e);
+      // this.props.deleteCurrency(e);
+      e.preventDefault();
+      fetch("https://accountant.tubalt.com/api/removecurrency", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name : e.target.name,
+          trip_id : this.props.trip_id,
+        })
+      })
+      .then(response => {
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            this.props.setNewTripInfo(res);
+            alert("Success");
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
+
+    }
+
+    toggleEditing(e) {
+      let newText = {}
+      Object.assign(newText,this.state.editingText);
+      console.log(newText);
+      let newEditing = {}
+      Object.assign(newEditing, this.state.editing);
+      newEditing[e.target.name] = !newEditing[e.target.name]
+      if (newEditing[e.target.name]) {
+        newText[e.target.name] = this.props.currencies.filter(([name,val,it])=>name == e.target.name).map(([name,val])=>
+       {return ({
+           newName : name,
+          newVal : val
+        });
+        })[0];
+      } else {
+        delete newText[e.target.name];
+      }
+
+      this.setState({
+        editing : newEditing,
+        editingText : newText,
+      })
+    }
+
+    changeCurrencyName(e) {
+      let newText = {}
+      Object.assign(newText,this.state.editingText);
+      newText[e.target.id]["newName"] = e.target.value;
+      this.setState({
+        editingText : newText,
+      });
+
+    }
+
+    changeCurrencyValue(e) {
+      let newText = {}
+      Object.assign(newText,this.state.editingText);
+      newText[e.target.id]["newVal"] = e.target.value;
+      this.setState({
+        editingText : newText,
+      });
+    }
+
+    submitCurrency(e) {
+      let oldName = e.target.name;
+      this.toggleEditing(e);
+      console.log(oldName);
+      console.log(this.state.editingText[oldName]["newName"]);
+      console.log(this.state.editingText[oldName]["newVal"]);
+
+      fetch("https://accountant.tubalt.com/api/edittripcurrency", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          originalName : oldName,
+          newName : this.state.editingText[oldName]["newName"],
+          newValue : this.state.editingText[oldName]["newVal"],
+          trip_id : this.props.trip_id,
+        })
+      })
+      .then(response => {
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            this.props.setNewTripInfo(res);
+            alert("Success");
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
     }
 
     render() {
-      const displayCurrencies = this.props.currencies.map(([name,val]) =>{
-        return(
-        <div>
-          <p>{name + " : " + val}</p>
-          <button type ="button"  name = {name} onClick = {this.deleteCurrency}>Delete</button>
-        </div>
-        )
+      const displayCurrencies = this.props.currencies.filter(currency => currency[2]==1).map(([name,val,it]) =>{
+        if (!this.state.editing[name]) {
+          return(
+          <div>
+            <p>{name + " : " + val}</p>
+            <button type ="button"  name = {name} onClick = {this.deleteCurrency}>Delete</button>
+            <button type ="button" name = {name} onClick = {this.toggleEditing}>Edit</button>
+          </div>
+          )
+        } else {
+          return(
+            <div>
+              <input type = "text" id = {name} value = {this.state.editingText[name]["newName"]} onChange = {this.changeCurrencyName} />
+              <input type = "text" id = {name} value = {this.state.editingText[name]["newVal"]} onChange = {this.changeCurrencyValue} />
+              <button type ="button" name = {name} onClick = {this.submitCurrency}>Done</button>
+              <button type ="button" name = {name} onClick = {this.toggleEditing}>Cancel</button>
+            </div>
+          );
+        }
       });
       return(
         <div>
@@ -529,5 +683,45 @@ class EditTrip extends React.Component {
       );
     }
 
+  }
+
+  class EndTrip extends React.Component {
+    constructor(props) {
+      super(props);
+      this.endTrip = this.endTrip.bind(this);
+    }
+    
+    endTrip(e) {
+      fetch("https://accountant.tubalt.com/api/endtrip", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          trip_id : this.props.trip_id,
+        })
+      })
+      .then(response => {
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            this.props.history.push("/home");
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
+    } 
+
+    render() {
+      return(
+      <div>
+        <button type = "button" onClick={this.endTrip}>End Trip</button>
+      </div>
+      );
+    }
   }
   export default withRouter(EditTrip);
