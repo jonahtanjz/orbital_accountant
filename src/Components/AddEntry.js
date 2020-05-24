@@ -29,7 +29,7 @@ class AddEntry extends React.Component {
   }
 
   componentDidMount() {
-    fetch("https://accountant.tubalt.com/api/gettripinfo?tripid="+this.props.location.state.trip_id)
+    fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid="+this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {
         let curr = response.currency.map((currency) => currency.name);
@@ -151,7 +151,7 @@ class AddEntry extends React.Component {
     } else {
       consume = this.state.consume;
     }
-    fetch("https://accountant.tubalt.com/api/addtransaction", {
+    fetch("https://accountant.tubalt.com/api/trips/addtransaction", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

@@ -32,7 +32,7 @@ class EditTrip extends React.Component {
         this.setState({
             user_id: user.user_id,
         });
-        fetch("https://accountant.tubalt.com/api/gettripinfo?tripid=" + this.props.location.state.trip_id)
+        fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
           console.log(response.currency);
@@ -97,7 +97,7 @@ class EditTrip extends React.Component {
     onSubmit(e) {
       e.preventDefault();
       alert("In Progress");
-    //   fetch("https://accountant.tubalt.com/api/newtrip", {
+    //   fetch("https://accountant.tubalt.com/api/trips/newtrip", {
     //     method: "POST",
     //     headers: {
     //       "Content-Type": "application/json"
@@ -153,7 +153,7 @@ class EditTrip extends React.Component {
         currencyNames : currNames,
         currencies : currencies,
       });
-      fetch("https://accountant.tubalt.com/api/addcurrency", {
+      fetch("https://accountant.tubalt.com/api/trips/addcurrency", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -193,7 +193,7 @@ class EditTrip extends React.Component {
       //   alert("Name already included.");
       //   return;
       // }
-      fetch("https://accountant.tubalt.com/api/adduser", {
+      fetch("https://accountant.tubalt.com/api/trips/adduser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -309,7 +309,7 @@ class EditTrip extends React.Component {
       this.setState({
         editing : false,
       });
-      fetch("https://accountant.tubalt.com/api/edittrip", {
+      fetch("https://accountant.tubalt.com/api/trips/edittrip", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -393,7 +393,7 @@ class EditTrip extends React.Component {
     deleteUser(e) {
       let link_id = e.target.id;
       let userName = this.props.currentUsers.filter((user) => user.id == link_id)[0].name;
-      fetch("https://accountant.tubalt.com/api/removeuser", {
+      fetch("https://accountant.tubalt.com/api/trips/removeuser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -443,7 +443,7 @@ class EditTrip extends React.Component {
       this.toggleEditing(e);
       let link_id = e.target.id;
       let newName = this.state.editingText[link_id];
-      fetch("https://accountant.tubalt.com/api/edittripuser", {
+      fetch("https://accountant.tubalt.com/api/trips/edittripuser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -550,7 +550,7 @@ class EditTrip extends React.Component {
     deleteCurrency(e) {
       // this.props.deleteCurrency(e);
       e.preventDefault();
-      fetch("https://accountant.tubalt.com/api/removecurrency", {
+      fetch("https://accountant.tubalt.com/api/trips/removecurrency", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -627,7 +627,7 @@ class EditTrip extends React.Component {
       console.log(this.state.editingText[oldName]["newName"]);
       console.log(this.state.editingText[oldName]["newVal"]);
 
-      fetch("https://accountant.tubalt.com/api/edittripcurrency", {
+      fetch("https://accountant.tubalt.com/api/trips/edittripcurrency", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -692,7 +692,7 @@ class EditTrip extends React.Component {
     }
     
     endTrip(e) {
-      fetch("https://accountant.tubalt.com/api/endtrip", {
+      fetch("https://accountant.tubalt.com/api/trips/endtrip", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

@@ -16,7 +16,7 @@ class ViewLedger extends React.Component {
     }
 
     componentDidMount() {
-        fetch("https://accountant.tubalt.com/api/getledger?tripid=" + this.props.location.state.trip_id)
+        fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
             console.log(response);
@@ -225,7 +225,7 @@ class UndoEndTrip extends React.Component {
     }
     
     undoEndTrip(e) {
-      fetch("https://accountant.tubalt.com/api/undoendtrip", {
+      fetch("https://accountant.tubalt.com/api/trips/undoendtrip", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

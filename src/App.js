@@ -18,7 +18,7 @@ class App extends Component {
         if (!token) {
             return;
         }
-        fetch('https://accountant.tubalt.com/api/verifyToken?token=' + token)
+        fetch('https://accountant.tubalt.com/api/users/verifyToken?token=' + token)
             .then(response => {
                 if (response.status === 401) {
                   removeUserSession();

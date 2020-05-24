@@ -82,7 +82,7 @@ class AddTrip extends React.Component {
       if (!users.includes(username)) {
         users.push(username);
       }
-      fetch("https://accountant.tubalt.com/api/newtrip", {
+      fetch("https://accountant.tubalt.com/api/trips/newtrip", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

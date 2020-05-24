@@ -17,7 +17,7 @@ class ViewTrips extends React.Component {
 
   async componentDidMount() {
     const user =  getUser().user_id;
-    fetch("https://accountant.tubalt.com/api/gettrips?userid="+ user)
+    fetch("https://accountant.tubalt.com/api/trips/gettrips?userid="+ user)
     .then(response => response.json())
     .then(response => this.setState({
       trips : response.trips,
