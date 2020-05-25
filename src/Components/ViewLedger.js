@@ -57,7 +57,7 @@ class ViewLedger extends React.Component {
                 </select>
                 <UndoEndTrip trip = {this.state.trip} history = {this.props.history}/>
                 <SuggestPay users= {this.state.users} transactions = {this.state.transactions} currency = {this.state.currency}/>
-                <Ledger currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} />
+                <Ledger currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
             </div>
         );
     }
@@ -80,7 +80,7 @@ class Ledger extends React.Component {
                 return (
                 <div>
                     <h1>Ledger of {personName}</h1>
-                    <Table currency = {this.props.currency} transactions = {entries} self ={this.props.self} />
+                    <Table currency = {this.props.currency} transactions = {entries} self ={this.props.self} history = {this.props.history} trip = {this.props.trip} />
                 </div>
                 );
             } else {
@@ -126,6 +126,7 @@ class Table extends React.Component {
                     <td>{entry.payer}</td>
                     <td>{entry.currency}</td>
                     <td>{conversion}</td>
+                    <td><button onClick = {() => this.props.history.push("/editentry",{transaction_id : entry.transaction_id, trip_id : this.props.trip.trip_id})}>Edit</button></td>
                 </tr>
             );
         });
