@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom'
 
-class AddEntry extends React.Component {
+class EditEntry extends React.Component {
   constructor(props){
     super(props);
     this.state = {
@@ -15,7 +15,7 @@ class AddEntry extends React.Component {
       selectedCurrency : "",
       equal : false,
       desc : "",
-      trip : {}
+      trip : {},
     }
     this.onChangePay = this.onChangePay.bind(this);
     this.onChangeConsume = this.onChangeConsume.bind(this);
@@ -25,20 +25,38 @@ class AddEntry extends React.Component {
     this.changeEqual = this.changeEqual.bind(this);
     this.updateDesc = this.updateDesc.bind(this);
     this.changeCurrency = this.changeCurrency.bind(this);
-
+    this.deleteTransaction = this.deleteTransaction.bind(this);
   }
 
   componentDidMount() {
-    fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid="+this.props.location.state.trip_id)
+    fetch("https://accountant.tubalt.com/api/trips/gettransaction?transactionid="+ this.props.location.state.transaction_id + "&trip_id=" + this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {
+        console.log(response);
         let curr = response.currency.map((currency) => currency.name);
         curr.push("SGD")
+
+        let pay = response.transactions.filter(transaction => transaction.type === "payee")
+            .map(transaction => [transaction.name, transaction.amount]);
+        let displayPay = response.transactions.filter(transaction => transaction.type === "payee")
+            .map(transaction => transaction.name);
+
+        let consume = response.transactions.filter(transaction => transaction.type === "payer")
+            .map(transaction => [transaction.name, transaction.amount]);
+        let displayConsume = response.transactions.filter(transaction => transaction.type === "payer")
+            .map(transaction => transaction.name);
+
         this.setState({
           trip : response.trip[0],
           people : response.users.map((person)=> person.name),
           currency : curr,
-          selectedCurrency : curr[0],
+          selectedCurrency : response.transactions[0].currency,
+          pay: pay,
+          displayPay : displayPay ,
+          consume: consume,
+          displayConsume : displayConsume ,
+          desc : response.transactions[0].description,
+          equal : (response.transactions[0].equal == 1) ? true : false,
         })
       });
   }
@@ -115,6 +133,7 @@ class AddEntry extends React.Component {
       pay : pay,
     });
   }
+
   onChangeConsume(e) {
     let display = [];
     let consume = this.state.consume.slice();
@@ -151,7 +170,7 @@ class AddEntry extends React.Component {
     } else {
       consume = this.state.consume;
     }
-    fetch("https://accountant.tubalt.com/api/trips/addtransaction", {
+    fetch("https://accountant.tubalt.com/api/trips/edittransaction", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -163,6 +182,7 @@ class AddEntry extends React.Component {
         description : this.state.desc,
         currency : this.state.selectedCurrency,
         equal : (this.state.equal) ? 1 : 0,
+        transaction_id : this.props.location.state.transaction_id,
       })
     })
     .then(response => {
@@ -171,7 +191,7 @@ class AddEntry extends React.Component {
       } else {
         response.json().then(res => {
           alert("Success");
-          this.props.history.push("/home");
+          this.props.history.push("/viewledger",{trip_id : this.props.location.state.trip_id});
         });
       }
     })
@@ -179,6 +199,33 @@ class AddEntry extends React.Component {
       console.log(error);
       alert("Oops! Something went wrong");
     });
+  }
+
+  deleteTransaction(e) {
+    e.preventDefault();
+    fetch("https://accountant.tubalt.com/api/trips/deletetransaction", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          transaction_id : this.props.location.state.transaction_id,
+        })
+      })
+      .then(response => {
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            alert("Success");
+            this.props.history.push("/viewledger",{trip_id : this.props.location.state.trip_id});
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
   }
 
   render() {
@@ -191,21 +238,23 @@ class AddEntry extends React.Component {
         <NameList 
         people = {this.state.people}
         onChange = {this.onChangePay}
+        display = {this.state.displayPay}
         />
         <AmountDisplay
         onSubmit = {this.onSubmit}
-        display = {this.state.displayPay}
+        display = {this.state.pay}
         onChange = {this.updatePay}
         />
         <p>People who consumed:</p>
         <NameList 
         people = {this.state.people}
         onChange = {this.onChangeConsume}
+        display = {this.state.displayConsume}
         type = "consume"
         />
         <AmountDisplay
         onSubmit = {this.onSubmit}
-        display = {this.state.displayConsume}
+        display = {this.state.consume}
         onChange = {this.updateConsume}
         />
         <br/>
@@ -223,6 +272,10 @@ class AddEntry extends React.Component {
         <input type="text" value = {this.state.desc} id="desc" onChange={this.updateDesc} placeholder="Description of Transaction"/>
         <br/> 
         {submitButton}
+        <br/>
+        <br/>
+        <br/>
+        <button type = "button" onClick ={this.deleteTransaction}>Delete</button>
       </form>
       </div>
       </div>
@@ -288,13 +341,14 @@ onChange(e) {
 render() {
   const listAmounts = this.props.display.map((person) => {
     return (
-      <div key = {person}>
-      <p>{person}</p>
+      <div key = {person[0]}>
+      <p>{person[0]}</p>
       <input
       type = "number"
-      name = {person} 
+      name = {person[0]} 
+      value = {person[1]}
       onChange = {this.onChange}
-      id = {person} 
+      id = {person[0]} 
       placeholder = "Input Amount"
       />
       </div>
@@ -316,17 +370,23 @@ constructor(props){
 }
 
 onChange(e) {
+    console.log(e);
   this.props.onChange(e);
 }
 
 render() {
   const list = this.props.people.map((person) => {
     return ( { label: person, value: person });
-  } );
+  });
+  const display = this.props.display.map(person => {
+      return(
+          { label: person, value: person }
+      );
+  });
   return (
-    <ReactMultiSelectCheckboxes options = {list} onChange = {this.onChange} />
+    <ReactMultiSelectCheckboxes value = {display} options = {list} onChange = {this.onChange} />
   );
 }
 }
 
-export default withRouter(AddEntry);
+export default withRouter(EditEntry);

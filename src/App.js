@@ -11,6 +11,7 @@ import AddTrip from './Components/AddTrip';
 import AddEntry from './Components/AddEntry';
 import ViewLedger from './Components/ViewLedger';
 import EditTrip from './Components/EditTrip';
+import EditEntry from './Components/EditEntry';
 
 class App extends Component {
     componentDidMount() {
@@ -50,6 +51,7 @@ class App extends Component {
                       <PrivateRoute path="/addtrip" component={AddTrip} />
                       <PrivateRoute path ="/edittrip" component = {EditTrip} />
                       <PrivateRoute path="/addentry" component ={AddEntry} />
+                      <PrivateRoute path = "/editentry" component = {EditEntry} />
                       <PublicRoute path="/login" component={Login} />
                       <Route path="/signup" component={Signup} />
                     </Switch>
