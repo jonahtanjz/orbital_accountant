@@ -126,8 +126,14 @@ class EditEntry extends React.Component {
     let pay = this.state.pay.slice();
     for (let i = 0; i < e.length; i++) {
       display.push(e[i].value);
+      if (pay.filter((x) => x[0] === e[i].value).length === 0) {
+          pay.push([e[i].value,0]);
+      }
     }
+    
     pay = this.matchArr(display,pay);
+    console.log(display);
+    console.log(pay);
     this.setState({
       displayPay : display,
       pay : pay,
@@ -139,6 +145,9 @@ class EditEntry extends React.Component {
     let consume = this.state.consume.slice();
     for (let i = 0; i < e.length; i++) {
       display.push(e[i].value);
+      if (consume.filter((x) => x[0] === e[i].value).length === 0) {
+        consume.push([e[i].value,0]);
+    }
     }
     consume = this.matchArr(display,consume)
     this.setState({
@@ -229,6 +238,8 @@ class EditEntry extends React.Component {
   }
 
   render() {
+    console.log(this.state.displayPay);
+    console.log(this.state.pay);
     const submitButton = (<input type = "submit" value = "Submit"/> ) ;
     return (
       <div>
@@ -346,7 +357,7 @@ render() {
       <input
       type = "number"
       name = {person[0]} 
-      value = {person[1]}
+      value = {(person[1] === 0) ? null : person[1]}
       onChange = {this.onChange}
       id = {person[0]} 
       placeholder = "Input Amount"
