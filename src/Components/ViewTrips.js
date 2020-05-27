@@ -19,10 +19,13 @@ class ViewTrips extends React.Component {
     const user =  getUser().user_id;
     fetch("https://accountant.tubalt.com/api/trips/gettrips?userid="+ user)
     .then(response => response.json())
-    .then(response => this.setState({
+    .then(response => {
+      console.log(response);
+      this.setState({
       trips : response.trips,
       user_id : user
-    }));
+      })
+    });
   }
 
   viewLedger(e) {
@@ -43,7 +46,7 @@ class ViewTrips extends React.Component {
 
   render() {
       let trips = this.state.trips;
-      let displayActive = trips.filter((trip) => trip[0].ended === 0).map((trip) => {
+      let displayActive = trips.filter((trip) => trip[0].ended === 0 && trip[0].in_trip === 1).map((trip) => {
           return(
               <div>
                   <p>{trip[0].trip_name}</p>
@@ -53,7 +56,7 @@ class ViewTrips extends React.Component {
               </div>
           );
       });
-      let displayInactive = trips.filter(trip => trip[0].ended === 1).map((trip) => {
+      let displayInactive = trips.filter(trip => trip[0].ended === 1 || trip[0].in_trip === 0).map((trip) => {
           return(
            <option value = {trip[0].trip_id}>{trip[0].trip_name}</option>
           );

@@ -7,9 +7,7 @@ class EditEntry extends React.Component {
     super(props);
     this.state = {
       people : [],
-      displayPay : [],
       pay : [],
-      displayConsume : [],
       consume : [],
       currency : [],
       selectedCurrency : "",
@@ -33,28 +31,48 @@ class EditEntry extends React.Component {
       .then(response => response.json())
       .then(response => {
         console.log(response);
-        let curr = response.currency.map((currency) => currency.name);
+        console.log(this.props.location.state.transaction_id);
+
+        let selectedCurrency = response.transactions[0].currency;
+        let curr = response.currency.filter((currency) => currency.in_trip === 1 || currency.name === selectedCurrency).map((currency) => currency.name);
         curr.push("SGD")
 
-        let pay = response.transactions.filter(transaction => transaction.type === "payee")
-            .map(transaction => [transaction.name, transaction.amount]);
-        let displayPay = response.transactions.filter(transaction => transaction.type === "payee")
-            .map(transaction => transaction.name);
+        let namesInTransactions = response.transactions.map((transaction) => transaction.name);
 
-        let consume = response.transactions.filter(transaction => transaction.type === "payer")
-            .map(transaction => [transaction.name, transaction.amount]);
-        let displayConsume = response.transactions.filter(transaction => transaction.type === "payer")
-            .map(transaction => transaction.name);
+        let pay = response.users.filter(person => person.in_trip === 1 || namesInTransactions.includes(person.name)).map((person)=>{ 
+          return {name : person.name, amount : null, display : false};
+        });
+        response.transactions.filter(transaction => transaction.type === "payee")
+            .map(transaction => {
+              pay.forEach((person)=>{
+                if (person.name === transaction.name) {
+                  person["amount"] = transaction.amount;
+                  person["display"] = true;
+                }
+              });
+            });
+
+
+        let consume = response.users.filter(person => person.in_trip === 1 || namesInTransactions.includes(person.name)).map((person)=>{ 
+              return {name : person.name, amount : null, display : false};
+            });
+        response.transactions.filter(transaction => transaction.type === "payer")
+            .map(transaction => {
+              consume.forEach((person)=>{
+                if (person.name === transaction.name) {
+                  person["amount"] = transaction.amount;
+                  person["display"] = true;
+                }
+              });
+            });
 
         this.setState({
           trip : response.trip[0],
-          people : response.users.map((person)=> person.name),
+          people : response.users.filter(person => person.in_trip === 1).map((person)=> person.name),
           currency : curr,
-          selectedCurrency : response.transactions[0].currency,
+          selectedCurrency : selectedCurrency,
           pay: pay,
-          displayPay : displayPay ,
           consume: consume,
-          displayConsume : displayConsume ,
           desc : response.transactions[0].description,
           equal : (response.transactions[0].equal == 1) ? true : false,
         })
@@ -73,33 +91,20 @@ class EditEntry extends React.Component {
     });
   }
 
-  matchArr(display,amounts) {
-    for (let i = 0; i < amounts.length; i++) {
-      if(! display.includes(amounts[i][0])) {
-        amounts.splice(i,1);
-        i--;
-      }
-    }
-    return amounts
-  }
 
   updatePay(e) {
     let person = e.target.name;
     let value = e.target.value;
     let pay = this.state.pay.slice();
     for (let i = 0; i < pay.length; i++) {
-      if (pay[i][0] == person) {
-        pay[i][1] = parseFloat(value);
+      if (pay[i]["name"] == person) {
+        pay[i]["amount"] = value;
         this.setState({
           pay : pay
         });
         return;
       }
     }
-    pay.push([person,parseFloat(value)]);
-    this.setState({
-      pay : pay
-    });
   }
 
   updateConsume(e) {
@@ -107,51 +112,46 @@ class EditEntry extends React.Component {
     let value = e.target.value;
     let consume = this.state.consume.slice();
     for (let i = 0; i < consume.length; i++) {
-      if (consume[i][0] == person) {
-        consume[i][1] = parseFloat(value);
+      if (consume[i]["name"] == person) {
+        consume[i]["amount"] = value;
         this.setState({
           consume : consume
         });
         return;
       }
     }
-    consume.push([person,parseFloat(value)]);
-    this.setState({
-      consume : consume
-    });
   }
 
   onChangePay(e) {
-    let display = [];
     let pay = this.state.pay.slice();
+    pay.forEach((person)=>{
+        person["display"] = false;
+    });
     for (let i = 0; i < e.length; i++) {
-      display.push(e[i].value);
-      if (pay.filter((x) => x[0] === e[i].value).length === 0) {
-          pay.push([e[i].value,0]);
-      }
+      pay.forEach((person)=>{
+        if (person["name"] === e[i].value) {
+          person["display"] = true;
+        }
+      });
     }
-    
-    pay = this.matchArr(display,pay);
-    console.log(display);
-    console.log(pay);
     this.setState({
-      displayPay : display,
       pay : pay,
     });
   }
 
   onChangeConsume(e) {
-    let display = [];
     let consume = this.state.consume.slice();
+    consume.forEach((person)=>{
+      person["display"] = false;
+    });
     for (let i = 0; i < e.length; i++) {
-      display.push(e[i].value);
-      if (consume.filter((x) => x[0] === e[i].value).length === 0) {
-        consume.push([e[i].value,0]);
+      consume.forEach((person)=>{
+        if (person["name"] === e[i].value) {
+          person["display"] = true;
+        }
+      });
     }
-    }
-    consume = this.matchArr(display,consume)
     this.setState({
-      displayConsume : display,
       consume : consume,
     });
   }
@@ -177,7 +177,9 @@ class EditEntry extends React.Component {
         consume.push([displayConsume[i],ave]);
       }
     } else {
-      consume = this.state.consume;
+      consume = this.state.consume
+          .filter((person) => person["display"])
+          .map(person => [person.name,parseFloat(eval(person.amount))])
     }
     fetch("https://accountant.tubalt.com/api/trips/edittransaction", {
       method: "POST",
@@ -185,7 +187,7 @@ class EditEntry extends React.Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        payees: this.state.pay,
+        payees: this.state.pay.filter((person) => person["display"]).map(person => [person.name,parseFloat(eval(person.amount))]),
         payers: consume,
         trip_id: this.state.trip.trip_id,
         description : this.state.desc,
@@ -247,9 +249,8 @@ class EditEntry extends React.Component {
       <form onSubmit = {this.onSubmit}>
       <p>People who paid:</p>
         <NameList 
-        people = {this.state.people}
         onChange = {this.onChangePay}
-        display = {this.state.displayPay}
+        display = {this.state.pay}
         />
         <AmountDisplay
         onSubmit = {this.onSubmit}
@@ -258,9 +259,8 @@ class EditEntry extends React.Component {
         />
         <p>People who consumed:</p>
         <NameList 
-        people = {this.state.people}
         onChange = {this.onChangeConsume}
-        display = {this.state.displayConsume}
+        display = {this.state.consume}
         type = "consume"
         />
         <AmountDisplay
@@ -350,16 +350,16 @@ onChange(e) {
 }
 
 render() {
-  const listAmounts = this.props.display.map((person) => {
+  const listAmounts = this.props.display.filter((person) => person["display"]).map((person) => {
     return (
-      <div key = {person[0]}>
-      <p>{person[0]}</p>
+      <div key = {person["name"]}>
+      <p>{person["name"]}</p>
       <input
       type = "number"
-      name = {person[0]} 
-      value = {(person[1] === 0) ? null : person[1]}
+      name = {person["name"]} 
+      value = {person["amount"]}
       onChange = {this.onChange}
-      id = {person[0]} 
+      id = {person["name"]} 
       placeholder = "Input Amount"
       />
       </div>
@@ -386,12 +386,14 @@ onChange(e) {
 }
 
 render() {
-  const list = this.props.people.map((person) => {
-    return ( { label: person, value: person });
+  const list = this.props.display.map((person) => {
+    return ( 
+      { label: person["name"], value: person["name"] }
+    );
   });
-  const display = this.props.display.map(person => {
+  const display = this.props.display.filter((person) => person["display"]).map(person => {
       return(
-          { label: person, value: person }
+          { label: person["name"], value: person["name"] }
       );
   });
   return (
