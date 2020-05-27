@@ -164,20 +164,20 @@ class EditEntry extends React.Component {
 
   onSubmit(e) {
     e.preventDefault();
-    let consume = [];
+    let newConsume = [];
     if (this.state.equal) {
-      let pay = this.state.pay.slice();
-      let displayConsume = this.state.displayConsume.slice();
+      let pay = this.state.pay.slice().filter(person => person["display"]);
+      let consume = this.state.consume.slice().filter(person => person["display"]);
       let total = 0;
       for(let i = 0; i < pay.length; i++) {
-        total = total + pay[i][1];
+        total = total + pay[i]["amount"];
       }
-      const ave = (total/displayConsume.length);
-      for (let i = 0; i < displayConsume.length; i++) {
-        consume.push([displayConsume[i],ave]);
+      const ave = (total/consume.length);
+      for (let i = 0; i < consume.length; i++) {
+        consume.push([consume[i]["name"],ave]);
       }
     } else {
-      consume = this.state.consume
+      newConsume = this.state.consume
           .filter((person) => person["display"])
           .map(person => [person.name,parseFloat(eval(person.amount))])
     }
@@ -188,7 +188,7 @@ class EditEntry extends React.Component {
       },
       body: JSON.stringify({
         payees: this.state.pay.filter((person) => person["display"]).map(person => [person.name,parseFloat(eval(person.amount))]),
-        payers: consume,
+        payers: newConsume,
         trip_id: this.state.trip.trip_id,
         description : this.state.desc,
         currency : this.state.selectedCurrency,
@@ -240,7 +240,6 @@ class EditEntry extends React.Component {
   }
 
   render() {
-    console.log(this.state.displayPay);
     console.log(this.state.pay);
     const submitButton = (<input type = "submit" value = "Submit"/> ) ;
     return (
