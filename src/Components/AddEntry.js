@@ -2,14 +2,13 @@ import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom'
 
+// Main component to render for adding transactions to the trips.
 class AddEntry extends React.Component {
   constructor(props){
     super(props);
     this.state = {
       people : [],
-      displayPay : [],
       pay : [],
-      displayConsume : [],
       consume : [],
       currency : [],
       selectedCurrency : "",
@@ -17,6 +16,7 @@ class AddEntry extends React.Component {
       desc : "",
       trip : {}
     }
+    //Bindings
     this.onChangePay = this.onChangePay.bind(this);
     this.onChangeConsume = this.onChangeConsume.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -27,23 +27,23 @@ class AddEntry extends React.Component {
     this.changeCurrency = this.changeCurrency.bind(this);
 
   }
-
+  //To fetch data when component mounts
   componentDidMount() {
     fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid="+this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {
-        console.log(response);
+        //Formatting currency
         let curr = response.currency.filter((currency) => currency.in_trip === 1).map((currency) => currency.name);
         curr.push("SGD")
-
+        //Formatting pay array
         let pay = response.users.filter(person => person.in_trip === 1).map((person)=>{ 
           return {name : person.name, amount : null, display : false};
         });
-
+        //Formating consume array
         let consume = response.users.filter(person => person.in_trip === 1).map((person)=>{ 
           return {name : person.name, amount : null, display : false};
         });
-
+        //Setting state to update values
         this.setState({
           trip : response.trip[0],
           people : response.users.filter((person) => person.in_trip === 1).map((person)=> person.name),
@@ -54,20 +54,19 @@ class AddEntry extends React.Component {
         })
       });
   }
-
+  //Updates description upon change
   updateDesc(e) {
     this.setState({
       desc : e.target.value,
     });
   }
-
+  //Updates equal upon change
   changeEqual(e) {
     this.setState({
       equal : !this.state.equal,
     });
   }
-
-
+  //Updates amount in pay array
   updatePay(e) {
     let person = e.target.name;
     let value = e.target.value;
@@ -82,7 +81,7 @@ class AddEntry extends React.Component {
       }
     }
   }
-
+  //Updates amount in consume array
   updateConsume(e) {
     let person = e.target.name;
     let value = e.target.value;
@@ -97,7 +96,7 @@ class AddEntry extends React.Component {
       }
     }
   }
-
+  //Updates display in pay array
   onChangePay(e) {
     let pay = this.state.pay.slice();
     pay.forEach((person)=>{
@@ -114,6 +113,7 @@ class AddEntry extends React.Component {
       pay : pay,
     });
   }
+  //Updates display in consume array
   onChangeConsume(e) {
     let consume = this.state.consume.slice();
     consume.forEach((person)=>{
@@ -130,30 +130,32 @@ class AddEntry extends React.Component {
       consume : consume,
     });
   }
-
+  //Changes selectedCurrency value
   changeCurrency(e) {
      this.setState({
        selectedCurrency : e.target.value
      });
   }
-
+  //Submits a post request to API
   onSubmit(e) {
     e.preventDefault();
-    let consume = [];
+    //Calculates (if equal) and formats consume array
+    let newConsume = [];
     if (this.state.equal) {
-      let pay = this.state.pay.slice();
-      let displayConsume = this.state.displayConsume.slice();
+      let pay = this.state.pay.slice().filter(person => person["display"]);
+      let consume = this.state.pay.slice().filter(person => person["display"]);
       let total = 0;
       for(let i = 0; i < pay.length; i++) {
-        total = total + pay[i][1];
+        total = total + pay[i]["amount"];
       }
-      const ave = (total/displayConsume.length);
-      for (let i = 0; i < displayConsume.length; i++) {
-        consume.push([displayConsume[i],ave]);
+      const ave = (total/consume.length);
+      for (let i = 0; i < consume.length; i++) {
+        newConsume.push([consume[i]["name"],ave]);
       }
     } else {
-      consume = this.state.consume.filter((person) => person["display"]).map((person) => [person.name,parseFloat(eval(person.amount))]);
+      newConsume = this.state.consume.filter((person) => person["display"]).map((person) => [person.name,parseFloat(eval(person.amount))]);
     }
+    //Post request
     fetch("https://accountant.tubalt.com/api/trips/addtransaction", {
       method: "POST",
       headers: {
@@ -161,7 +163,7 @@ class AddEntry extends React.Component {
       },
       body: JSON.stringify({
         payees: this.state.pay.filter((person) => person["display"]).map((person) => [person.name,parseFloat(eval(person.amount))]),
-        payers: consume,
+        payers: newConsume,
         trip_id: this.state.trip.trip_id,
         description : this.state.desc,
         currency : this.state.selectedCurrency,
@@ -183,62 +185,61 @@ class AddEntry extends React.Component {
       alert("Oops! Something went wrong");
     });
   }
-
+  //Renders the Componenets needed for AddEntry form
   render() {
     const submitButton = (<input type = "submit" value = "Submit"/> ) ;
+    
     return (
       <div>
-      <div>
-      <h1>{this.state.trip.trip_name}</h1>
-      <form onSubmit = {this.onSubmit}>
-      <p>People who paid:</p>
-        <NameList 
-        display = {this.state.pay}
-        onChange = {this.onChangePay}
-        />
-        <AmountDisplay
-        onSubmit = {this.onSubmit}
-        display = {this.state.pay}
-        onChange = {this.updatePay}
-        />
-        <p>People who consumed:</p>
-        <NameList 
-        display = {this.state.consume}
-        onChange = {this.onChangeConsume}
-        />
-        <AmountDisplay
-        onSubmit = {this.onSubmit}
-        display = {this.state.consume}
-        onChange = {this.updateConsume}
-        />
-        <br/>
-        <CurrencyList 
-        currency = {this.state.currency}
-        changeCurrency = {this.changeCurrency}
-        />
-        <br/>
-        <br/>
-        <Equals 
-        changeEqual = {this.changeEqual} 
-        equal = {this.state.equal} 
-        />
-        <br/>
-        <input type="text" value = {this.state.desc} id="desc" onChange={this.updateDesc} placeholder="Description of Transaction"/>
-        <br/> 
-        {submitButton}
-      </form>
-      </div>
+        <h1>{this.state.trip.trip_name}</h1>
+        <form onSubmit = {this.onSubmit}>
+          <p>People who paid:</p>
+          <NameList 
+          display = {this.state.pay}
+          onChange = {this.onChangePay}
+          />
+          <AmountDisplay
+          display = {this.state.pay}
+          onChange = {this.updatePay}
+          />
+          <p>People who consumed:</p>
+          <NameList 
+          display = {this.state.consume}
+          onChange = {this.onChangeConsume}
+          />
+          <AmountDisplay
+          display = {this.state.consume}
+          onChange = {this.updateConsume}
+          />
+          <br/>
+          <CurrencyList 
+          currency = {this.state.currency}
+          changeCurrency = {this.changeCurrency}
+          />
+          <br/>
+          <br/>
+          <Equals 
+          changeEqual = {this.changeEqual} 
+          equal = {this.state.equal} 
+          />
+          <br/>
+          <input type="text" value = {this.state.desc} id="desc" onChange={this.updateDesc} placeholder="Description of Transaction"/>
+          <br/> 
+          {submitButton}
+        </form>
       </div>
     );
   }
 }
 
+// Implements the Equals checkbox to indicate weather total amount is to be split equally among people
 class Equals extends React.Component {
   constructor(props) {
     super(props);
     this.changeEqual = this.changeEqual.bind(this);
   }
 
+  //Calls props changeEqual function
   changeEqual(e) {
     this.props.changeEqual(e);
   }
@@ -253,88 +254,93 @@ class Equals extends React.Component {
   }
 }
 
+//Implements the list of currencies that can be selected from
 class CurrencyList extends React.Component {
   constructor(props) {
     super(props);
     this.changeCurrency = this.changeCurrency.bind(this);
   }
+  //Calls props changeCurrency function
   changeCurrency(e) {
     this.props.changeCurrency(e);
   }
-render () {
-  const currencyDisplay = this.props.currency.map((curr) => 
-  <option id = {curr} name = {curr} value = {curr}>{curr}</option>
-  );
-  return (
-    <select onChange = {this.changeCurrency} id = "curr" className = "css-1r4vtzz">
-      {currencyDisplay}
-    </select>
-  );
-}
-}
 
-class AmountDisplay extends React.Component {
-constructor(props) {
-  super(props);
-  this.onSubmit = this.onSubmit.bind(this);
-  this.onChange = this.onChange.bind(this);
-}
-
-onSubmit(e) {
-  this.props.onSubmit(e);
-}
-
-onChange(e) {
-  this.props.onChange(e);
-}
-
-render() {
-  const listAmounts = this.props.display.filter((person)=> person["display"]).map((person) => {
+  render () {
+    const currencyDisplay = this.props.currency.map((curr) => 
+      <option id = {curr} name = {curr} value = {curr}>{curr}</option>
+    );
     return (
-      <div key = {person["name"]}>
-      <p>{person["name"]}</p>
-      <input
-      type = "text"
-      name = {person["name"]} 
-      onChange = {this.onChange}
-      id = {person["name"]} 
-      placeholder = "Input Amount"
-      value = {person["amount"]}
-      />
+      <select onChange = {this.changeCurrency} id = "curr" className = "css-1r4vtzz">
+        {currencyDisplay}
+      </select>
+    );
+  }
+}
+//Implements the multiselect dropdown list to choose users involved in transaction.
+class NameList extends React.Component {
+  constructor(props){
+    super(props);
+    this.onChange = this.onChange.bind(this);
+  
+  }
+  // calls props onChange function
+  onChange(e) {
+    this.props.onChange(e);
+  }
+  
+  render() {
+    //All users as options
+    const options = this.props.display.map((person) => {
+      return ( { label: person["name"], value: person["name"] });
+    } );
+    //Only selected users as value
+    const value = this.props.display.filter((person) => person["display"]).map((person) => {
+      return ( { label: person["name"], value: person["name"] });
+    })
+
+    return (
+      <ReactMultiSelectCheckboxes value = {value} options = {options} onChange = {this.onChange} />
+    );
+  }
+}
+
+//Implements the display of names selected and input box to add the amounts.
+class AmountDisplay extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onChange = this.onChange.bind(this);
+  }
+  //Calls props onChange function
+  onChange(e) {
+    this.props.onChange(e);
+  }
+
+  render() {
+    //Mapping to display name and input box
+    const listAmounts = this.props.display.filter((person)=> person["display"]).map((person) => {
+      return (
+        <div key = {person["name"]}>
+        <p>{person["name"]}</p>
+        <input
+        type = "text"
+        name = {person["name"]} 
+        onChange = {this.onChange}
+        id = {person["name"]} 
+        placeholder = "Input Amount"
+        value = {person["amount"]}
+        />
+        </div>
+      );
+    })
+
+    return (
+      <div>
+        {listAmounts}
       </div>
     );
-  })
-  return (
-    <div>
-      {listAmounts}
-    </div>
-  );
-}
+  }
 }
 
-class NameList extends React.Component {
-constructor(props){
-  super(props);
-  this.onChange = this.onChange.bind(this);
 
-}
-
-onChange(e) {
-  this.props.onChange(e);
-}
-
-render() {
-  const list = this.props.display.map((person) => {
-    return ( { label: person["name"], value: person["name"] });
-  } );
-
-  const value = this.props.display.filter((person) => person["display"]).map((person) => {
-    return ( { label: person["name"], value: person["name"] });
-  })
-  return (
-    <ReactMultiSelectCheckboxes value = {value} options = {list} onChange = {this.onChange} />
-  );
-}
-}
 
 export default withRouter(AddEntry);
