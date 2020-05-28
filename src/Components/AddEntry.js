@@ -276,6 +276,7 @@ class CurrencyList extends React.Component {
     );
   }
 }
+
 //Implements the multiselect dropdown list to choose users involved in transaction.
 class NameList extends React.Component {
   constructor(props){
