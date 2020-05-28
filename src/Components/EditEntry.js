@@ -2,6 +2,7 @@ import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom'
 
+//Main component to render when editing transactions in the trips
 class EditEntry extends React.Component {
   constructor(props){
     super(props);
@@ -25,20 +26,20 @@ class EditEntry extends React.Component {
     this.changeCurrency = this.changeCurrency.bind(this);
     this.deleteTransaction = this.deleteTransaction.bind(this);
   }
-
+  //Loads up trip and transaction data to pre-fill forms.
   componentDidMount() {
     fetch("https://accountant.tubalt.com/api/trips/gettransaction?transactionid="+ this.props.location.state.transaction_id + "&trip_id=" + this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {
-        console.log(response);
-        console.log(this.props.location.state.transaction_id);
-
+        //Format currency
         let selectedCurrency = response.transactions[0].currency;
         let curr = response.currency.filter((currency) => currency.in_trip === 1 || currency.name === selectedCurrency).map((currency) => currency.name);
         curr.push("SGD")
 
+        //Load the names that were involved in transaction
         let namesInTransactions = response.transactions.map((transaction) => transaction.name);
 
+        //Load the options for people who paid
         let pay = response.users.filter(person => person.in_trip === 1 || namesInTransactions.includes(person.name)).map((person)=>{ 
           return {name : person.name, amount : null, display : false};
         });
@@ -52,7 +53,7 @@ class EditEntry extends React.Component {
               });
             });
 
-
+        //Load the options for those who consumed
         let consume = response.users.filter(person => person.in_trip === 1 || namesInTransactions.includes(person.name)).map((person)=>{ 
               return {name : person.name, amount : null, display : false};
             });
@@ -78,20 +79,19 @@ class EditEntry extends React.Component {
         })
       });
   }
-
+  //Updates the description upon change
   updateDesc(e) {
     this.setState({
       desc : e.target.value,
     });
   }
-
+  //Updates equal upon change
   changeEqual(e) {
     this.setState({
       equal : !this.state.equal,
     });
   }
-
-
+  //Updates pay array with amount upon change
   updatePay(e) {
     let person = e.target.name;
     let value = e.target.value;
@@ -106,7 +106,7 @@ class EditEntry extends React.Component {
       }
     }
   }
-
+  //Updates consume array with amount upon change
   updateConsume(e) {
     let person = e.target.name;
     let value = e.target.value;
@@ -121,7 +121,7 @@ class EditEntry extends React.Component {
       }
     }
   }
-
+  //Updates pay array with display upon change
   onChangePay(e) {
     let pay = this.state.pay.slice();
     pay.forEach((person)=>{
@@ -138,7 +138,7 @@ class EditEntry extends React.Component {
       pay : pay,
     });
   }
-
+  //Updates consume array with display upon change
   onChangeConsume(e) {
     let consume = this.state.consume.slice();
     consume.forEach((person)=>{
@@ -155,15 +155,16 @@ class EditEntry extends React.Component {
       consume : consume,
     });
   }
-
+  //Updates selectedCurrency upon change
   changeCurrency(e) {
      this.setState({
        selectedCurrency : e.target.value
      });
   }
-
+  //Submits Post request to API
   onSubmit(e) {
     e.preventDefault();
+    //Calculates (if equal) and formats consume array
     let newConsume = [];
     if (this.state.equal) {
       let pay = this.state.pay.slice().filter(person => person["display"]);
@@ -181,6 +182,7 @@ class EditEntry extends React.Component {
           .filter((person) => person["display"])
           .map(person => [person.name,parseFloat(eval(person.amount))])
     }
+    //Post request
     fetch("https://accountant.tubalt.com/api/trips/edittransaction", {
       method: "POST",
       headers: {
@@ -211,7 +213,7 @@ class EditEntry extends React.Component {
       alert("Oops! Something went wrong");
     });
   }
-
+  //Deletes the transaction
   deleteTransaction(e) {
     e.preventDefault();
     fetch("https://accountant.tubalt.com/api/trips/deletetransaction", {
@@ -238,71 +240,68 @@ class EditEntry extends React.Component {
         alert("Oops! Something went wrong");
       });
   }
-
+  //Renders the components for EditEntry
   render() {
-    console.log(this.state.pay);
     const submitButton = (<input type = "submit" value = "Submit"/> ) ;
+    
     return (
       <div>
-      <div>
-      <form onSubmit = {this.onSubmit}>
-      <p>People who paid:</p>
-        <NameList 
-        onChange = {this.onChangePay}
-        display = {this.state.pay}
-        />
-        <AmountDisplay
-        onSubmit = {this.onSubmit}
-        display = {this.state.pay}
-        onChange = {this.updatePay}
-        />
-        <p>People who consumed:</p>
-        <NameList 
-        onChange = {this.onChangeConsume}
-        display = {this.state.consume}
-        type = "consume"
-        />
-        <AmountDisplay
-        onSubmit = {this.onSubmit}
-        display = {this.state.consume}
-        onChange = {this.updateConsume}
-        />
-        <br/>
-        <CurrencyList 
-        currency = {this.state.currency}
-        changeCurrency = {this.changeCurrency}
-        />
-        <br/>
-        <br/>
-        <Equals 
-        changeEqual = {this.changeEqual} 
-        equal = {this.state.equal} 
-        />
-        <br/>
-        <input type="text" value = {this.state.desc} id="desc" onChange={this.updateDesc} placeholder="Description of Transaction"/>
-        <br/> 
-        {submitButton}
-        <br/>
-        <br/>
-        <br/>
-        <button type = "button" onClick ={this.deleteTransaction}>Delete</button>
-      </form>
-      </div>
+        <form onSubmit = {this.onSubmit}>
+          <p>People who paid:</p>
+          <NameList 
+          onChange = {this.onChangePay}
+          display = {this.state.pay}
+          />
+          <AmountDisplay
+          display = {this.state.pay}
+          onChange = {this.updatePay}
+          />
+          <p>People who consumed:</p>
+          <NameList 
+          onChange = {this.onChangeConsume}
+          display = {this.state.consume}
+          type = "consume"
+          />
+          <AmountDisplay
+          display = {this.state.consume}
+          onChange = {this.updateConsume}
+          />
+          <br/>
+          <CurrencyList 
+          currency = {this.state.currency}
+          changeCurrency = {this.changeCurrency}
+          />
+          <br/>
+          <br/>
+          <Equals 
+          changeEqual = {this.changeEqual} 
+          equal = {this.state.equal} 
+          />
+          <br/>
+          <input type="text" value = {this.state.desc} id="desc" onChange={this.updateDesc} placeholder="Description of Transaction"/>
+          <br/> 
+          {submitButton}
+          <br/>
+          <br/>
+          <br/>
+          <button type = "button" onClick ={this.deleteTransaction}>Delete</button>
+        </form>
       </div>
     );
   }
 }
 
+// Implements the Equals checkbox to indicate weather total amount is to be split equally among people
 class Equals extends React.Component {
   constructor(props) {
     super(props);
     this.changeEqual = this.changeEqual.bind(this);
   }
-
+  //Calls props changeEqual function
   changeEqual(e) {
     this.props.changeEqual(e);
   }
-
+  
   render() {
     return (
       <div>
@@ -313,92 +312,93 @@ class Equals extends React.Component {
   }
 }
 
+//Implements the list of currencies that can be selected from
 class CurrencyList extends React.Component {
   constructor(props) {
     super(props);
     this.changeCurrency = this.changeCurrency.bind(this);
   }
+  //Calls props changeCurrency function
   changeCurrency(e) {
     this.props.changeCurrency(e);
   }
-render () {
-  const currencyDisplay = this.props.currency.map((curr) => 
-  <option id = {curr} name = {curr} value = {curr}>{curr}</option>
-  );
-  return (
-    <select onChange = {this.changeCurrency} id = "curr" className = "css-1r4vtzz">
-      {currencyDisplay}
-    </select>
-  );
-}
-}
 
-class AmountDisplay extends React.Component {
-constructor(props) {
-  super(props);
-  this.onSubmit = this.onSubmit.bind(this);
-  this.onChange = this.onChange.bind(this);
-}
-
-onSubmit(e) {
-  this.props.onSubmit(e);
-}
-
-onChange(e) {
-  this.props.onChange(e);
-}
-
-render() {
-  const listAmounts = this.props.display.filter((person) => person["display"]).map((person) => {
+  render () {
+    const currencyDisplay = this.props.currency.map((curr) => 
+      <option id = {curr} name = {curr} value = {curr}>{curr}</option>
+    );
     return (
-      <div key = {person["name"]}>
-      <p>{person["name"]}</p>
-      <input
-      type = "number"
-      name = {person["name"]} 
-      value = {person["amount"]}
-      onChange = {this.onChange}
-      id = {person["name"]} 
-      placeholder = "Input Amount"
-      />
+      <select onChange = {this.changeCurrency} id = "curr" className = "css-1r4vtzz">
+        {currencyDisplay}
+      </select>
+    );
+  }
+}
+
+//Implements the display of names selected and input box to add the amounts.
+class AmountDisplay extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onChange = this.onChange.bind(this);
+  }
+  //Calls the props onChange function
+  onChange(e) {
+    this.props.onChange(e);
+  }
+
+  render() {
+    const listAmounts = this.props.display.filter((person) => person["display"]).map((person) => {
+      return (
+        <div key = {person["name"]}>
+        <p>{person["name"]}</p>
+        <input
+        type = "text"
+        name = {person["name"]} 
+        value = {person["amount"]}
+        onChange = {this.onChange}
+        id = {person["name"]} 
+        placeholder = "Input Amount"
+        />
+        </div>
+      );
+    })
+    return (
+      <div>
+        {listAmounts}
       </div>
     );
-  })
-  return (
-    <div>
-      {listAmounts}
-    </div>
-  );
-}
+  }
 }
 
+//Implements the multiselect dropdown list to choose users involved in transaction.
 class NameList extends React.Component {
-constructor(props){
-  super(props);
-  this.onChange = this.onChange.bind(this);
+  constructor(props){
+    super(props);
+    this.onChange = this.onChange.bind(this)
+  }
+  //Calls the props onChange function
+  onChange(e) {
+    this.props.onChange(e);
+  }
 
-}
-
-onChange(e) {
-    console.log(e);
-  this.props.onChange(e);
-}
-
-render() {
-  const list = this.props.display.map((person) => {
-    return ( 
-      { label: person["name"], value: person["name"] }
-    );
-  });
-  const display = this.props.display.filter((person) => person["display"]).map(person => {
-      return(
-          { label: person["name"], value: person["name"] }
+  render() {
+    //Loads Options for dropdown list
+    const options = this.props.display.map((person) => {
+      return ( 
+        { label: person["name"], value: person["name"] }
       );
-  });
-  return (
-    <ReactMultiSelectCheckboxes value = {display} options = {list} onChange = {this.onChange} />
-  );
-}
+    });
+    //Loads the values selected
+    const display = this.props.display.filter((person) => person["display"]).map(person => {
+        return(
+            { label: person["name"], value: person["name"] }
+        );
+    });
+    
+    return (
+      <ReactMultiSelectCheckboxes value = {display} options = {options} onChange = {this.onChange} />
+    );
+  }
 }
 
 export default withRouter(EditEntry);

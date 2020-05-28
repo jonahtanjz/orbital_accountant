@@ -22,6 +22,16 @@ class Login extends React.Component {
 
   onSubmit = (e) => {
     e.preventDefault();
+    //Check for empty username
+    if(! this.state.username) {
+      alert("Please enter a Username");
+      return null;
+    }
+    //Check for empty password
+    if(! this.state.password) {
+      alert("Please enter a Password");
+      return null;
+    }
     fetch('https://accountant.tubalt.com/api/users/signin', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},

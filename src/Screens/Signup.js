@@ -35,32 +35,43 @@ class Signup extends React.Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    if (this.state.validated) {
-      fetch('https://accountant.tubalt.com/api/users/signup', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({
-              username: this.state.username,
-              password: this.state.password
-          })
-      })
-      .then(response => {
-        if (response.status === 401) {
-          response.json().then(res => alert(res.message));
-        } else {
-          response.json().then(res => {
-            setUserSession(res.token, res.user);
-            this.props.history.push("/home");
-          });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        alert("Oops! Something went wrong");
-      });
-    } else {
-      alert("Passwords do not match")
+    //Check for empty username
+    if (! this.state.username) {
+      alert("Please enter a username");
+      return null;
     }
+    if (! this.state.password) {
+      alert("Please enter a password");
+      return null;
+    }
+    //Check for matching password
+    if (! this.state.validated) {
+      alert("Passwords do not match")
+      return null;
+    }
+
+    fetch('https://accountant.tubalt.com/api/users/signup', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+            username: this.state.username,
+            password: this.state.password
+        })
+    })
+    .then(response => {
+      if (response.status === 401) {
+        response.json().then(res => alert(res.message));
+      } else {
+        response.json().then(res => {
+          setUserSession(res.token, res.user);
+          this.props.history.push("/home");
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Oops! Something went wrong");
+    });
   }
 
   render() {
