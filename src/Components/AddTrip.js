@@ -77,6 +77,21 @@ class AddTrip extends React.Component {
   
     onSubmit(e) {
       e.preventDefault();
+      //Check for empty trip name
+      if (!this.state.tripName) {
+        alert("Please enter a name for the trip.");
+        return null;
+      }
+      //Check for empty users
+      if (this.state.currentUsers.length === 0) {
+        alert("Please enter the users for the trip.");
+        return null;
+      }
+      //Check for empty currencies
+      if (this.state.currencies.length === 0) {
+        alert("Please enter the currencies for the trip.");
+        return null;
+      }
       let users = this.state.currentUsers;
       let username = getUser().username
       if (!users.includes(username)) {

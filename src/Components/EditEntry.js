@@ -161,9 +161,58 @@ class EditEntry extends React.Component {
        selectedCurrency : e.target.value
      });
   }
+  //Evaluates string amount and returns float
+  evaluateAmount(strAmount) {
+    try {
+      return parseFloat(eval(strAmount));
+    } catch (err) {
+      throw err;
+    }
+  };
+  //Validates expressions entered
+  validateExpression(exp) {
+    let regex = /[^0-9.+*/-/s]/;
+    return regex.test(exp);
+  }
+
   //Submits Post request to API
   onSubmit(e) {
     e.preventDefault();
+    //Checking for empty pay
+    if (this.state.pay.filter((person)=> person.display).length === 0) {
+      alert("Please select the people who payed.")
+      return null;
+    }
+    //Checking for no amounts entered in pay array
+    if (this.state.pay.filter((person)=> person.display && (! person.amount)).length !== 0) {
+      alert("Please enter the amounts for the people who payed.")
+      return null;
+    }
+    //Checking for valid amounts in pay array 
+    if (this.state.pay.filter((person) => person.display && this.validateExpression(person.amount)).length !== 0 ) {
+      alert("Please enter a valid expression");
+      return null;
+    }
+    //Checking for empty consume
+    if (this.state.consume.filter((person)=> person.display).length === 0) {
+      alert("Please select the people who consumed.")
+      return null;
+    }
+    //Checking for no amounts entered in consume array when is not equal 
+    if (this.state.consume.filter((person)=> person.display && (! person.amount)).length !== 0 && (! this.state.equal)) {
+      alert("Please enter the amounts for people who consumed.")
+      return null;
+    }
+    //Checking for valid amounts in consume array 
+    if (this.state.consume.filter((person) => person.display && this.validateExpression(person.amount)).length !== 0 ) {
+      alert("Please enter a valid expression");
+      return null;
+    }
+    //Checking for empty description
+    if (!this.state.desc) {
+      alert("Please enter a transaction description.");
+      return null;
+    }
     //Calculates (if equal) and formats consume array
     let newConsume = [];
     if (this.state.equal) {
@@ -173,14 +222,25 @@ class EditEntry extends React.Component {
       for(let i = 0; i < pay.length; i++) {
         total = total + pay[i]["amount"];
       }
-      const ave = (total/consume.length);
+      const avg = (total/consume.length);
       for (let i = 0; i < consume.length; i++) {
-        consume.push([consume[i]["name"],ave]);
+        consume.push([consume[i]["name"],avg]);
       }
     } else {
-      newConsume = this.state.consume
-          .filter((person) => person["display"])
-          .map(person => [person.name,parseFloat(eval(person.amount))])
+      try {
+        newConsume = this.state.consume.filter((person) => person["display"]).map((person) =>[person.name,this.evaluateAmount(person.amount)]);
+      } catch (err) {
+        alert("Please enter a valid expression");
+        return null;
+      }
+    }
+    //Formats pay array
+    let newPay;
+    try {
+      newPay = this.state.pay.filter((person) => person["display"]).map((person) => [person.name,this.evaluateAmount(person.amount)])
+    } catch (err) {
+      alert("Please enter a valid expression");
+      return null;
     }
     //Post request
     fetch("https://accountant.tubalt.com/api/trips/edittransaction", {
@@ -189,7 +249,7 @@ class EditEntry extends React.Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        payees: this.state.pay.filter((person) => person["display"]).map(person => [person.name,parseFloat(eval(person.amount))]),
+        payees: newPay,
         payers: newConsume,
         trip_id: this.state.trip.trip_id,
         description : this.state.desc,
