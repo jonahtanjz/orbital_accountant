@@ -204,7 +204,7 @@ class EditEntry extends React.Component {
       return null;
     }
     //Checking for valid amounts in consume array 
-    if (this.state.consume.filter((person) => person.display && this.validateExpression(person.amount)).length !== 0 ) {
+    if (this.state.consume.filter((person) => person.display && this.validateExpression(person.amount)).length !== 0 && (! this.state.equal)) {
       alert("Please enter a valid expression");
       return null;
     }
@@ -215,24 +215,24 @@ class EditEntry extends React.Component {
     }
     //Calculates (if equal) and formats consume array
     let newConsume = [];
-    if (this.state.equal) {
-      let pay = this.state.pay.slice().filter(person => person["display"]);
-      let consume = this.state.consume.slice().filter(person => person["display"]);
-      let total = 0;
-      for(let i = 0; i < pay.length; i++) {
-        total = total + pay[i]["amount"];
-      }
-      const avg = (total/consume.length);
-      for (let i = 0; i < consume.length; i++) {
-        consume.push([consume[i]["name"],avg]);
-      }
-    } else {
-      try {
+    try {
+      if (this.state.equal) {
+        let pay = this.state.pay.slice().filter(person => person["display"]);
+        let consume = this.state.consume.slice().filter(person => person["display"]);
+        let total = 0;
+        for(let i = 0; i < pay.length; i++) {
+          total = total + this.evaluateAmount(pay[i]["amount"]);
+        }
+        const avg = (total/consume.length);
+        for (let i = 0; i < consume.length; i++) {
+          newConsume.push([consume[i]["name"],avg]);
+        }
+      } else {
         newConsume = this.state.consume.filter((person) => person["display"]).map((person) =>[person.name,this.evaluateAmount(person.amount)]);
-      } catch (err) {
-        alert("Please enter a valid expression");
-        return null;
       }
+    } catch (err) {
+      alert("Please enter a valid expression");
+      return null;
     }
     //Formats pay array
     let newPay;
