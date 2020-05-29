@@ -195,7 +195,7 @@ class AddEntry extends React.Component {
     try {
       if (this.state.equal) {
         let pay = this.state.pay.slice().filter(person => person["display"]);
-        let consume = this.state.pay.slice().filter(person => person["display"]);
+        let consume = this.state.consume.slice().filter(person => person["display"]);
         let total = 0;
         for(let i = 0; i < pay.length; i++) {
           total = total + this.evaluateAmount(pay[i]["amount"]);
@@ -220,6 +220,8 @@ class AddEntry extends React.Component {
       return null;
     }
     //Post request
+    console.log(newPay);
+    console.log(newConsume);
     fetch("https://accountant.tubalt.com/api/trips/addtransaction", {
       method: "POST",
       headers: {
