@@ -35,7 +35,7 @@ class EditTrip extends React.Component {
         fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
-          console.log(response.currency);
+          console.log(response);
             this.setState({
                 tripName: response.trip[0].trip_name,
                 currentUsers: response.users,

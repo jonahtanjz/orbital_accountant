@@ -13,6 +13,8 @@ class ViewTrips extends React.Component {
     this.addEntry = this.addEntry.bind(this);
     this.onSelect = this.onSelect.bind(this);
     this.editTrip = this.editTrip.bind(this);
+    this.deleteSelf = this.deleteSelf.bind(this);
+    this.deleteAll = this.deleteAll.bind(this);
   }
 
   async componentDidMount() {
@@ -20,9 +22,8 @@ class ViewTrips extends React.Component {
     fetch("https://accountant.tubalt.com/api/trips/gettrips?userid="+ user)
     .then(response => response.json())
     .then(response => {
-      console.log(response);
       this.setState({
-      trips : response.trips,
+      trips : response.trips.filter(trip => trip[0].deleted === 0),
       user_id : user
       })
     });
@@ -44,6 +45,64 @@ class ViewTrips extends React.Component {
     this.props.history.push("/edittrip",{trip_id : e.target.id});  
   }
 
+  deleteSelf(e) {
+    fetch("https://accountant.tubalt.com/api/trips/deletetrip", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user_id : this.state.user_id,
+          trip_id : e.target.id,
+        })
+      })
+      .then(response => {
+        if (response.status === 401) {
+          response.json().then(res => alert(res.message));
+        } else {
+          response.json().then(res => {
+            this.setState({
+              trips : res.trips.filter(trip => trip[0].deleted === 0),
+            });
+            alert("Success");
+          });
+        }
+      })
+      .catch(error => {
+        console.log(error);
+        alert("Oops! Something went wrong");
+      });
+  }
+  
+  deleteAll(e){
+    fetch("https://accountant.tubalt.com/api/trips/deletetripall", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id : this.state.user_id,
+        trip_id : e.target.id,
+      })
+    })
+    .then(response => {
+      if (response.status === 401) {
+        response.json().then(res => alert(res.message));
+      } else {
+        response.json().then(res => {
+          this.setState({
+            trips : res.trips.filter(trip => trip[0].deleted === 0),
+          });
+          alert("Success");
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Oops! Something went wrong");
+    });
+  }
+
   render() {
       let trips = this.state.trips;
       let displayActive = trips.filter((trip) => trip[0].ended === 0 && trip[0].in_trip === 1).map((trip) => {
@@ -53,6 +112,8 @@ class ViewTrips extends React.Component {
                   <button id = {trip[0].trip_id} onClick = {this.viewLedger}>View Ledger</button>
                   <button id = {trip[0].trip_id} onClick = {this.addEntry}>Add Entry</button>
                   <button id = {trip[0].trip_id} onClick = {this.editTrip}>Edit Trip</button>
+                  <button id = {trip[0].trip_id} onClick = {this.deleteSelf}>Delete</button>
+                  <button id = {trip[0].trip_id} onClick = {this.deleteAll}>Delete All</button> 
               </div>
           );
       });
