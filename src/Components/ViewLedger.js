@@ -195,7 +195,6 @@ class SuggestPay extends React.Component {
                 return -a + b;
             }
         })
-        console.log(arr2);
         let amt = 0;
         let display = arr2.filter((total) => total[1].toFixed(2) !=0 ).map((total) =>{
             amt += total[1]
