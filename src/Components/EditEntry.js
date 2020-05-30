@@ -330,6 +330,7 @@ class EditEntry extends React.Component {
           <CurrencyList 
           currency = {this.state.currency}
           changeCurrency = {this.changeCurrency}
+          selectedCurrency = {this.state.selectedCurrency}
           />
           <br/>
           <br/>
@@ -388,7 +389,7 @@ class CurrencyList extends React.Component {
       <option id = {curr} name = {curr} value = {curr}>{curr}</option>
     );
     return (
-      <select onChange = {this.changeCurrency} id = "curr" className = "css-1r4vtzz">
+      <select  value = {this.props.selectedCurrency} onChange = {this.changeCurrency} id = "curr" className = "css-1r4vtzz">
         {currencyDisplay}
       </select>
     );
