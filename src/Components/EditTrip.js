@@ -15,6 +15,7 @@ class EditTrip extends React.Component {
         tripName : "",
         originalUser : [],
         trip_id : 0,
+        owner_id : 0,
       }
       this.addUser = this.addUser.bind(this);
       this.addCurrency = this.addCurrency.bind(this);
@@ -39,23 +40,24 @@ class EditTrip extends React.Component {
             this.setState({
                 tripName: response.trip[0].trip_name,
                 currentUsers: response.users,
-                currencies: response.currency.map(currency=>[currency.name,currency.value,currency.in_trip]),
+                currencies: response.currency,
                 currencyNames : response.currency.map(currency=>currency.name),
                 trip_id: this.props.location.state.trip_id,
-                //ended: response.trip[0].ended,
+                owner_id: response.trip[0].owner,
             });
         })
 
     }
 
     setNewTripInfo(response) {
-      
+      console.log(response);
       this.setState({
         tripName: response.trip[0].trip_name,
         currentUsers: response.users,
-        currencies: response.currency.map(currency=>[currency.name,currency.value,currency.in_trip]),
+        currencies: response.currency,
         currencyNames : response.currency.map(currency=>currency.name),
       });
+      
     }
     
     enterCheck(e) {
@@ -136,23 +138,20 @@ class EditTrip extends React.Component {
     addCurrency(e) {
       e.preventDefault();
       let currencies = this.state.currencies.slice();
-      let currNames = this.state.currencyNames.slice();
       let newCurrencyName = document.getElementById('currency').value;
       let newCurrencyValue = document.getElementById('currencyVal').value;
-      if (newCurrencyName === "" || newCurrencyValue === "") {
+      if (newCurrencyName === "" || newCurrencyValue === "" || newCurrencyValue == 0) {
         alert("Please enter a valid currency");
         return;
       }
       document.getElementById('currency').value = '';
       document.getElementById('currencyVal').value = '';
       let newCurr = [ newCurrencyName, newCurrencyValue]
-      // if (currNames.includes(newCurrencyName)){return;}
-      currencies.push(newCurr);
-      currNames.push(newCurrencyName);
-      this.setState({
-        currencyNames : currNames,
-        currencies : currencies,
-      });
+      console.log(currencies);
+      if (currencies.filter(currency => currency.in_trip === 1 && currency.name === newCurrencyName).length > 0){
+        alert("Currency name already exists.")
+        return;
+      }
       fetch("https://accountant.tubalt.com/api/trips/addcurrency", {
         method: "POST",
         headers: {
@@ -189,10 +188,10 @@ class EditTrip extends React.Component {
         alert("Please enter a name.");
         return;
       }
-      // if (curr.includes(newName)) {
-      //   alert("Name already included.");
-      //   return;
-      // }
+      if (this.state.currentUsers.filter((person) => person.name === newName && person.in_trip === 1).length !== 0) {
+        alert("Name already included.");
+        return;
+      }
       fetch("https://accountant.tubalt.com/api/trips/adduser", {
         method: "POST",
         headers: {
@@ -249,6 +248,7 @@ class EditTrip extends React.Component {
         trip_id = {this.state.trip_id}
         setNewTripInfo = {this.setNewTripInfo}
         history = {this.props.history}
+        owner_id = {this.state.owner_id}
         />
       );
     }
@@ -262,7 +262,7 @@ class EditTrip extends React.Component {
           <InputTripName enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
           <InputUsers addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
-          <DisplayUsers deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} changeUserName = {this.props.changeUserName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
+          <DisplayUsers deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} changeUserName = {this.props.changeUserName} trip_id = {this.props.trip_id} owner_id = {this.props.owner_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
           <InputCurrency enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
           <DisplayCurrencies currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} setNewTripInfo = {this.props.setNewTripInfo} trip_id = {this.props.trip_id} />
@@ -273,6 +273,7 @@ class EditTrip extends React.Component {
       );
     }
   }
+
   class InputTripName extends React.Component {
     constructor(props) {
       super(props);
@@ -306,6 +307,10 @@ class EditTrip extends React.Component {
       });
     }
     editTripName(e) {
+      if (!this.state.editingText) {
+        alert("Please enter a trip name.");
+        return null;
+      }
       this.setState({
         editing : false,
       });
@@ -393,6 +398,14 @@ class EditTrip extends React.Component {
     deleteUser(e) {
       let link_id = e.target.id;
       let userName = this.props.currentUsers.filter((user) => user.id == link_id)[0].name;
+      if (this.props.currentUsers.filter(person => person.in_trip === 1).length === 1) {
+        alert("There has to be at least one person in the trip at all times.");
+        return null;
+      }
+      if (this.props.currentUsers.filter(person => person.user_id === this.props.owner_id)[0].name === userName) {
+        alert("The owner of the is not allowed to be removed.");
+        return null;
+      }
       fetch("https://accountant.tubalt.com/api/trips/removeuser", {
         method: "POST",
         headers: {
@@ -443,6 +456,15 @@ class EditTrip extends React.Component {
       this.toggleEditing(e);
       let link_id = e.target.id;
       let newName = this.state.editingText[link_id];
+      if (!newName) {
+        alert("Please enter a valid name.");
+        return null;
+      }
+      console.log(this.props.currentUsers);
+      if (this.props.currentUsers.filter(person => person.in_trip === 1 && person.name === newName).length > 0) {
+        alert("Name already exists");
+        return null;
+      }
       fetch("https://accountant.tubalt.com/api/trips/edittripuser", {
         method: "POST",
         headers: {
@@ -487,8 +509,16 @@ class EditTrip extends React.Component {
           ?
           <div>
             <p>{user.name}</p>
-            <button type= "button" id= {user.id}  onClick = {this.deleteUser}>Delete</button>
-            <button type = "button" id= {user.id} onClick = {this.toggleEditing}>Edit</button>
+            {(user.user_id !== this.props.owner_id)
+              ?<div>
+                <button type= "button" id= {user.id}  onClick = {this.deleteUser}>Delete</button>
+                <button type = "button" id= {user.id} onClick = {this.toggleEditing}>Edit</button>
+              </div>
+              :<div>
+                <button type= "button" id= {user.id}  onClick = {this.deleteUser} disabled>Delete</button>
+                <button type = "button" id= {user.id} onClick = {this.toggleEditing} disabled>Edit</button>
+              </div>
+          	}
           </div>
           :
           <div>
@@ -533,6 +563,7 @@ class EditTrip extends React.Component {
       );
     }
   }
+
   class DisplayCurrencies extends React.Component {
     constructor(props) {
       super(props);
@@ -585,10 +616,10 @@ class EditTrip extends React.Component {
       Object.assign(newEditing, this.state.editing);
       newEditing[e.target.name] = !newEditing[e.target.name]
       if (newEditing[e.target.name]) {
-        newText[e.target.name] = this.props.currencies.filter(([name,val,it])=>name == e.target.name).map(([name,val])=>
+        newText[e.target.name] = this.props.currencies.filter((currency)=>currency.name == e.target.name).map((currency)=>
        {return ({
-           newName : name,
-          newVal : val
+           newName : currency.name,
+          newVal : currency.value,
         });
         })[0];
       } else {
@@ -623,10 +654,16 @@ class EditTrip extends React.Component {
     submitCurrency(e) {
       let oldName = e.target.name;
       this.toggleEditing(e);
-      console.log(oldName);
-      console.log(this.state.editingText[oldName]["newName"]);
-      console.log(this.state.editingText[oldName]["newVal"]);
-
+      let newName = this.state.editingText[oldName]["newName"];
+      let newVal = this.state.editingText[oldName]["newVal"];
+      if (! newName || !newVal || newVal == 0) {
+        alert("Please enter a valid currency");
+        return null;
+      }
+      if (this.props.currencies.filter(currency => currency.in_trip === 1 && currency.name === newName).length > 0) {
+        alert("Currency name already exists.");
+        return null;
+      }
       fetch("https://accountant.tubalt.com/api/trips/edittripcurrency", {
         method: "POST",
         headers: {
@@ -656,22 +693,22 @@ class EditTrip extends React.Component {
     }
 
     render() {
-      const displayCurrencies = this.props.currencies.filter(currency => currency[2]==1).map(([name,val,it]) =>{
-        if (!this.state.editing[name]) {
+      const displayCurrencies = this.props.currencies.filter(currency => currency.in_trip === 1).map((currency) =>{
+        if (!this.state.editing[currency.name]) {
           return(
           <div>
-            <p>{name + " : " + val}</p>
-            <button type ="button"  name = {name} onClick = {this.deleteCurrency}>Delete</button>
-            <button type ="button" name = {name} onClick = {this.toggleEditing}>Edit</button>
+            <p>{currency.name + " : " + currency.value}</p>
+            <button type ="button"  name = {currency.name} onClick = {this.deleteCurrency}>Delete</button>
+            <button type ="button" name = {currency.name} onClick = {this.toggleEditing}>Edit</button>
           </div>
           )
         } else {
           return(
             <div>
-              <input type = "text" id = {name} value = {this.state.editingText[name]["newName"]} onChange = {this.changeCurrencyName} />
-              <input type = "text" id = {name} value = {this.state.editingText[name]["newVal"]} onChange = {this.changeCurrencyValue} />
-              <button type ="button" name = {name} onClick = {this.submitCurrency}>Done</button>
-              <button type ="button" name = {name} onClick = {this.toggleEditing}>Cancel</button>
+              <input type = "text" id = {currency.name} value = {this.state.editingText[currency.name]["newName"]} onChange = {this.changeCurrencyName} />
+              <input type = "text" id = {currency.name} value = {this.state.editingText[currency.name]["newVal"]} onChange = {this.changeCurrencyValue} />
+              <button type ="button" name = {currency.name} onClick = {this.submitCurrency}>Done</button>
+              <button type ="button" name = {currency.name} onClick = {this.toggleEditing}>Cancel</button>
             </div>
           );
         }
@@ -724,4 +761,5 @@ class EditTrip extends React.Component {
       );
     }
   }
+
   export default withRouter(EditTrip);
