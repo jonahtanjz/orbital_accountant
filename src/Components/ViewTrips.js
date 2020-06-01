@@ -14,9 +14,11 @@ const styles = themes => ({
     maxWidth: 600,
     minWidth: 350,
     margin: '20px 0',
+    backgroundColor: "#EDF3F8",
   },
   tripsHeader: {
     textAlign: 'center',
+    color: '#FFF',
   },
   tripsMenu: {
     marginLeft: 'auto',
@@ -301,8 +303,8 @@ class ViewTrips extends React.Component {
       });
       return(
           <Box className={classes.mainContainer}>
-              <Typography className={classes.tripsHeader}>
-                <h1>Active Trips</h1>
+              <Typography className={classes.tripsHeader} variant="h4">
+                Current Trips:
               </Typography>
               {displayActive}
               <Typography className={classes.tripsHeader}>
