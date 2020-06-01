@@ -1,0 +1,31 @@
+body {
+    background-color: #54b0f3;
+}
+
+.card {
+    width: 25%;
+    margin: auto;
+    padding: 2px #2fa3f7;
+  }
+
+.cardAction {
+    justify-content: center;
+    width : 100%;
+    background-color: #54b0f3;
+}
+
+.textField {
+    border-color: white;
+}
+
+
+.button {
+    color: white;
+    background-color: #54b0f3;
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 5px;
+    width: 100%;
+    margin: auto;
+
+}

@@ -1,6 +1,8 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { setUserSession } from '../Utils/Common';
+import  { Button, TextField, Card, CardActions } from '@material-ui/core';
+//import '../CSS/Signup.css'
 
 class Signup extends React.Component {
   constructor(props) {
@@ -77,28 +79,35 @@ class Signup extends React.Component {
   render() {
     return (
       <div>
-        <form onSubmit={this.onSubmit}>
-          <input
-            name='username'
-            placeholder='Username'
-            onChange={this.onChange}
-            value={this.state.username} />
-          <input
-            name='password'
-            placeholder='Password'
-            type='password'
-            onChange={this.onChange}
-            value={this.state.password} />
-          <input
-            name='cPassword'
-            placeholder='Confirm Password'
-            type='password'
-            onChange={this.onChangePassword}
-            value={this.state.cPassword} /> 
-          <p>{this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}</p>   
-          <br />
-          <button type="submit">Sign Up</button>
-          </form>
+        <Card className = "center">
+          <CardActions className = "colour">
+            <form onSubmit={this.onSubmit}>
+              <TextField
+                required
+                name='username'
+                placeholder='Username'
+                onChange={this.onChange}
+                value={this.state.username} />
+              <TextField
+                required
+                name='password'
+                placeholder='Password'
+                type='password'
+                onChange={this.onChange}
+                value={this.state.password} />
+              <TextField
+                required
+                name='cPassword'
+                placeholder='Confirm Password'
+                type='password'
+                onChange={this.onChangePassword}
+                value={this.state.cPassword} /> 
+              <p>{this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}</p>   
+              <br />
+              <Button class = "button" type="submit">Sign Up</Button>
+            </form>
+            </CardActions>
+          </Card>
       </div>
     );
   }
