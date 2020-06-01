@@ -1,13 +1,46 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {getUser} from '../Utils/Common';
+import {Button, Card, CardContent, Typography, withStyles, Box, Menu, MenuItem, IconButton, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Snackbar} from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Alert from './Alert';
+import PropTypes from 'prop-types';
+
+const styles = themes => ({
+  mainContainer: {
+    justifyContent: 'center',
+  },
+  tripsContainer: {
+    maxWidth: 600,
+    minWidth: 350,
+    margin: '20px 0',
+  },
+  tripsHeader: {
+    textAlign: 'center',
+  },
+  tripsMenu: {
+    marginLeft: 'auto',
+    padding: 0,
+  },
+  tripsTitleContainer: {
+    margin: '20px 5px',
+  },
+  tripsTitle: {
+    textAlign: "Left"
+  }
+});
 
 class ViewTrips extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       user_id : -1,
-      trips : []
+      trips : [],
+      anchorEl: {},
+      deleteDialog: {},
+      deleteAllDialog: {},
+      successCallback: false,
+      failCallback: false,
     }
     this.viewLedger = this.viewLedger.bind(this);
     this.addEntry = this.addEntry.bind(this);
@@ -15,6 +48,16 @@ class ViewTrips extends React.Component {
     this.editTrip = this.editTrip.bind(this);
     this.deleteSelf = this.deleteSelf.bind(this);
     this.deleteAll = this.deleteAll.bind(this);
+    this.handleMenuClose = this.handleMenuClose.bind(this);
+    this.handleMenuOpen = this.handleMenuOpen.bind(this);
+    this.handleDeleteDialogOpen = this.handleDeleteDialogOpen.bind(this);
+    this.handleDeleteDialogClose = this.handleDeleteDialogClose.bind(this);
+    this.handleDeleteAllDialogOpen = this.handleDeleteAllDialogOpen.bind(this);
+    this.handleDeleteAllDialogClose = this.handleDeleteAllDialogClose.bind(this);
+    this.handleSuccessCallback = this.handleSuccessCallback.bind(this);
+    this.handleSuccessCallbackClose = this.handleSuccessCallbackClose.bind(this);
+    this.handleFailCallback = this.handleFailCallback.bind(this);
+    this.handleFailCallbackClose = this.handleFailCallbackClose.bind(this);
   }
 
   async componentDidMount() {
@@ -22,30 +65,41 @@ class ViewTrips extends React.Component {
     fetch("https://accountant.tubalt.com/api/trips/gettrips?userid="+ user)
     .then(response => response.json())
     .then(response => {
+      let newAnchorEl = {};
+      let newdeleteDialog = {};
+      let newdeleteAllDialog = {};
+      for (let i = 0; i < response.trips.length; i++) {
+        newAnchorEl[i] = null;
+        newdeleteDialog[i] = false;
+        newdeleteAllDialog[i] = false;
+      }
       this.setState({
-      trips : response.trips.filter(trip => trip[0].deleted === 0),
-      user_id : user
+        trips : response.trips.filter(trip => trip[0].deleted === 0),
+        user_id : user,
+        anchorEl: newAnchorEl,
+        deleteDialog: newdeleteDialog,
+        deleteAllDialog: newdeleteAllDialog
       })
     });
   }
 
-  viewLedger(e) {
-      this.props.history.push("/viewledger",{trip_id : e.target.id});
+  viewLedger(id) {
+      this.props.history.push("/viewledger",{trip_id : id});
   }
 
-  addEntry(e) {
-      this.props.history.push("/addentry",{trip_id : e.target.id});
+  addEntry(id) {
+    this.props.history.push("/addentry",{trip_id : id});
   }
 
   onSelect(e) {
     this.props.history.push("/viewledger",{trip_id : e.target.value});  
   }
   
-  editTrip(e) {
-    this.props.history.push("/edittrip",{trip_id : e.target.id});  
+  editTrip(id) {
+    this.props.history.push("/edittrip",{trip_id : id});  
   }
 
-  deleteSelf(e) {
+  deleteSelf(id) {
     fetch("https://accountant.tubalt.com/api/trips/deletetrip", {
         method: "POST",
         headers: {
@@ -53,7 +107,7 @@ class ViewTrips extends React.Component {
         },
         body: JSON.stringify({
           user_id : this.state.user_id,
-          trip_id : e.target.id,
+          trip_id : id,
         })
       })
       .then(response => {
@@ -64,17 +118,31 @@ class ViewTrips extends React.Component {
             this.setState({
               trips : res.trips.filter(trip => trip[0].deleted === 0),
             });
-            alert("Success");
+            this.handleSuccessCallback();
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.handleFailCallback();
       });
   }
+
+  handleMenuOpen(id, e) {
+    let tripId = id;
+    let newAnchorEl = this.state.anchorEl;
+    newAnchorEl[tripId] = e.currentTarget;
+    this.setState({anchorEl: newAnchorEl});
+  }
+
+  handleMenuClose(id) {
+    let tripId = id;
+    let newAnchorEl = this.state.anchorEl;
+    newAnchorEl[tripId] = null;
+    this.setState({anchorEl: newAnchorEl});
+  }
   
-  deleteAll(e){
+  deleteAll(id){
     fetch("https://accountant.tubalt.com/api/trips/deletetripall", {
       method: "POST",
       headers: {
@@ -82,7 +150,7 @@ class ViewTrips extends React.Component {
       },
       body: JSON.stringify({
         user_id : this.state.user_id,
-        trip_id : e.target.id,
+        trip_id : id,
       })
     })
     .then(response => {
@@ -93,28 +161,137 @@ class ViewTrips extends React.Component {
           this.setState({
             trips : res.trips.filter(trip => trip[0].deleted === 0),
           });
-          alert("Success");
+          this.handleSuccessCallback();
         });
       }
     })
     .catch(error => {
       console.log(error);
-      alert("Oops! Something went wrong");
+      this.handleFailCallback();
     });
   }
 
+  handleDeleteDialogOpen(id) {
+    let newdeleteDialog = this.state.deleteDialog;
+    newdeleteDialog[id] = true;
+    this.setState({ deleteDialog: newdeleteDialog });
+  }
+
+  handleDeleteDialogClose(id) {
+    let newdeleteDialog = this.state.deleteDialog;
+    newdeleteDialog[id] = false;
+    this.setState({ deleteDialog: newdeleteDialog });
+  }
+
+  handleDeleteAllDialogOpen(id) {
+    let newDeleteAllDialog = this.state.deleteAllDialog;
+    newDeleteAllDialog[id] = true;
+    this.setState({ deleteAllDialog: newDeleteAllDialog });
+  }
+
+  handleDeleteAllDialogClose(id) {
+    let newDeleteAllDialog = this.state.deleteAllDialog;
+    newDeleteAllDialog[id] = false;
+    this.setState({ deleteAllDialog: newDeleteAllDialog });
+  }
+
+  handleSuccessCallback() {
+    this.setState({successCallback: true});
+  }
+
+  handleSuccessCallbackClose() {
+    this.setState({successCallback: false});
+  }
+
+  handleFailCallback() {
+    this.setState({failCallback: true});
+  }
+
+  handleFailCallbackClose() {
+    this.setState({failCallback: false});
+  }
+
   render() {
+      const { classes } = this.props;
       let trips = this.state.trips;
       let displayActive = trips.filter((trip) => trip[0].ended === 0 && trip[0].in_trip === 1).map((trip) => {
           return(
-              <div>
-                  <p>{trip[0].trip_name}</p>
-                  <button id = {trip[0].trip_id} onClick = {this.viewLedger}>View Ledger</button>
-                  <button id = {trip[0].trip_id} onClick = {this.addEntry}>Add Entry</button>
-                  <button id = {trip[0].trip_id} onClick = {this.editTrip}>Edit Trip</button>
-                  <button id = {trip[0].trip_id} onClick = {this.deleteSelf}>Delete</button>
-                  <button id = {trip[0].trip_id} onClick = {this.deleteAll}>Delete All</button> 
-              </div>
+              <Card className={classes.tripsContainer}>
+                <CardContent>
+                  <Box display="flex" className={classes.tripsTitleContainer}>
+                    <Typography className={classes.tripsTitle}>
+                      {trip[0].trip_name}
+                    </Typography> 
+                    <IconButton
+                    className={classes.tripsMenu}
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    onClick={(e) => this.handleMenuOpen(trip[0].trip_id, e)}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                  <Menu
+                    anchorEl={this.state.anchorEl[trip[0].trip_id]}
+                    keepMounted
+                    open={Boolean(this.state.anchorEl[trip[0].trip_id])}
+                    onClick={() => this.handleMenuClose(trip[0].trip_id)}
+                  >
+                    <MenuItem id = {trip[0].trip_id} onClick={() => this.editTrip(trip[0].trip_id)}>Edit Trip</MenuItem>
+                    <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteDialogOpen(trip[0].trip_id)}>Delete</MenuItem>
+                    <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteAllDialogOpen(trip[0].trip_id)}>Delete All</MenuItem>
+                  </Menu>   
+                  </Box>
+
+                  <Button id = {trip[0].trip_id} onClick = {() => this.viewLedger(trip[0].trip_id)} variant="outlined">View Ledger</Button>
+                  <Button id = {trip[0].trip_id} onClick = {() => this.addEntry(trip[0].trip_id)} variant="outlined">Add Entry</Button>
+                </CardContent>
+                <Dialog
+                  open={this.state.deleteDialog[trip[0].trip_id]}
+                  onClose={() => this.handleDeleteDialogClose(trip[0].trip_id)}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">{"Delete this trip?"}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Are you sure you want to delete this trip? Once this is done, you can no longer
+                      view this trip's ledger or add new entry to it. To undo this, you need to ask
+                      someone in the trip to add you back in.
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => this.handleDeleteDialogClose(trip[0].trip_id)} color="primary">
+                      No, cancel
+                    </Button>
+                    <Button onClick={() => this.deleteSelf(trip[0].trip_id)} color="primary" autoFocus>
+                      Yes, delete trip
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+                <Dialog
+                  open={this.state.deleteAllDialog[trip[0].trip_id]}
+                  onClose={() => this.handleDeleteAllDialogClose(trip[0].trip_id)}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">{"Delete this trip for all?"}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Are you sure you want to delete this trip for all? Once this is done, everyone can no longer
+                      view this trip's ledger or add new entry to it. This cannot be undone.
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => this.handleDeleteAllDialogClose(trip[0].trip_id)} color="primary">
+                      No, cancel
+                    </Button>
+                    <Button onClick={() => this.deleteAll(trip[0].trip_id)} color="primary" autoFocus>
+                      Yes, delete for all
+                    </Button>
+                  </DialogActions>
+                </Dialog>    
+              </Card>
           );
       });
       let displayInactive = trips.filter(trip => trip[0].ended === 1 || trip[0].in_trip === 0).map((trip) => {
@@ -123,19 +300,37 @@ class ViewTrips extends React.Component {
           );
       });
       return(
-          <div>
-              <h1>Active Trips</h1>
+          <Box className={classes.mainContainer}>
+              <Typography className={classes.tripsHeader}>
+                <h1>Active Trips</h1>
+              </Typography>
               {displayActive}
-              <h1>Inactive Trips</h1>
+              <Typography className={classes.tripsHeader}>
+                <h1>Inactive Trips</h1>
+              </Typography>
               <select onChange = {this.onSelect}>
                   <option>Choose a Trip</option>
                   {displayInactive}
               </select>
-          </div>
+              <Snackbar open={this.state.successCallback} autoHideDuration={3000} onClose={this.handleSuccessCallbackClose}>
+                  <Alert onClose={this.handleSuccessCallbackClose} severity="success">
+                    Success!
+                  </Alert>
+                </Snackbar>
+                <Snackbar open={this.state.failCallback} autoHideDuration={3000} onClose={this.handleFailCallbackClose}>
+                  <Alert onClose={this.handleFailCallbackClose} severity="error">
+                    Oops.. Something went wrong. Please try again.
+                  </Alert>
+                </Snackbar>
+          </Box>
 
       );
   }
 
 }
 
-export default withRouter(ViewTrips);
+ViewTrips.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(withRouter(ViewTrips));
