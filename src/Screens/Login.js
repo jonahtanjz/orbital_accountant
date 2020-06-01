@@ -1,6 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { setUserSession } from '../Utils/Common';
+import  { Button, TextField } from '@material-ui/core';
 
 class Login extends React.Component {
   constructor(props) {
@@ -60,19 +61,20 @@ class Login extends React.Component {
     return (
       <div>
         <form onSubmit={this.onSubmit}>
-          <input
+          <TextField
             name='username'
             placeholder='Username'
             onChange={this.onChange}
             value={this.state.username} />
-          <input
+          <br/>
+          <TextField
             name='password'
             placeholder='Password'
             type='password'
             onChange={this.onChange}
             value={this.state.password} />
           <br />
-          <button type="submit">Login</button>
+          <Button type="submit" variant="contained" color = "primary">Login</Button>
           </form>
       </div>
     );
