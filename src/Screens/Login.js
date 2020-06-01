@@ -1,7 +1,18 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { setUserSession } from '../Utils/Common';
-import  { Button, TextField } from '@material-ui/core';
+import  PropTypes  from 'prop-types';
+import  { Button, TextField, withStyles, Card, CardActions, Grid } from '@material-ui/core';
+import '../CSS/Login.css'
+
+const styles = themes => ({
+  textField : {
+    color: 'white !important',
+    'MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated Mui-required Mui-required': {
+      color: 'white !important'
+    }
+  }
+});
 
 class Login extends React.Component {
   constructor(props) {
@@ -58,27 +69,41 @@ class Login extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
     return (
-      <div>
-        <form onSubmit={this.onSubmit}>
-          <TextField
-            name='username'
-            placeholder='Username'
-            onChange={this.onChange}
-            value={this.state.username} />
-          <br/>
-          <TextField
-            name='password'
-            placeholder='Password'
-            type='password'
-            onChange={this.onChange}
-            value={this.state.password} />
-          <br />
-          <Button type="submit" variant="contained" color = "primary">Login</Button>
+      <Grid  justify="center" alignItems="center">
+        <Card className = "card">
+          <CardActions className = "cardAction">
+          <form onSubmit={this.onSubmit}>
+            <TextField
+              className = {classes.textField}
+              required
+              name='username'
+              label='Username'
+              onChange={this.onChange}
+              value={this.state.username} />
+            <br/>
+            <TextField
+              className = {classes.textField}
+              required
+              name='password'
+              label='Password'
+              type='password'
+              onChange={this.onChange}
+              value={this.state.password} />
+            <br />
+            <br />
+            <Button class="button" type="submit" variant="contained" color = "primary">Login</Button>
           </form>
-      </div>
+          </CardActions>
+        </Card>
+      </Grid>
     );
   }
 }
 
-export default withRouter(Login);
+Login.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(withRouter(Login));
