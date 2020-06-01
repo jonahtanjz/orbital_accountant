@@ -15,6 +15,7 @@ const styles = themes => ({
     minWidth: 350,
     margin: '20px 0',
     backgroundColor: "#EDF3F8",
+    borderRadius: '10px',
   },
   tripsHeader: {
     textAlign: 'center',
