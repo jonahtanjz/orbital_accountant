@@ -1,7 +1,7 @@
 import React from 'react';
 import { getUser, removeUserSession } from '../Utils/Common';
 import { withRouter } from 'react-router-dom';
-import ViewTrip from '../Components/ViewTrips';
+import ViewPastTrips from '../Components/ViewPastTrips';
 import PropTypes from 'prop-types';
 import {Typography, withStyles, Box, Fab} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
@@ -18,7 +18,7 @@ const styles = theme => ({
       },
 });
  
-class Home extends React.Component {
+class PastTrips extends React.Component {
     constructor(props) {
         super(props);
         this.handleLogout = this.handleLogout.bind(this);
@@ -49,19 +49,16 @@ class Home extends React.Component {
         const { classes } = this.props;
         return (
             <div>
-            <Box display="flex" justifyContent="center" className={classes.homeContainer}>
-                <ViewTrip/>
-            </Box>
-            <Fab className={classes.fab} color="secondary" href="/addtrip" aria-label="add">
-                <AddIcon />
-            </Fab>
+                <Box display="flex" justifyContent="center" className={classes.homeContainer}>
+                    <ViewPastTrips/>
+                </Box>
             </div>
           );
     }
 }
 
-Home.propTypes = {
+PastTrips.propTypes = {
     classes: PropTypes.object.isRequired,
   };
  
-export default withStyles(styles)(withRouter(Home));
+export default withStyles(styles)(withRouter(PastTrips));

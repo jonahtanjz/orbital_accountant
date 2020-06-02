@@ -37,7 +37,7 @@ const styles = themes => ({
   }
 });
 
-class ViewTrips extends React.Component {
+class ViewPastTrips extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -221,7 +221,7 @@ class ViewTrips extends React.Component {
   render() {
       const { classes } = this.props;
       let trips = this.state.trips;
-      let displayActive = trips.filter((trip) => trip[0].ended === 0 && trip[0].in_trip === 1).map((trip) => {
+      let displayInactive = trips.filter(trip => trip[0].ended === 1 || trip[0].in_trip === 0).map((trip) => {
           return(
               <Card className={classes.tripsContainer}>
                 <CardContent>
@@ -244,14 +244,12 @@ class ViewTrips extends React.Component {
                     open={Boolean(this.state.anchorEl[trip[0].trip_id])}
                     onClick={() => this.handleMenuClose(trip[0].trip_id)}
                   >
-                    <MenuItem id = {trip[0].trip_id} onClick={() => this.editTrip(trip[0].trip_id)}>Edit Trip</MenuItem>
                     <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteDialogOpen(trip[0].trip_id)}>Delete</MenuItem>
                     <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteAllDialogOpen(trip[0].trip_id)}>Delete All</MenuItem>
                   </Menu>   
                   </Box>
 
                   <Button id = {trip[0].trip_id} className={classes.tripsButton} onClick = {() => this.viewLedger(trip[0].trip_id)} color="primary">View Ledger</Button>
-                  <Button id = {trip[0].trip_id} className={classes.tripsButton} onClick = {() => this.addEntry(trip[0].trip_id)} color="primary">Add Entry</Button>
                 </CardContent>
                 <Dialog
                   open={this.state.deleteDialog[trip[0].trip_id]}
@@ -301,14 +299,10 @@ class ViewTrips extends React.Component {
               </Card>
           );
       });
-      let displayInactive = trips.filter(trip => trip[0].ended === 1 || trip[0].in_trip === 0).map((trip) => {
-          return(
-           <option value = {trip[0].trip_id}>{trip[0].trip_name}</option>
-          );
-      });
+
       return(
           <Box className={classes.mainContainer}>
-              {displayActive}
+              {displayInactive}
               <Snackbar open={this.state.successCallback} autoHideDuration={3000} onClose={this.handleSuccessCallbackClose}>
                   <Alert onClose={this.handleSuccessCallbackClose} severity="success">
                     Success!
@@ -326,8 +320,8 @@ class ViewTrips extends React.Component {
 
 }
 
-ViewTrips.propTypes = {
+ViewPastTrips.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(withRouter(ViewTrips));
+export default withStyles(styles)(withRouter(ViewPastTrips));
