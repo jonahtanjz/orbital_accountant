@@ -30,6 +30,7 @@ class AddEntry extends React.Component {
   }
   //To fetch data when component mounts
   componentDidMount() {
+    this.props.updatePageName("New Transaction");
     fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid="+this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {

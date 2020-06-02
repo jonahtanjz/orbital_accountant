@@ -44,6 +44,10 @@ class Login extends React.Component {
     this.gotoSignup = this.gotoSignup.bind(this);
   }
 
+  componentDidMount() {
+    this.props.updatePageName("Login");
+  }
+
   onChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value,

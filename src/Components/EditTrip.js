@@ -29,6 +29,7 @@ class EditTrip extends React.Component {
     }
 
     componentDidMount() {
+        this.props.updatePageName("Edit Trip");
         const user = getUser();
         this.setState({
             user_id: user.user_id,

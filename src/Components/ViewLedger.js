@@ -16,6 +16,7 @@ class ViewLedger extends React.Component {
     }
 
     componentDidMount() {
+        this.props.updatePageName("Ledger");
         fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {

@@ -50,11 +50,13 @@ class App extends Component {
     constructor(props) {
       super(props);
       this.state = {
+        pageName: 'The Accountant',
         drawerState: false,
       }
       this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
       this.handleLogout = this.handleLogout.bind(this);
+      this.updatePageName = this.updatePageName.bind(this);
     }
     componentDidMount() {
         const token = getToken();
@@ -87,6 +89,10 @@ class App extends Component {
       removeUserSession();
     } 
 
+    updatePageName(name) {
+      this.setState({pageName: name});
+    }
+
     render() {
         const { classes } = this.props;
         return (
@@ -99,12 +105,7 @@ class App extends Component {
                       <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
-                      {window.location.pathname === "/home"
-                          ? "Current Trips"
-                          : window.location.pathname === "/pasttrips"
-                            ? "Past Trips"
-                            : "The Accountant"
-                      }
+                      {this.state.pageName}
                     </Typography>
                   </Toolbar>
                 </AppBar>
@@ -133,16 +134,16 @@ class App extends Component {
                   </div> */}
                   <div className="content">
                     <Switch>
-                      <Route exact path="/" component={Welcome} />
-                      <Route path="/viewledger" component={ViewLedger} />
-                      <PrivateRoute path="/home" component={Home} />
-                      <PrivateRoute path="/pasttrips" component={PastTrips} />
-                      <PrivateRoute path="/addtrip" component={AddTrip} />
-                      <PrivateRoute path ="/edittrip" component = {EditTrip} />
-                      <PrivateRoute path="/addentry" component ={AddEntry} />
-                      <PrivateRoute path = "/editentry" component = {EditEntry} />
-                      <PublicRoute path="/login" component={Login} />
-                      <Route path="/signup" component={Signup} />
+                      <Route exact path="/" render={(props) => <Welcome {...props} updatePageName={this.updatePageName} />} />
+                      <Route path="/viewledger" render={(props) => <ViewLedger {...props} updatePageName={this.updatePageName} />} />
+                      <PrivateRoute path="/home" component={Home} updatePageName={this.updatePageName} />
+                      <PrivateRoute path="/pasttrips" component={PastTrips} updatePageName={this.updatePageName} />
+                      <PrivateRoute path="/addtrip" component={AddTrip} updatePageName={this.updatePageName} />
+                      <PrivateRoute path ="/edittrip" component = {EditTrip} updatePageName={this.updatePageName} />
+                      <PrivateRoute path="/addentry" component ={AddEntry} updatePageName={this.updatePageName} />
+                      <PrivateRoute path = "/editentry" component = {EditEntry} updatePageName={this.updatePageName} />
+                      <PublicRoute path="/login" component={Login} updatePageName={this.updatePageName} />
+                      <Route path="/signup" render={(props) => <Signup {...props} updatePageName={this.updatePageName} />}  />
                     </Switch>
                   </div>
                 </div>

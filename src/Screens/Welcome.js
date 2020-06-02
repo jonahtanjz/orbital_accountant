@@ -1,6 +1,9 @@
 import React from 'react';
  
 class Welcome extends React.Component {
+    componentDidMount() {
+        this.props.updatePageName("The Accountant");
+    }
     render() {
         return (
             <div>

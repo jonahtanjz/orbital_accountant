@@ -25,6 +25,7 @@ class AddTrip extends React.Component {
     }
 
     componentDidMount() {
+        this.props.updatePageName("New Trip");
         const user = getUser();
         this.setState({
             user_id: user.user_id,

@@ -28,6 +28,7 @@ class EditEntry extends React.Component {
   }
   //Loads up trip and transaction data to pre-fill forms.
   componentDidMount() {
+    this.props.updatePageName("Edit Transaction");
     fetch("https://accountant.tubalt.com/api/trips/gettransaction?transactionid="+ this.props.location.state.transaction_id + "&trip_id=" + this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {

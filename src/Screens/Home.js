@@ -29,6 +29,7 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
+        this.props.updatePageName("Current Trips");
         const user = getUser();
         this.setState({
             user_id: user.user_id,
@@ -52,7 +53,7 @@ class Home extends React.Component {
             <Box display="flex" justifyContent="center" className={classes.homeContainer}>
                 <ViewTrip/>
             </Box>
-            <Fab className={classes.fab} color="secondary" href="/addtrip" aria-label="add">
+            <Fab className={classes.fab} color="secondary" onClick={() => this.props.history.push('/addtrip')} aria-label="add">
                 <AddIcon />
             </Fab>
             </div>
