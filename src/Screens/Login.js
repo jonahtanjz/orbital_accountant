@@ -2,16 +2,28 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { setUserSession } from '../Utils/Common';
 import  PropTypes  from 'prop-types';
-import  { Button, TextField, withStyles, Card, CardActions, Grid } from '@material-ui/core';
+import  { Button, TextField, withStyles, Card, CardActions, Grid, CardMedia, CardActionArea } from '@material-ui/core';
 import '../CSS/Login.css'
 
 const styles = themes => ({
-  textField : {
-    color: 'white !important',
-    'MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated Mui-required Mui-required': {
-      color: 'white !important'
-    }
-  }
+  // textField : {
+  //   color: 'white !important',
+  //   'MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated Mui-required Mui-required': {
+  //     color: 'white !important'
+  //   }
+  // },
+  // root: {
+  //   width: 330,
+  // },
+  card : {
+    width : '40%',
+    height : '55vw',
+    backgroundColor : 'white',
+  },
+  media: {
+    width : '100%',
+    height : '25vw',
+  },
 });
 
 class Login extends React.Component {
@@ -24,6 +36,7 @@ class Login extends React.Component {
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.gotoSignup = this.gotoSignup.bind(this);
   }
 
   onChange = (e) => {
@@ -67,25 +80,43 @@ class Login extends React.Component {
       alert("Oops! Something went wrong");
     });
   }
+  
+  gotoSignup(e) {
+    this.props.history.push("/signup");
+  }
 
   render() {
     const { classes } = this.props;
     return (
-      <Grid  justify="center" alignItems="center">
-        <Card className = "card">
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+      >
+        <Card className = {classes.card}>
+          <CardActionArea>
+            <CardMedia
+              className={classes.media}
+              image={require('../images/tubalt_logo.png')}
+              title="Logo"
+            />
+        </CardActionArea>
           <CardActions className = "cardAction">
           <form onSubmit={this.onSubmit}>
             <TextField
               className = {classes.textField}
               required
+              variant="outlined"
               name='username'
               label='Username'
               onChange={this.onChange}
               value={this.state.username} />
             <br/>
+            <br/>
             <TextField
-              className = {classes.textField}
               required
+              variant="outlined"
               name='password'
               label='Password'
               type='password'
@@ -94,6 +125,8 @@ class Login extends React.Component {
             <br />
             <br />
             <Button class="button" type="submit" variant="contained" color = "primary">Login</Button>
+            <br/>
+            <Button class = "toggleLogin" onClick = {this.gotoSignup}>Don't have an account? Sign up</Button>
           </form>
           </CardActions>
         </Card>

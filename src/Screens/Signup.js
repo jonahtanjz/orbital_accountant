@@ -1,8 +1,30 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { setUserSession } from '../Utils/Common';
-import  { Button, TextField, Card, CardActions } from '@material-ui/core';
-//import '../CSS/Signup.css'
+import  PropTypes  from 'prop-types';
+import  { Button, TextField, withStyles, Card, CardActions, Grid, CardMedia, CardActionArea } from '@material-ui/core';
+import '../CSS/Login.css'
+
+const styles = themes => ({
+  // textField : {
+  //   color: 'white !important',
+  //   'MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated Mui-required Mui-required': {
+  //     color: 'white !important'
+  //   }
+  // },
+  // root: {
+  //   width: 330,
+  // },
+  card : {
+    width : '40vw',
+    height : '90vh',
+    backgroundColor : 'white',
+  },
+  media: {
+    width : '100%',
+    height : '35vh',
+  },
+});
 
 class Signup extends React.Component {
   constructor(props) {
@@ -16,6 +38,7 @@ class Signup extends React.Component {
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.gotoLogin = this.gotoLogin.bind(this);
   }
 
   onChange = (e) => {
@@ -76,41 +99,71 @@ class Signup extends React.Component {
     });
   }
 
+  gotoLogin(e) {
+    this.props.history.push("/login");
+  }
+
   render() {
+    const { classes } = this.props;
     return (
       <div>
-        <Card className = "center">
-          <CardActions className = "colour">
+        <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        >
+        <Card className = {classes.card}>
+        <CardActionArea>
+            <CardMedia
+              className={classes.media}
+              image={require('../images/tubalt_logo.png')}
+              title="Logo"
+            />
+        </CardActionArea>
+          <CardActions className = "cardAction">
             <form onSubmit={this.onSubmit}>
               <TextField
                 required
+                variant="outlined"
                 name='username'
-                placeholder='Username'
+                label='Username'
                 onChange={this.onChange}
                 value={this.state.username} />
+                <br/><br/>
               <TextField
                 required
+                variant="outlined"
                 name='password'
-                placeholder='Password'
+                label='Password'
                 type='password'
                 onChange={this.onChange}
                 value={this.state.password} />
+                <br/><br/>
               <TextField
                 required
+                variant="outlined"
                 name='cPassword'
-                placeholder='Confirm Password'
+                label='Confirm Password'
                 type='password'
                 onChange={this.onChangePassword}
                 value={this.state.cPassword} /> 
               <p>{this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}</p>   
               <br />
               <Button class = "button" type="submit">Sign Up</Button>
+              <br/>
+              <Button class = "toggleLogin" onClick = {this.gotoLogin}>Already have an account? Log in</Button>
             </form>
             </CardActions>
           </Card>
+          </Grid>
       </div>
     );
   }
 }
 
-export default withRouter(Signup);
+Signup.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(withRouter(Signup));
