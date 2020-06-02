@@ -16,14 +16,19 @@ const styles = themes => ({
   //   width: 330,
   // },
   card : {
-    width : '40%',
-    height : '55vw',
+    maxWidth: 600,
+    minWidth: 350,
     backgroundColor : 'white',
+    borderRadius: "10px",
+    marginTop: '30px'
   },
   media: {
     width : '100%',
-    height : '25vw',
+    height: 320
   },
+  loginForm: {
+    marginTop: '20px'
+  }
 });
 
 class Login extends React.Component {
@@ -103,7 +108,7 @@ class Login extends React.Component {
             />
         </CardActionArea>
           <CardActions className = "cardAction">
-          <form onSubmit={this.onSubmit}>
+          <form className={classes.loginForm} onSubmit={this.onSubmit}>
             <TextField
               className = {classes.textField}
               required
