@@ -1,31 +1,40 @@
 body {
-    background-color: #54b0f3;
+    background-color: #edf3f8;
 }
 
 .card {
-    width: 25%;
+    width: 50%;
     margin: auto;
-    padding: 2px #2fa3f7;
+    background-color: white;
+
   }
 
 .cardAction {
     justify-content: center;
     width : 100%;
-    background-color: #54b0f3;
+    background-color: white;
 }
 
-.textField {
-    border-color: white;
-}
+/* .textField {
+    border-color: #edf3f8;
+} */
 
 
 .button {
-    color: white;
-    background-color: #54b0f3;
-    padding: 10px;
-    border: 2px solid white;
+    color: #edf3f8;
+    background-color: #0083E2;
+    padding: 15px;
+    border: none;
     border-radius: 5px;
     width: 100%;
     margin: auto;
+    font-size: 15px;
+    font-weight: bold;
 
+}
+
+.toggleLogin {
+    color : lightblue;
+    background-color: white;
+    border: none;
 }
