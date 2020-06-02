@@ -3,13 +3,19 @@ import { getUser, removeUserSession } from '../Utils/Common';
 import { withRouter } from 'react-router-dom';
 import ViewTrip from '../Components/ViewTrips';
 import PropTypes from 'prop-types';
-import {Typography, withStyles, Box} from '@material-ui/core';
+import {Typography, withStyles, Box, Fab} from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
 
-const styles = themes => ({
+const styles = theme => ({
     homeContainer: {
       maxWidth: '100%',
       padding: 0
-    }
+    },
+    fab: {
+        position: 'fixed',
+        bottom: theme.spacing(3),
+        right: theme.spacing(3),
+      },
 });
  
 class Home extends React.Component {
@@ -47,9 +53,11 @@ class Home extends React.Component {
                 <ViewTrip/>
             </Box>
             <Box display="flex" justifyContent="center">    
-                <input type="button" onClick={this.gotoAddTrip} value="Add trip"/><br/>
                 <input type="button" onClick={this.handleLogout} value="Logout" />
             </Box>
+            <Fab className={classes.fab} color="secondary" href="/addtrip" aria-label="add">
+                <AddIcon />
+            </Fab>
             </div>
           );
     }
