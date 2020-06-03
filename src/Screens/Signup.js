@@ -2,7 +2,8 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { setUserSession } from '../Utils/Common';
 import  PropTypes  from 'prop-types';
-import  { Button, TextField, withStyles, Card, CardActions, Grid, CardMedia, CardActionArea } from '@material-ui/core';
+import  { Button, TextField, withStyles, Card, CardActions, Grid, CardMedia, CardActionArea, Typography, InputAdornment, IconButton } from '@material-ui/core';
+import { VpnKey, Visibility, VisibilityOff, AccountCircle } from '@material-ui/icons';
 import '../CSS/Login.css'
 
 const styles = themes => ({
@@ -38,12 +39,14 @@ class Signup extends React.Component {
       username: '',
       password: '',
       cPassword: '',
-      validated: false
+      validated: false,
+      showPassword : false,
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.gotoLogin = this.gotoLogin.bind(this);
+    this.toggleShowPassword = this.toggleShowPassword.bind(this);
   }
 
   componentDidMount() {
@@ -112,6 +115,11 @@ class Signup extends React.Component {
     this.props.history.push("/login");
   }
 
+  toggleShowPassword(e) {
+    this.setState({
+      showPassword: !this.state.showPassword,
+    });
+  }
   render() {
     const { classes } = this.props;
     return (
@@ -134,6 +142,14 @@ class Signup extends React.Component {
             <form className={classes.loginForm} onSubmit={this.onSubmit}>
               <TextField
                 required
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircle />
+                    </InputAdornment>
+                  ),
+                }}
                 variant="outlined"
                 name='username'
                 label='Username'
@@ -142,26 +158,71 @@ class Signup extends React.Component {
                 <br/><br/>
               <TextField
                 required
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <VpnKey />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={this.toggleShowPassword}
+                          edge="end"
+                        >
+                          {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                  ),
+                }}  
                 variant="outlined"
                 name='password'
                 label='Password'
-                type='password'
+                type={this.state.showPassword ? 'text' : 'password'}
                 onChange={this.onChange}
                 value={this.state.password} />
                 <br/><br/>
               <TextField
+                error = {!(this.state.validated || this.state.cPassword === '')}
                 required
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <VpnKey />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={this.toggleShowPassword}
+                          edge="end"
+                        >
+                          {this.state.showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                  ),
+                }}  
                 variant="outlined"
                 name='cPassword'
                 label='Confirm Password'
-                type='password'
+                type={this.state.showPassword ? 'text' : 'password'}
                 onChange={this.onChangePassword}
-                value={this.state.cPassword} /> 
-              <p>{this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}</p>   
+                value={this.state.cPassword}
+                /> 
+              <Typography color= "error">
+                {this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}
+              </Typography>   
               <br />
               <Button class = "button" type="submit">Sign Up</Button>
-              <br/>
-              <Button class = "toggleLogin" onClick = {this.gotoLogin}>Already have an account? Log in</Button>
+              <br/><br/>
+              <Typography align="center">
+                Already have an account?
+                <Button class = "toggleLogin" onClick = {this.gotoLogin}>Login</Button>
+              </Typography>
             </form>
             </CardActions>
           </Card>
