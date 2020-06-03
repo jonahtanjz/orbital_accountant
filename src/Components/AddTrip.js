@@ -45,9 +45,9 @@ class AddTrip extends React.Component {
     
     enterCheck(e) {
       if (e.key == "Enter") {
-        if (e.target.name === "username") {
+        if (e.target.id === "username") {
           this.addUser(e);
-        } else if (e.target.name === "currency" || e.target.name === "currencyVal" ) {
+        } else if (e.target.id === "currency" || e.target.id === "currencyVal" ) {
           this.addCurrency(e);
         } else {
           e.preventDefault();
