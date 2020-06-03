@@ -1,20 +1,99 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
+import { TextField, Button, Chip, withStyles, Typography } from '@material-ui/core';
+import PropTypes from 'prop-types';
+
+const styles = theme => ({
+  root: {
+    justifyContent: 'center',
+  },
+  tripNameField: {
+    width: "330px",
+  },
+  usernameField: {
+    width: "250px",
+    marginRight: "10px"
+  },
+  addUserButton: {
+    width: "60px",
+    marginTop: "15px"
+  },
+  currencyLabel: {
+    textAlign: "left",
+    paddingLeft: "3px"
+  },
+  currencyField: {
+    width: "120px",
+    marginRight: "10px"
+  },
+  addCurrencyButton: {
+    width: "60px",
+    marginTop: "15px"
+  },
+  peopleTitle: {
+    textAlign: "left",
+    paddingLeft: "3px",
+    marginTop: "20px",
+    fontWeight: "bolder",
+    color: "rgba(88, 88, 88, 1)"
+
+  },
+  people: {
+    minHeight: "100px",
+    textAlign: "left"
+  },
+  peopleText: {
+    marginTop: "35px",
+    textAlign: "center",
+    fontWeight: 700,
+    color: "rgba(117, 117, 117, 0.7)"
+  },
+  peopleChip: {
+    margin: "5px"
+  },
+  currencyContainer: {
+    marginTop: "10px",
+    marginBottom: "10px"
+  },
+  currencyLabel: {
+    textAlign: "left",
+    paddingLeft: "3px",
+    fontWeight: "bolder",
+    color: "rgba(88, 88, 88, 1)"
+  },
+  currency: {
+    minHeight: "80px",
+    textAlign: "left"
+  },
+  currencyText: {
+    marginTop: "45px",
+    textAlign: "center",
+    fontWeight: 700,
+    color: "rgba(117, 117, 117, 0.7)"
+  },
+  currencyChip: {
+    margin: "5px"
+  },
+  createTripButton: {
+    width: "330px"
+  }
+});
 
 class TripForm extends React.Component {
     render(){
+      const { classes } = this.props;
       return(
-      <div>
+      <div className={classes.root}>
         <form onSubmit = {this.props.onSubmit} >
-          <InputTripName enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} />
+          <InputTripName classes={classes} enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} />
           <br/>
-          <InputUsers addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
-          <DisplayUsers deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} />
+          <InputUsers classes={classes} addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
+          <DisplayUsers classes={classes} deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} />
           <br/>
-          <InputCurrency enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
-          <DisplayCurrencies currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} />
+          <InputCurrency classes={classes} enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
+          <DisplayCurrencies classes={classes} currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} />
           <br/>
-          <input type="submit" value = "Submit" />
+          <Button className={classes.createTripButton} color="primary" variant="contained" type="submit">Create Trip</Button>
         </form>
       </div>
       );
@@ -38,8 +117,7 @@ class TripForm extends React.Component {
     render() {
       return(
         <div>
-          <label>Trip Name</label>
-          <input type = "text" id = "tripName" value = {this.props.tripName} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/>
+          <TextField required className={this.props.classes.tripNameField} id="tripName" label="Trip Name" variant="outlined" value = {this.props.tripName} onChange = {this.updateTripName} onKeyPress ={this.enterCheck} />
         </div>
       );
     }
@@ -65,9 +143,8 @@ class TripForm extends React.Component {
     render() {
       return (
         <div>
-        <label>Username</label>
-        <input type = "text" name = "username" id = "username" onKeyPress ={this.enterCheck} />
-        <input type = "button" value = "Add User" onClick = {this.addUser}  />
+        <TextField className={this.props.classes.usernameField} label="Username" id = "username" onKeyPress={this.enterCheck} />
+        <Button className={this.props.classes.addUserButton} size="small" variant="contained" color="primary" type="button" onClick={this.addUser}>Add</Button>
         </div>
       );
     }
@@ -79,23 +156,23 @@ class TripForm extends React.Component {
       this.deleteUser = this.deleteUser.bind(this);
     }
 
-    deleteUser(e) {
-      this.props.deleteUser(e);
+    deleteUser(name, e) {
+      this.props.deleteUser(name, e);
     }
 
     render() {
       const displayUsers = this.props.currentUsers.map((user) => {
         return (
-          <div>
-            <p>{user}</p>
-            <button type= "button" name = {user} onClick = {this.deleteUser}>Delete</button>
-          </div>
-  
+          <Chip className={this.props.classes.peopleChip} color="primary" onDelete={(e) => this.deleteUser(user, e)} label={user} />
         );
       });
       return(
-        <div>
-          {displayUsers}
+        <div className={this.props.classes.people}>
+          <Typography className={this.props.classes.peopleTitle}>On this trip: </Typography>
+          { displayUsers.length === 0
+            ? <p className={this.props.classes.peopleText}>No users added!</p>
+            : displayUsers
+          }
         </div>
       );
     }
@@ -119,10 +196,14 @@ class TripForm extends React.Component {
     render() {
       return(
         <div>
-        <label>Currency</label>
-        <input type = "text" name = "currency" id = "currency" placeholder = "Name" onKeyPress ={this.enterCheck}/>
-        <input type = "number" name = "currencyVal" id = "currencyVal" placeholder = "Value" onKeyPress ={this.enterCheck} />
-        <input type = "button" value = "Add Currency" onClick = {this.addCurrency} />
+          <Typography className={this.props.classes.currencyLabel}>Currency: </Typography>
+          <div className={this.props.classes.currencyContainer}>
+            <TextField className={this.props.classes.currencyField} id = "currency" label="Name" onKeyPress ={this.enterCheck} />
+            <TextField className={this.props.classes.currencyField} type="number" id = "currencyVal" label="Value" onKeyPress ={this.enterCheck} />
+            <Button className={this.props.classes.addCurrencyButton} size="small" variant="contained" color="primary" type = "button" onClick = {this.addCurrency}>
+              Add
+            </Button>
+          </div>
         </div>
       );
     }
@@ -133,26 +214,30 @@ class TripForm extends React.Component {
       this.deleteCurrency = this.deleteCurrency.bind(this);
     }
 
-    deleteCurrency(e) {
-      this.props.deleteCurrency(e);
+    deleteCurrency(currency, e) {
+      this.props.deleteCurrency(currency, e);
     }
 
     render() {
       const displayCurrencies = this.props.currencies.map(([name,val]) =>{
         return(
-        <div>
-          <p>{name + " : " + val}</p>
-          <button type ="button"  name = {name} onClick = {this.deleteCurrency}>Delete</button>
-        </div>
+          <Chip className={this.props.classes.currencyChip} label={name + ": " + val} onDelete={(e) => this.deleteCurrency(name, e)} color="primary" />
         )
       });
       return(
-        <div>
-          {displayCurrencies}
+        <div className={this.props.classes.currency}>
+          { displayCurrencies.length === 0
+            ? <p className={this.props.classes.currencyText}>No currencies added!</p>
+            : displayCurrencies
+          }
         </div>
       );
     }
 
   }
 
-  export default withRouter(TripForm);
+TripForm.propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
+  export default withStyles(styles)(withRouter(TripForm));

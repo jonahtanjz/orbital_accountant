@@ -6,7 +6,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Alert from './Alert';
 import PropTypes from 'prop-types';
 
-const styles = themes => ({
+const styles = theme => ({
   mainContainer: {
     justifyContent: 'center',
   },

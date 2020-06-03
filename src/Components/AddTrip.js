@@ -2,7 +2,18 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { getUser } from '../Utils/Common';
 import TripForm from './TripForm';
+import { Box, withStyles } from '@material-ui/core';
+import PropTypes from 'prop-types';
 
+const styles = theme => ({
+  root: {
+    width: "335px",
+    textAlign: "center",
+    marginRight: "auto",
+    marginLeft: "auto",
+    marginTop: "20px" 
+  },
+});
 
 
 class AddTrip extends React.Component {
@@ -44,9 +55,9 @@ class AddTrip extends React.Component {
       }
     }
   
-    deleteUser(e) {
+    deleteUser(name, e) {
       e.preventDefault();
-      let userName = e.target.name;
+      let userName = name
       let usernames = this.state.currentUsers;
       let index = usernames.findIndex((x) => {
         return x === userName
@@ -57,9 +68,9 @@ class AddTrip extends React.Component {
       });
     }
   
-    deleteCurrency(e) {
+    deleteCurrency(currency, e) {
       e.preventDefault();
-      let name = e.target.name;
+      let name = currency;
       let currencies = this.state.currencies.slice();
       let currNames = this.state.currencyNames.slice();
       for (let i = 0; i < currNames.length; i++) {
@@ -176,21 +187,28 @@ class AddTrip extends React.Component {
     }
   
     render() {
-
+      const { classes } = this.props;
       return(
-        <TripForm 
-        onSubmit = {this.onSubmit}
-        enterCheck = {this.enterCheck}
-        updateTripName = {this.updateTripName}
-        tripName = {this.state.tripName}
-        addUser = {this.addUser}
-        deleteUser = {this.deleteUser}
-        currentUsers = {this.state.currentUsers}
-        addCurrency = {this.addCurrency}
-        currencies = {this.state.currencies}
-        deleteCurrency = {this.deleteCurrency}
-        />
+        <Box className={classes.root}>
+            <TripForm 
+            onSubmit = {this.onSubmit}
+            enterCheck = {this.enterCheck}
+            updateTripName = {this.updateTripName}
+            tripName = {this.state.tripName}
+            addUser = {this.addUser}
+            deleteUser = {this.deleteUser}
+            currentUsers = {this.state.currentUsers}
+            addCurrency = {this.addCurrency}
+            currencies = {this.state.currencies}
+            deleteCurrency = {this.deleteCurrency}
+            />
+        </Box>
       );
     }
   }
-  export default withRouter(AddTrip);
+
+  AddTrip.propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
+  export default withStyles(styles)(withRouter(AddTrip));
