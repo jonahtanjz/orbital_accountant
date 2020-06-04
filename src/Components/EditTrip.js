@@ -1,8 +1,101 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { getUser } from '../Utils/Common';
+import { TextField, Button, Chip, withStyles, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import EditIcon from '@material-ui/icons/Edit';
+import DoneIcon from '@material-ui/icons/Done';
+import CloseIcon from '@material-ui/icons/Close';
 
+const styles = theme => ({
+  root: {
+    width: "335px",
+    textAlign: "center",
+    marginRight: "auto",
+    marginLeft: "auto",
+    marginTop: "20px" 
+  },
+  tripNameTitle: {
+    display: "inline",
+  },
+  tripNameField: {
+    width: "230px",
+  },
+  usernameField: {
+    width: "250px",
+    marginRight: "10px"
+  },
+  addUserButton: {
+    width: "60px",
+    marginTop: "15px"
+  },
+  currencyLabel: {
+    textAlign: "left",
+    paddingLeft: "3px"
+  },
+  currencyField: {
+    width: "120px",
+    marginRight: "10px"
+  },
+  addCurrencyButton: {
+    width: "60px",
+    marginTop: "15px"
+  },
+  peopleTitle: {
+    textAlign: "left",
+    paddingLeft: "3px",
+    marginTop: "20px",
+    fontWeight: "bolder",
+    color: "rgba(88, 88, 88, 1)"
 
+  },
+  people: {
+    minHeight: "100px",
+    textAlign: "left"
+  },
+  peopleText: {
+    marginTop: "35px",
+    textAlign: "center",
+    fontWeight: 700,
+    color: "rgba(117, 117, 117, 0.7)"
+  },
+  peopleChip: {
+    margin: "5px"
+  },
+  currencyContainer: {
+    marginTop: "10px",
+    marginBottom: "10px"
+  },
+  currencyLabel: {
+    textAlign: "left",
+    paddingLeft: "3px",
+    fontWeight: "bolder",
+    color: "rgba(88, 88, 88, 1)"
+  },
+  currency: {
+    minHeight: "80px",
+    textAlign: "left"
+  },
+  currencyText: {
+    marginTop: "45px",
+    textAlign: "center",
+    fontWeight: 700,
+    color: "rgba(117, 117, 117, 0.7)"
+  },
+  currencyChip: {
+    margin: "5px"
+  },
+  createTripButton: {
+    width: "330px"
+  },
+  editCurrencyField: {
+    width: "45%",
+    marginRight: "10px"
+  },
+  iconButtons: {
+    marginTop: "5px"
+  }
+});
 
 class EditTrip extends React.Component {
     constructor(props) {
@@ -233,6 +326,7 @@ class EditTrip extends React.Component {
 
   
     render() {
+      const { classes } = this.props;
       return(
         <TripForm 
         onSubmit = {this.onSubmit}
@@ -250,6 +344,7 @@ class EditTrip extends React.Component {
         setNewTripInfo = {this.setNewTripInfo}
         history = {this.props.history}
         owner_id = {this.state.owner_id}
+        classes = { classes }
         />
       );
     }
@@ -258,17 +353,17 @@ class EditTrip extends React.Component {
   class TripForm extends React.Component {
     render(){
       return(
-      <div>
+      <div className={this.props.classes.root}>
         <form >
-          <InputTripName enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
+          <InputTripName classes = {this.props.classes} enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
-          <InputUsers addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
-          <DisplayUsers deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} changeUserName = {this.props.changeUserName} trip_id = {this.props.trip_id} owner_id = {this.props.owner_id} setNewTripInfo = {this.props.setNewTripInfo} />
+          <InputUsers classes = {this.props.classes} addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
+          <DisplayUsers classes = {this.props.classes} deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} changeUserName = {this.props.changeUserName} trip_id = {this.props.trip_id} owner_id = {this.props.owner_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
-          <InputCurrency enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
-          <DisplayCurrencies currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} setNewTripInfo = {this.props.setNewTripInfo} trip_id = {this.props.trip_id} />
+          <InputCurrency classes = {this.props.classes} enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
+          <DisplayCurrencies classes = {this.props.classes} currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} setNewTripInfo = {this.props.setNewTripInfo} trip_id = {this.props.trip_id} />
           <br/>
-          <EndTrip trip_id = {this.props.trip_id} history = {this.props.history} />
+          <EndTrip classes = {this.props.classes} trip_id = {this.props.trip_id} history = {this.props.history} />
         </form>
       </div>
       );
@@ -345,10 +440,25 @@ class EditTrip extends React.Component {
      
       return(
         <div>
-          <label>Trip Name: </label>
           {(! this.state.editing) 
-            ? <div><span>{this.props.tripName}</span> <button type = "button" onClick = {this.toggleEditing}>Edit</button> </div>
-            : <div><input type = "text" id = "tripName" value = {this.state.editingText} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/> <button type = "button" onClick = {this.editTripName}>Done</button><button type = "button" onClick = {this.toggleEditing}>Cancel</button></div>
+            ? <div>
+                <TextField className={this.props.classes.tripNameField} id="tripName" label="Trip Name" variant="outlined" value = {this.props.tripName} disabled/>
+                <IconButton className={this.props.classes.iconButtons} color="primary" onClick = {this.toggleEditing}>
+                  <EditIcon />
+                </IconButton> 
+              </div>
+            //? <div><span>{this.props.tripName}</span> <button type = "button" onClick = {this.toggleEditing}>Edit</button> </div>
+
+            : <div>
+                <TextField className={this.props.classes.tripNameField} id="tripName" label="Trip Name" variant="outlined" value = {this.state.editingText} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/>
+                <IconButton className={this.props.classes.iconButtons} color="primary" onClick = {this.editTripName}>
+                  <DoneIcon />
+                </IconButton> 
+                <IconButton className={this.props.classes.iconButtons} color="secondary" onClick = {this.toggleEditing}>
+                  <CloseIcon />
+                </IconButton>
+              </div>
+            //: <div><input type = "text" id = "tripName" value = {this.state.editingText} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/> <button type = "button" onClick = {this.editTripName}>Done</button><button type = "button" onClick = {this.toggleEditing}>Cancel</button></div>
           }
         </div>
       );
@@ -375,9 +485,8 @@ class EditTrip extends React.Component {
     render() {
       return (
         <div>
-        <label>Username</label>
-        <input type = "text" name = "username" id = "username" onKeyPress ={this.enterCheck} />
-        <input type = "button" value = "Add User" onClick = {this.addUser}  />
+          <TextField className={this.props.classes.usernameField} label="Username" id = "username" onKeyPress={this.enterCheck} />
+          <Button className={this.props.classes.addUserButton} size="small" variant="contained" color="primary" type="button" onClick={this.addUser}>Add</Button>
         </div>
       );
     }
@@ -389,15 +498,19 @@ class EditTrip extends React.Component {
       this.state = {
         editing : {},
         editingText: {},
+        deleteUserDialog: {},
+        ownerDialog: false,
       };
       this.deleteUser = this.deleteUser.bind(this);
       this.toggleEditing = this.toggleEditing.bind(this);
       this.submitEditedName = this.submitEditedName.bind(this);
       this.changeUserName = this.changeUserName.bind(this);
+      this.toggleDeleteUserDialog = this.toggleDeleteUserDialog.bind(this);
+      this.toggleOwnerDialog = this.toggleOwnerDialog.bind(this);
     }
 
-    deleteUser(e) {
-      let link_id = e.target.id;
+    deleteUser(e, id) {
+      let link_id = id;
       let userName = this.props.currentUsers.filter((user) => user.id == link_id)[0].name;
       if (this.props.currentUsers.filter(person => person.in_trip === 1).length === 1) {
         alert("There has to be at least one person in the trip at all times.");
@@ -433,14 +546,14 @@ class EditTrip extends React.Component {
         alert("Oops! Something went wrong");
       });
       this.props.deleteUser(e);
+      this.toggleDeleteUserDialog(id);
     }
 
-    toggleEditing(e) {
+    toggleEditing(id) {
       let newEdit = {};
       let newEditText = {};
       Object.assign(newEdit, this.state.editing);
       Object.assign(newEditText, this.state.editingText);
-      let id = e.target.id;
       newEdit[id] = !newEdit[id];
       if (newEdit[id]) {
         newEditText[id] = this.props.currentUsers.filter((user) => user.id == id)[0].name;
@@ -453,9 +566,9 @@ class EditTrip extends React.Component {
       });
     }
 
-    submitEditedName(e) {
-      this.toggleEditing(e);
-      let link_id = e.target.id;
+    submitEditedName(id) {
+      this.toggleEditing(id);
+      let link_id = id;
       let newName = this.state.editingText[link_id];
       if (!newName) {
         alert("Please enter a valid name.");
@@ -503,35 +616,125 @@ class EditTrip extends React.Component {
       }); 
     }
 
+    toggleDeleteUserDialog(id) {
+      let newDeleteUserDialog = this.state.deleteUserDialog;
+      newDeleteUserDialog[id] = !this.state.deleteUserDialog[id];
+      this.setState({
+        deleteUserDialog: newDeleteUserDialog
+      });
+    }
+
+    toggleOwnerDialog() {
+      let newState = !this.state.ownerDialog;
+      this.setState({ ownerDialog: newState });
+    }
+
     render() {
       const displayUsers = this.props.currentUsers.filter(user => user.in_trip === 1).map((user) => {
-        return (
-          (!this.state.editing[user.id]) 
-          ?
-          <div>
-            <p>{user.name}</p>
-            {(user.user_id !== this.props.owner_id)
-              ?<div>
-                <button type= "button" id= {user.id}  onClick = {this.deleteUser}>Delete</button>
-                <button type = "button" id= {user.id} onClick = {this.toggleEditing}>Edit</button>
-              </div>
-              :<div>
-                <button type= "button" id= {user.id}  onClick = {this.deleteUser} disabled>Delete</button>
-                <button type = "button" id= {user.id} onClick = {this.toggleEditing} disabled>Edit</button>
-              </div>
-          	}
-          </div>
-          :
-          <div>
-            <input type = "text" id = {user.id} value = {this.state.editingText[user.id]} onChange = {this.changeUserName}/>
-            <button type = "button" id = {user.id} onClick={this.submitEditedName}>Done</button>
-            <button type = "button" id = {user.id} onClick={this.toggleEditing}>Cancel</button>
-          </div>
+        if (user.user_id !== this.props.owner_id) {
+          return (
+            <React.Fragment>
+              <Chip className={this.props.classes.peopleChip} clickable color="primary" onClick={() => this.toggleEditing(user.id)} onDelete={() => this.toggleDeleteUserDialog(user.id)} label={user.name} />
+              
+              <Dialog open={this.state.editing[user.id]} onClose={() => this.toggleEditing(user.id)} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Edit Username</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Once completed, all transactions relating to this user will be renamed to the new edited name. 
+                  </DialogContentText>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    id={user.id}
+                    label="Username"
+                    fullWidth
+                    value={this.state.editingText[user.id]}
+                    onChange={this.changeUserName}
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => this.toggleEditing(user.id)} color="primary">
+                    Cancel
+                  </Button>
+                  <Button onClick={() => this.submitEditedName(user.id)} color="primary">
+                    Change
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
+              <Dialog
+                open={this.state.deleteUserDialog[user.id]}
+                onClose={() => this.toggleDeleteUserDialog(user.id)}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+              >
+                <DialogTitle id="alert-dialog-title">Remove {user.name} from the trip?</DialogTitle>
+                <DialogContent>
+                  <DialogContentText id="alert-dialog-description">
+                    Removing this user from the trip will remove his name from future transactions. All existing
+                    transactions with this user will still be present in the ledger.
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => this.toggleDeleteUserDialog(user.id)} color="primary">
+                    Cancel
+                  </Button>
+                  <Button onClick={(e) => this.deleteUser(e, user.id)} color="primary" autoFocus>
+                    Remove
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </React.Fragment>
+          );
+        } else {
+          return(
+            <React.Fragment>
+                <Chip className={this.props.classes.peopleChip} onClick={this.toggleOwnerDialog} label={user.name} />
+                
+                <Dialog open={this.state.ownerDialog} onClose={this.toggleOwnerDialog} aria-labelledby="form-dialog-title">
+                  <DialogTitle id="form-dialog-title">Creator of Trip</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      {user.name} is the creator of this trip. Creator's data cannot be edited or removed from
+                      the trip. 
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={this.toggleOwnerDialog} color="primary">
+                      OK
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+              </React.Fragment>
+          );
+        }
+
+          // (!this.state.editing[user.id]) 
+          // ?
+          // <div>
+          //   <p>{user.name}</p>
+          //   {(user.user_id !== this.props.owner_id)
+          //     ?<div>
+          //       <button type= "button" id= {user.id}  onClick = {this.deleteUser}>Delete</button>
+          //       <button type = "button" id= {user.id} onClick = {this.toggleEditing}>Edit</button>
+          //     </div>
+          //     :<div>
+          //       <button type= "button" id= {user.id}  onClick = {this.deleteUser} disabled>Delete</button>
+          //       <button type = "button" id= {user.id} onClick = {this.toggleEditing} disabled>Edit</button>
+          //     </div>
+          // 	}
+          // </div>
+          // :
+          // <div>
+          //   <input type = "text" id = {user.id} value = {this.state.editingText[user.id]} onChange = {this.changeUserName}/>
+          //   <button type = "button" id = {user.id} onClick={this.submitEditedName}>Done</button>
+          //   <button type = "button" id = {user.id} onClick={this.toggleEditing}>Cancel</button>
+          // </div>
           
-        );
       });
       return(
-        <div>
+        <div className={this.props.classes.currency}>
+          <Typography className={this.props.classes.peopleTitle}>On this trip: </Typography>
           {displayUsers}
         </div>
       );
@@ -556,10 +759,14 @@ class EditTrip extends React.Component {
     render() {
       return(
         <div>
-        <label>Currency</label>
-        <input type = "text" name = "currency" id = "currency" placeholder = "Name" onKeyPress ={this.enterCheck}/>
-        <input type = "number" name = "currencyVal" id = "currencyVal" placeholder = "Value" onKeyPress ={this.enterCheck} />
-        <input type = "button" value = "Add Currency" onClick = {this.addCurrency} />
+          <Typography className={this.props.classes.currencyLabel}>Currency: </Typography>
+          <div className={this.props.classes.currencyContainer}>
+            <TextField className={this.props.classes.currencyField} id = "currency" label="Name" onKeyPress ={this.enterCheck} />
+            <TextField className={this.props.classes.currencyField} type="number" id = "currencyVal" label="Value" onKeyPress ={this.enterCheck} />
+            <Button className={this.props.classes.addCurrencyButton} size="small" variant="contained" color="primary" type = "button" onClick = {this.addCurrency}>
+              Add
+            </Button>
+          </div>
         </div>
       );
     }
@@ -571,6 +778,7 @@ class EditTrip extends React.Component {
       this.state = {
         editing : {},
         editingText : {},
+        deleteCurrencyDialog: {},
       }
       this.deleteCurrency = this.deleteCurrency.bind(this);
       this.toggleEditing = this.toggleEditing.bind(this);
@@ -579,7 +787,7 @@ class EditTrip extends React.Component {
       this.submitCurrency = this.submitCurrency.bind(this);
     }
 
-    deleteCurrency(e) {
+    deleteCurrency(e, name) {
       // this.props.deleteCurrency(e);
       e.preventDefault();
       fetch("https://accountant.tubalt.com/api/trips/removecurrency", {
@@ -588,7 +796,7 @@ class EditTrip extends React.Component {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          name : e.target.name,
+          name : name,
           trip_id : this.props.trip_id,
         })
       })
@@ -609,22 +817,22 @@ class EditTrip extends React.Component {
 
     }
 
-    toggleEditing(e) {
+    toggleEditing(name) {
       let newText = {}
       Object.assign(newText,this.state.editingText);
       console.log(newText);
       let newEditing = {}
       Object.assign(newEditing, this.state.editing);
-      newEditing[e.target.name] = !newEditing[e.target.name]
-      if (newEditing[e.target.name]) {
-        newText[e.target.name] = this.props.currencies.filter((currency)=>currency.name == e.target.name).map((currency)=>
+      newEditing[name] = !newEditing[name]
+      if (newEditing[name]) {
+        newText[name] = this.props.currencies.filter((currency)=>currency.name == name).map((currency)=>
        {return ({
-           newName : currency.name,
+          newName : currency.name,
           newVal : currency.value,
         });
         })[0];
       } else {
-        delete newText[e.target.name];
+        delete newText[name];
       }
 
       this.setState({
@@ -652,19 +860,19 @@ class EditTrip extends React.Component {
       });
     }
 
-    submitCurrency(e) {
-      let oldName = e.target.name;
-      this.toggleEditing(e);
+    submitCurrency(name) {
+      let oldName = name;
+      this.toggleEditing(name);
       let newName = this.state.editingText[oldName]["newName"];
       let newVal = this.state.editingText[oldName]["newVal"];
       if (! newName || !newVal || newVal == 0) {
         alert("Please enter a valid currency");
         return null;
       }
-      if (this.props.currencies.filter(currency => currency.in_trip === 1 && currency.name === newName).length > 0) {
-        alert("Currency name already exists.");
-        return null;
-      }
+      // if (this.props.currencies.filter(currency => currency.in_trip === 1 && currency.name === newName).length > 0) {
+      //   alert("Currency name already exists.");
+      //   return null;
+      // }
       fetch("https://accountant.tubalt.com/api/trips/edittripcurrency", {
         method: "POST",
         headers: {
@@ -693,31 +901,104 @@ class EditTrip extends React.Component {
       });
     }
 
+    toggleDeleteCurrencyDialog(name) {
+      let newDeleteCurrencyDialog = this.state.deleteCurrencyDialog;
+      newDeleteCurrencyDialog[name] = !this.state.deleteCurrencyDialog[name];
+      this.setState({
+        deleteCurrencyDialog: newDeleteCurrencyDialog
+      });
+    }
+
     render() {
       const displayCurrencies = this.props.currencies.filter(currency => currency.in_trip === 1).map((currency) =>{
-        if (!this.state.editing[currency.name]) {
-          return(
-          <div>
-            <p>{currency.name + " : " + currency.value}</p>
-            <button type ="button"  name = {currency.name} onClick = {this.deleteCurrency}>Delete</button>
-            <button type ="button" name = {currency.name} onClick = {this.toggleEditing}>Edit</button>
-          </div>
-          )
-        } else {
-          return(
-            <div>
-              <input type = "text" id = {currency.name} value = {this.state.editingText[currency.name]["newName"]} onChange = {this.changeCurrencyName} />
-              <input type = "text" id = {currency.name} value = {this.state.editingText[currency.name]["newVal"]} onChange = {this.changeCurrencyValue} />
-              <button type ="button" name = {currency.name} onClick = {this.submitCurrency}>Done</button>
-              <button type ="button" name = {currency.name} onClick = {this.toggleEditing}>Cancel</button>
-            </div>
-          );
-        }
+        return( 
+          <React.Fragment>
+            <Chip className={this.props.classes.currencyChip} label={currency.name + ": " + currency.value} clickable color="primary" onClick={() => this.toggleEditing(currency.name)} onDelete={() => this.toggleDeleteCurrencyDialog(currency.name)} />
+            
+            <Dialog open={this.state.editing[currency.name]} onClose={() => this.toggleEditing(currency.name)} aria-labelledby="form-dialog-title">
+              <DialogTitle id="form-dialog-title">Edit Currency</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Once completed, all transactions relating to this currency will be renamed to the new edited currency and value. 
+                </DialogContentText>
+                <TextField
+                  autoFocus
+                  className={this.props.classes.editCurrencyField}
+                  margin="dense"
+                  label="Name"
+                  id = {currency.name} 
+                  value = {this.state.editing[currency.name] ? this.state.editingText[currency.name]["newName"] : currency.name} 
+                  onChange = {this.changeCurrencyName}
+                />
+                <TextField
+                  autoFocus
+                  className={this.props.classes.editCurrencyField}
+                  margin="dense"
+                  label="Value"
+                  id = {currency.name} 
+                  value = {this.state.editing[currency.name] ? this.state.editingText[currency.name]["newVal"] : currency.value} 
+                  onChange = {this.changeCurrencyValue}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => this.toggleEditing(currency.name)} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={() => this.submitCurrency(currency.name)} color="primary">
+                  Change
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog
+              open={this.state.deleteCurrencyDialog[currency.name]}
+              onClose={() => this.toggleDeleteCurrencyDialog(currency.name)}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">Remove {currency.name} from the trip?</DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Removing this currency from the trip will remove the currency from future transactions. All existing
+                  transactions with this currency will still be present in the ledger.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => this.toggleDeleteCurrencyDialog(currency.name)} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={(e) => this.deleteCurrency(e, currency.name)} color="primary" autoFocus>
+                  Remove
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </React.Fragment>)
+        // if (!this.state.editing[currency.name]) {
+        //   return(
+        //   <div>
+        //     <p>{currency.name + " : " + currency.value}</p>
+        //     <button type ="button"  name = {currency.name} onClick = {this.deleteCurrency}>Delete</button>
+        //     <button type ="button" name = {currency.name} onClick = {this.toggleEditing}>Edit</button>
+        //   </div>
+        //   )
+        // } else {
+        //   return(
+        //     <div>
+        //       <input type = "text" id = {currency.name} value = {this.state.editingText[currency.name]["newName"]} onChange = {this.changeCurrencyName} />
+        //       <input type = "text" id = {currency.name} value = {this.state.editingText[currency.name]["newVal"]} onChange = {this.changeCurrencyValue} />
+        //       <button type ="button" name = {currency.name} onClick = {this.submitCurrency}>Done</button>
+        //       <button type ="button" name = {currency.name} onClick = {this.toggleEditing}>Cancel</button>
+        //     </div>
+        //   );
+        // }
       });
       return(
-        <div>
-          {displayCurrencies}
-        </div>
+        <div className={this.props.classes.currency}>
+        { displayCurrencies.length === 0
+          ? <p className={this.props.classes.currencyText}>No currencies added!</p>
+          : displayCurrencies
+        }
+      </div>
       );
     }
 
@@ -757,10 +1038,14 @@ class EditTrip extends React.Component {
     render() {
       return(
       <div>
-        <button type = "button" onClick={this.endTrip}>End Trip</button>
+        <Button type = "button" color="primary" variant="contained" size="large" fullWidth onClick={this.endTrip}>End Trip</Button>
       </div>
       );
     }
   }
 
-  export default withRouter(EditTrip);
+  EditTrip.propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
+  export default withStyles(styles)(withRouter(EditTrip));

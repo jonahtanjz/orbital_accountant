@@ -93,7 +93,7 @@ class TripForm extends React.Component {
           <InputCurrency classes={classes} enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
           <DisplayCurrencies classes={classes} currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} />
           <br/>
-          <Button className={classes.createTripButton} color="primary" variant="contained" type="submit">Create Trip</Button>
+          <Button className={classes.createTripButton} color="primary" variant="contained" fullWidth size="large" type="submit">Create Trip</Button>
         </form>
       </div>
       );
@@ -238,6 +238,6 @@ class TripForm extends React.Component {
 
 TripForm.propTypes = {
     classes: PropTypes.object.isRequired,
-  };
+};
 
   export default withStyles(styles)(withRouter(TripForm));
