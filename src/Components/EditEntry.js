@@ -1,6 +1,26 @@
 import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
-import {withRouter} from 'react-router-dom'
+import {withRouter} from 'react-router-dom';
+import { Grid, withStyles, Typography, TextField, InputAdornment, MenuItem, Select, InputLabel, FormControlLabel, Checkbox } from '@material-ui/core';
+import { ChatOutlined } from '@material-ui/icons'
+import '../CSS/Login.css'
+
+const styles = themes => ({
+  textField: {
+    width: 330,
+  },
+  dropDownSelect: {
+    width: 330,
+    borderRadius: 10,
+  },
+  currSelect: {
+    width: 330,
+    borderRadius: 10,
+    backgroundColor: "white",
+    height: 40,
+    border: "none",
+  },
+});
 
 //Main component to render when editing transactions in the trips
 class EditEntry extends React.Component {
@@ -303,51 +323,94 @@ class EditEntry extends React.Component {
   }
   //Renders the components for EditEntry
   render() {
-    const submitButton = (<input type = "submit" value = "Submit"/> ) ;
-    
+    const submitButton = (<input class="button" type = "submit" value = "Submit"/> ) ;
+    const { classes } = this.props;
     return (
       <div>
+        <Grid
+        container
+        direction="column"
+        justify="center"
+        alignItems="center"
+        >
         <form onSubmit = {this.onSubmit}>
-          <p>People who paid:</p>
-          <NameList 
-          onChange = {this.onChangePay}
-          display = {this.state.pay}
-          />
-          <AmountDisplay
-          display = {this.state.pay}
-          onChange = {this.updatePay}
-          />
-          <p>People who consumed:</p>
-          <NameList 
-          onChange = {this.onChangeConsume}
-          display = {this.state.consume}
-          type = "consume"
-          />
-          <AmountDisplay
-          display = {this.state.consume}
-          onChange = {this.updateConsume}
-          />
+          <Grid item>
+            <TextField 
+              required
+              type="text"   
+              className = {classes.textField}      
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <ChatOutlined />
+                  </InputAdornment>
+                ),
+                }}
+              variant = "outlined"
+              value = {this.state.desc}
+              id="desc"
+              onChange={this.updateDesc} 
+              label="Description"
+            />
+          </Grid>
           <br/>
-          <CurrencyList 
-          currency = {this.state.currency}
-          changeCurrency = {this.changeCurrency}
-          selectedCurrency = {this.state.selectedCurrency}
-          />
+          <Grid item>
+            <Typography align = "left">People who paid:</Typography>
+          </Grid>
+          <Grid item>
+            <NameList 
+            onChange = {this.onChangePay}
+            display = {this.state.pay}
+            classes = {classes}
+            />
+          </Grid>
           <br/>
+          <Grid item>
+            <AmountDisplay
+            display = {this.state.pay}
+            onChange = {this.updatePay}
+            />
+          </Grid>
+          <Grid item>
+            <Typography align= "left">People who consumed:</Typography>
+          </Grid>
+          <Grid item>
+            <NameList 
+            onChange = {this.onChangeConsume}
+            display = {this.state.consume}
+            classes = {classes}
+            />
+          </Grid>
           <br/>
-          <Equals 
-          changeEqual = {this.changeEqual} 
-          equal = {this.state.equal} 
-          />
+          <Grid item>
+            <AmountDisplay
+            display = {this.state.consume}
+            onChange = {this.updateConsume}
+            />
+          </Grid>
+          <Grid item>
+            <CurrencyList 
+            currency = {this.state.currency}
+            changeCurrency = {this.changeCurrency}
+            selectedCurrency = {this.state.selectedCurrency}
+            classes = {classes}
+            />
+          </Grid>
+          <Grid item>
+            <Equals 
+            changeEqual = {this.changeEqual} 
+            equal = {this.state.equal} 
+            />
+          </Grid>
+          <Grid item>
+            {submitButton}
+          </Grid>
           <br/>
-          <input type="text" value = {this.state.desc} id="desc" onChange={this.updateDesc} placeholder="Description of Transaction"/>
-          <br/> 
-          {submitButton}
-          <br/>
-          <br/>
-          <br/>
-          <button type = "button" onClick ={this.deleteTransaction}>Delete</button>
+          <Grid item>
+            <button class = "delbutton" type = "button" onClick ={this.deleteTransaction}>Delete</button>
+          </Grid>
         </form>
+        </Grid>
       </div>
     );
   }
@@ -367,8 +430,18 @@ class Equals extends React.Component {
   render() {
     return (
       <div>
-        <input type = "checkbox" checked = {this.props.equal} onChange={this.changeEqual} id="equal" /> 
-        <lable>Equal</lable>
+        <FormControlLabel
+          control={
+            <Checkbox
+                checked={this.props.equal}
+                onChange={this.changeEqual}
+                id = "equal"
+                name="checkbox"
+                color="primary"
+              />
+          }
+          label="Split bill equally"
+        />
       </div>
     );
   }
@@ -387,12 +460,23 @@ class CurrencyList extends React.Component {
 
   render () {
     const currencyDisplay = this.props.currency.map((curr) => 
-      <option id = {curr} name = {curr} value = {curr}>{curr}</option>
+      <MenuItem id = {curr} name = {curr} value = {curr}>{curr}</MenuItem>
     );
     return (
-      <select  value = {this.props.selectedCurrency} onChange = {this.changeCurrency} id = "curr" className = "css-1r4vtzz">
-        {currencyDisplay}
-      </select>
+      <div>
+        <InputLabel id="curr-label">Currency</InputLabel>
+        <Select
+          size = "sm"
+          className = {this.props.classes.currSelect}
+          variant = "outlined"
+          id = "curr"
+          labelId = "curr-label"
+          onChange={this.changeCurrency}
+          value = {this.props.selectedCurrency}
+          >
+          {currencyDisplay}
+        </Select>
+      </div>
     );
   }
 }
@@ -412,15 +496,18 @@ class AmountDisplay extends React.Component {
     const listAmounts = this.props.display.filter((person) => person["display"]).map((person) => {
       return (
         <div key = {person["name"]}>
-        <p>{person["name"]}</p>
-        <input
-        type = "text"
-        name = {person["name"]} 
-        value = {person["amount"]}
-        onChange = {this.onChange}
-        id = {person["name"]} 
-        placeholder = "Input Amount"
-        />
+          <TextField
+            variant = "outlined"
+            size = "small"
+            type = "text"
+            name = {person["name"]} 
+            onChange = {this.onChange}
+            id = {person["name"]} 
+            label ={person["name"]}
+            value = {person["amount"]}
+            helperText = "Input Amount"
+          />
+          <br/><br/>
         </div>
       );
     })
@@ -458,9 +545,9 @@ class NameList extends React.Component {
     });
     
     return (
-      <ReactMultiSelectCheckboxes value = {display} options = {options} onChange = {this.onChange} />
+      <ReactMultiSelectCheckboxes className = {this.props.classes.dropDownSelect} value = {display} options = {options} onChange = {this.onChange} />
     );
   }
 }
 
-export default withRouter(EditEntry);
+export default withStyles(styles)(withRouter(EditEntry));

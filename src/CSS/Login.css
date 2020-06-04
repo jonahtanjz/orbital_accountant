@@ -33,6 +33,19 @@ body {
 
 }
 
+.delbutton {
+    color: #edf3f8;
+    background-color: red;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    margin: auto;
+    font-size: 15px;
+    font-weight: bold;
+
+}
+
 .toggleLogin {
     color : #0083E2;
     background-color: white;
@@ -51,5 +64,9 @@ body {
     width: 330px !important;
 
 }
+
+/* input:-internal-autofill-selected {
+    background-color: white !important;
+} */
 
 

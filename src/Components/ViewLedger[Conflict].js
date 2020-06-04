@@ -1,10 +1,9 @@
 import React from 'react';
 import { getUser } from '../Utils/Common';
 import { withRouter } from 'react-router-dom';
-import { Grid, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, MenuItem, InputLabel } from '@material-ui/core';
+import { ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Edit } from '@material-ui/icons';
-import '../CSS/Login.css';
 
 class ViewLedger extends React.Component {
     constructor(props) {
@@ -43,7 +42,12 @@ class ViewLedger extends React.Component {
 
     render() {
         let chooseName = this.state.users.map((person)=>{
-                return(<MenuItem key ={person.name} value = {person.name}>{person.name}</MenuItem>);
+                if (person.name === getUser().username) {
+                    
+                    return(<option key ={person.name} value = {person.name} selected>{person.name}</option>);
+                } else {
+                    return(<option key ={person.name} value = {person.name}>{person.name}</option>);
+                }
                 
         })
         let filteredTransactions = this.state.transactions.filter((entry) =>
@@ -52,34 +56,12 @@ class ViewLedger extends React.Component {
 
         return(
             <div>
-                <Grid
-                    container
-                    item 
-                    direction="column"
-                    justify="center"
-                    alignItems="center">
-                    <Grid item>
-                        <InputLabel id="select-person-label">Select Person</InputLabel>
-                        <Select
-                            labelId="select-person-label"
-                            id="select-person"
-                            value={this.state.selectedName}
-                            onChange={this.changeSelectedName}
-                        >
-                            {chooseName}
-                        </Select>
-                    </Grid>
-                    <Grid item>
-                        <SuggestPay users= {this.state.users} transactions = {this.state.transactions} currency = {this.state.currency}/>
-                    </Grid>
-                    <Grid item>
-                        <Ledger currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
-                    </Grid>
-                    <br/>
-                    <Grid item>
-                        <UndoEndTrip trip = {this.state.trip} history = {this.props.history}/>
-                    </Grid>
-                </Grid>
+                <select id = "nameSelect" onChange = {this.changeSelectedName}>
+                    {chooseName}
+                </select>
+                <UndoEndTrip trip = {this.state.trip} history = {this.props.history}/>
+                <SuggestPay users= {this.state.users} transactions = {this.state.transactions} currency = {this.state.currency}/>
+                <Ledger currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
             </div>
         );
     }
@@ -136,10 +118,9 @@ class DisplayTable extends React.Component {
             }
             let value = (entry.amount/conversion)
             if (entry.payer == this.props.self) {
-                value = (0 - value)
+                value = (0 - (entry.amount/conversion))
             }
             total = total + value;
-            let valueColor =( (value > 0) ? "" : "secondary");
             return(
                 // <tr>
                 //     <td>{entry.description}</td>
@@ -151,16 +132,13 @@ class DisplayTable extends React.Component {
                 //     <td><button onClick = {() => this.props.history.push("/editentry",{transaction_id : entry.transaction_id, trip_id : this.props.trip.trip_id})}>Edit</button></td>
                 // </tr>
                 <TableRow key={entry.description}>
-                    <TableCell colSpan={3}>{entry.description}</TableCell>
-                    <TableCell align="right">
-                        <Typography color = {valueColor}>
+                    <TableCell colSpan={4}>{entry.description}</TableCell>
+                    <TableCell colSpan={1} align="right">
+                        <Typography >
                             {value.toFixed(2)}
                         </Typography>
                     </TableCell>
                     <TableCell>
-                        {/* <button onClick = {() => this.props.history.push("/editentry",{transaction_id : entry.transaction_id, trip_id : this.props.trip.trip_id})}>
-                            Edit
-                        </button> */}
                         <IconButton aria-label="delete" onClick = {() => this.props.history.push("/editentry",{transaction_id : entry.transaction_id, trip_id : this.props.trip.trip_id})}>
                             <Edit/>
                         </IconButton>
@@ -214,11 +192,7 @@ class DisplayTable extends React.Component {
                                 <TableRow>
                                     <TableCell colSpan={1} />
                                     <TableCell colSpan={2}>{"Total" + desc}</TableCell>
-                                    <TableCell colSpan={2} align="right">
-                                        <Typography>
-                                            {total.toFixed(2)}
-                                        </Typography>
-                                    </TableCell>
+                                    <TableCell align="right">{total.toFixed(2)}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>
@@ -327,7 +301,7 @@ class UndoEndTrip extends React.Component {
         if (this.props.trip.ended == 1) {
             return(
             <div>
-                <button class = "button" type = "button" onClick={this.undoEndTrip}>Restart Trip</button>
+                <button type = "button" onClick={this.undoEndTrip}>Restart Trip</button>
             </div>
             );
         } else {
