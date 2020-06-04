@@ -48,7 +48,7 @@ class EditEntry extends React.Component {
   }
   //Loads up trip and transaction data to pre-fill forms.
   componentDidMount() {
-    this.props.updatePageName("Edit Transaction");
+    this.props.functionProps["updatePageName"]("Edit Transaction");
     fetch("https://accountant.tubalt.com/api/trips/gettransaction?transactionid="+ this.props.location.state.transaction_id + "&trip_id=" + this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {
@@ -281,17 +281,17 @@ class EditEntry extends React.Component {
     })
     .then(response => {
       if (response.status === 401) {
-        response.json().then(res => alert(res.message));
+        response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
       } else {
         response.json().then(res => {
-          alert("Success");
+          this.props.functionProps["toggleSuccessCallback"]("Success");
           this.props.history.push("/viewledger",{trip_id : this.props.location.state.trip_id});
         });
       }
     })
     .catch(error => {
       console.log(error);
-      alert("Oops! Something went wrong");
+      this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
     });
   }
   //Deletes the transaction
@@ -308,17 +308,17 @@ class EditEntry extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("Success");
             this.props.history.push("/viewledger",{trip_id : this.props.location.state.trip_id});
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
   }
   //Renders the components for EditEntry

@@ -52,7 +52,7 @@ class AddEntry extends React.Component {
   }
   //To fetch data when component mounts
   componentDidMount() {
-    this.props.updatePageName("New Transaction");
+    this.props.functionProps["updatePageName"]("Add Transactions");
     fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid="+this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {
@@ -259,17 +259,17 @@ class AddEntry extends React.Component {
     })
     .then(response => {
       if (response.status === 401) {
-        response.json().then(res => alert(res.message));
+        response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
       } else {
         response.json().then(res => {
-          alert("Success");
+          this.props.functionProps["toggleSuccessCallback"]("Success");
           this.props.history.push("/home");
         });
       }
     })
     .catch(error => {
       console.log(error);
-      alert("Oops! Something went wrong");
+      this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
     });
   }
   //Renders the Componenets needed for AddEntry form

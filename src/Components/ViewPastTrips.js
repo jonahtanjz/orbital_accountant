@@ -46,6 +46,7 @@ class ViewPastTrips extends React.Component {
       anchorEl: {},
       deleteDialog: {},
       deleteAllDialog: {},
+      restartTripDialog: {},
       successCallback: false,
       failCallback: false,
     }
@@ -61,6 +62,7 @@ class ViewPastTrips extends React.Component {
     this.handleDeleteDialogClose = this.handleDeleteDialogClose.bind(this);
     this.handleDeleteAllDialogOpen = this.handleDeleteAllDialogOpen.bind(this);
     this.handleDeleteAllDialogClose = this.handleDeleteAllDialogClose.bind(this);
+    this.toggleRestartTripDialog = this.toggleRestartTripDialog.bind(this);
     this.handleSuccessCallback = this.handleSuccessCallback.bind(this);
     this.handleSuccessCallbackClose = this.handleSuccessCallbackClose.bind(this);
     this.handleFailCallback = this.handleFailCallback.bind(this);
@@ -75,17 +77,20 @@ class ViewPastTrips extends React.Component {
       let newAnchorEl = {};
       let newdeleteDialog = {};
       let newdeleteAllDialog = {};
+      let newRestartTripDialog = {};
       for (let i = 0; i < response.trips.length; i++) {
         newAnchorEl[i] = null;
         newdeleteDialog[i] = false;
         newdeleteAllDialog[i] = false;
+        newRestartTripDialog[i] = false;
       }
       this.setState({
         trips : response.trips.filter(trip => trip[0].deleted === 0),
         user_id : user,
         anchorEl: newAnchorEl,
         deleteDialog: newdeleteDialog,
-        deleteAllDialog: newdeleteAllDialog
+        deleteAllDialog: newdeleteAllDialog,
+        restartTripDialog: newRestartTripDialog,
       })
     });
   }
@@ -202,6 +207,41 @@ class ViewPastTrips extends React.Component {
     this.setState({ deleteAllDialog: newDeleteAllDialog });
   }
 
+  restartTrip(id) {
+    fetch("https://accountant.tubalt.com/api/trips/undoendtrip", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id: this.state.user_id,
+        trip_id: id,
+      })
+    })
+    .then(response => {
+      if (response.status === 401) {
+        response.json().then(res => alert(res.message));
+      } else {
+        response.json().then(res => {
+          this.setState({
+            trips : res.trips.filter(trip => trip[0].deleted === 0),
+          });
+          this.handleSuccessCallback();
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Oops! Something went wrong");
+    });
+  } 
+
+  toggleRestartTripDialog(id) {
+    let newRestartTripDialog = this.state.restartTripDialog;
+    newRestartTripDialog[id] = !this.state.restartTripDialog[id];
+    this.setState({ restartTripDialog: newRestartTripDialog });
+  }
+
   handleSuccessCallback() {
     this.setState({successCallback: true});
   }
@@ -244,8 +284,17 @@ class ViewPastTrips extends React.Component {
                     open={Boolean(this.state.anchorEl[trip[0].trip_id])}
                     onClick={() => this.handleMenuClose(trip[0].trip_id)}
                   >
+                    {
+                      (this.state.user_id === trip[0].owner)
+                        ? <MenuItem id = {trip[0].trip_id} onClick={() => this.toggleRestartTripDialog(trip[0].trip_id)}>Restart Trip</MenuItem>
+                        : null
+                    }
                     <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteDialogOpen(trip[0].trip_id)}>Delete</MenuItem>
-                    <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteAllDialogOpen(trip[0].trip_id)}>Delete All</MenuItem>
+                    {
+                      (this.state.user_id === trip[0].owner)
+                        ? <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteAllDialogOpen(trip[0].trip_id)}>Delete All</MenuItem>
+                        : null
+                    }
                   </Menu>   
                   </Box>
 
@@ -296,6 +345,28 @@ class ViewPastTrips extends React.Component {
                     </Button>
                   </DialogActions>
                 </Dialog>    
+                <Dialog
+                  open={this.state.restartTripDialog[trip[0].trip_id]}
+                  onClose={() => this.toggleRestartTripDialog(trip[0].trip_id)}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">Restart this trip?</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Are you sure you want to restart this trip? Once this is done, it will be shifted to
+                      the current trips section and additional transactions can be added.
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => this.toggleRestartTripDialog(trip[0].trip_id)} color="primary">
+                      No, cancel
+                    </Button>
+                    <Button onClick={() => this.restartTrip(trip[0].trip_id)} color="primary" autoFocus>
+                      Yes, restart trip
+                    </Button>
+                  </DialogActions>
+                </Dialog>  
               </Card>
           );
       });

@@ -36,7 +36,7 @@ class AddTrip extends React.Component {
     }
 
     componentDidMount() {
-        this.props.updatePageName("New Trip");
+      this.props.functionProps["updatePageName"]("New Trip");
         const user = getUser();
         this.setState({
             user_id: user.user_id,
@@ -123,17 +123,17 @@ class AddTrip extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("Success");
             this.props.history.push("/home");
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
   
     }

@@ -19,7 +19,7 @@ class ViewLedger extends React.Component {
     }
 
     componentDidMount() {
-        this.props.updatePageName("Ledger");
+        this.props.functionProps["updatePageName"]("Ledger");
         fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
@@ -59,7 +59,6 @@ class ViewLedger extends React.Component {
                 <select id = "nameSelect" onChange = {this.changeSelectedName}>
                     {chooseName}
                 </select>
-                <UndoEndTrip trip = {this.state.trip} history = {this.props.history}/>
                 <SuggestPay users= {this.state.users} transactions = {this.state.transactions} currency = {this.state.currency}/>
                 <Ledger currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
             </div>

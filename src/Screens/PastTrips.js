@@ -29,7 +29,7 @@ class PastTrips extends React.Component {
     }
 
     componentDidMount() {
-        this.props.updatePageName("Past Trips");
+        this.props.functionProps["updatePageName"]("Past Trips");
         const user = getUser();
         this.setState({
             user_id: user.user_id,

@@ -46,6 +46,7 @@ class ViewTrips extends React.Component {
       anchorEl: {},
       deleteDialog: {},
       deleteAllDialog: {},
+      endTripDialog: {},
       successCallback: false,
       failCallback: false,
     }
@@ -61,6 +62,7 @@ class ViewTrips extends React.Component {
     this.handleDeleteDialogClose = this.handleDeleteDialogClose.bind(this);
     this.handleDeleteAllDialogOpen = this.handleDeleteAllDialogOpen.bind(this);
     this.handleDeleteAllDialogClose = this.handleDeleteAllDialogClose.bind(this);
+    this.toggleEndTripDialog = this.toggleEndTripDialog.bind(this);
     this.handleSuccessCallback = this.handleSuccessCallback.bind(this);
     this.handleSuccessCallbackClose = this.handleSuccessCallbackClose.bind(this);
     this.handleFailCallback = this.handleFailCallback.bind(this);
@@ -75,17 +77,20 @@ class ViewTrips extends React.Component {
       let newAnchorEl = {};
       let newdeleteDialog = {};
       let newdeleteAllDialog = {};
+      let newEndTripDialog = {};
       for (let i = 0; i < response.trips.length; i++) {
         newAnchorEl[i] = null;
         newdeleteDialog[i] = false;
         newdeleteAllDialog[i] = false;
+        newEndTripDialog[i] = false;
       }
       this.setState({
         trips : response.trips.filter(trip => trip[0].deleted === 0),
         user_id : user,
         anchorEl: newAnchorEl,
         deleteDialog: newdeleteDialog,
-        deleteAllDialog: newdeleteAllDialog
+        deleteAllDialog: newdeleteAllDialog,
+        endTripDialog: newEndTripDialog,
       })
     });
   }
@@ -178,6 +183,35 @@ class ViewTrips extends React.Component {
     });
   }
 
+  endTrip(id) {
+    fetch("https://accountant.tubalt.com/api/trips/endtrip", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_id: this.state.user_id,
+        trip_id: id,
+      })
+    })
+    .then(response => {
+      if (response.status === 401) {
+        response.json().then(res => alert(res.message));
+      } else {
+          response.json().then(res => {
+            this.setState({
+              trips : res.trips.filter(trip => trip[0].deleted === 0),
+            });
+            this.handleSuccessCallback();
+        });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Oops! Something went wrong");
+    });
+  } 
+
   handleDeleteDialogOpen(id) {
     let newdeleteDialog = this.state.deleteDialog;
     newdeleteDialog[id] = true;
@@ -200,6 +234,12 @@ class ViewTrips extends React.Component {
     let newDeleteAllDialog = this.state.deleteAllDialog;
     newDeleteAllDialog[id] = false;
     this.setState({ deleteAllDialog: newDeleteAllDialog });
+  }
+
+  toggleEndTripDialog(id) {
+    let newEndTripDialog = this.state.endTripDialog;
+    newEndTripDialog[id] = !this.state.endTripDialog[id];
+    this.setState({ endTripDialog: newEndTripDialog });
   }
 
   handleSuccessCallback() {
@@ -245,8 +285,21 @@ class ViewTrips extends React.Component {
                     onClick={() => this.handleMenuClose(trip[0].trip_id)}
                   >
                     <MenuItem id = {trip[0].trip_id} onClick={() => this.editTrip(trip[0].trip_id)}>Edit Trip</MenuItem>
-                    <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteDialogOpen(trip[0].trip_id)}>Delete</MenuItem>
-                    <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteAllDialogOpen(trip[0].trip_id)}>Delete All</MenuItem>
+                    {
+                      (this.state.user_id === trip[0].owner)
+                        ? <MenuItem id = {trip[0].trip_id} onClick={() => this.toggleEndTripDialog(trip[0].trip_id)}>End Trip</MenuItem>
+                        : null
+                    }
+                    {
+                      (this.state.user_id !== trip[0].owner)
+                        ? <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteDialogOpen(trip[0].trip_id)}>Delete</MenuItem>
+                        : null
+                    }
+                    {
+                      (this.state.user_id === trip[0].owner)
+                        ? <MenuItem id = {trip[0].trip_id} onClick={() => this.handleDeleteAllDialogOpen(trip[0].trip_id)}>Delete All</MenuItem>
+                        : null
+                    }
                   </Menu>   
                   </Box>
 
@@ -297,7 +350,30 @@ class ViewTrips extends React.Component {
                       Yes, delete for all
                     </Button>
                   </DialogActions>
-                </Dialog>    
+                </Dialog>  
+                <Dialog
+                  open={this.state.endTripDialog[trip[0].trip_id]}
+                  onClose={() => this.toggleEndTripDialog(trip[0].trip_id)}
+                  aria-labelledby="alert-dialog-title"
+                  aria-describedby="alert-dialog-description"
+                >
+                  <DialogTitle id="alert-dialog-title">End this trip?</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                      Are you sure you want to end this trip? Once this is done, you can no longer
+                      add new transactions to this trip. The ledger will still be visible in the past 
+                      trips section.
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => this.toggleEndTripDialog(trip[0].trip_id)} color="primary">
+                      No, cancel
+                    </Button>
+                    <Button onClick={() => this.endTrip(trip[0].trip_id)} color="primary" autoFocus>
+                      Yes, end trip
+                    </Button>
+                  </DialogActions>
+                </Dialog>  
               </Card>
           );
       });

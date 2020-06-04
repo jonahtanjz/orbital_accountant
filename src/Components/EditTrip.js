@@ -122,7 +122,7 @@ class EditTrip extends React.Component {
     }
 
     componentDidMount() {
-        this.props.updatePageName("Edit Trip");
+      this.props.functionProps["updatePageName"]("Edit Trip");
         const user = getUser();
         this.setState({
             user_id: user.user_id,
@@ -156,9 +156,9 @@ class EditTrip extends React.Component {
     
     enterCheck(e) {
       if (e.key == "Enter") {
-        if (e.target.name === "username") {
+        if (e.target.id === "username") {
           this.addUser(e);
-        } else if (e.target.name === "currency" || e.target.name === "currencyVal" ) {
+        } else if (e.target.id === "currency" || e.target.id === "currencyVal" ) {
           this.addCurrency(e);
         } else {
           e.preventDefault();
@@ -259,17 +259,17 @@ class EditTrip extends React.Component {
       .then(response => {
         console.log("Sent");
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
             this.setNewTripInfo(res);
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("Currency Added");
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
 
     }
@@ -298,17 +298,17 @@ class EditTrip extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("User Added");
             this.setNewTripInfo(res);
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
 
     }
@@ -345,6 +345,7 @@ class EditTrip extends React.Component {
         history = {this.props.history}
         owner_id = {this.state.owner_id}
         classes = { classes }
+        functionProps = {this.props.functionProps}
         />
       );
     }
@@ -355,15 +356,14 @@ class EditTrip extends React.Component {
       return(
       <div className={this.props.classes.root}>
         <form >
-          <InputTripName classes = {this.props.classes} enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
+          <InputTripName functionProps = {this.props.functionProps} classes = {this.props.classes} enterCheck = {this.props.enterCheck} updateTripName = {this.props.updateTripName} tripName = {this.props.tripName} trip_id = {this.props.trip_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
-          <InputUsers classes = {this.props.classes} addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
-          <DisplayUsers classes = {this.props.classes} deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} changeUserName = {this.props.changeUserName} trip_id = {this.props.trip_id} owner_id = {this.props.owner_id} setNewTripInfo = {this.props.setNewTripInfo} />
+          <InputUsers functionProps = {this.props.functionProps} classes = {this.props.classes} addUser = {this.props.addUser} enterCheck = {this.props.enterCheck} />
+          <DisplayUsers functionProps = {this.props.functionProps} classes = {this.props.classes} deleteUser = {this.props.deleteUser} currentUsers = {this.props.currentUsers} changeUserName = {this.props.changeUserName} trip_id = {this.props.trip_id} owner_id = {this.props.owner_id} setNewTripInfo = {this.props.setNewTripInfo} />
           <br/>
-          <InputCurrency classes = {this.props.classes} enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
-          <DisplayCurrencies classes = {this.props.classes} currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} setNewTripInfo = {this.props.setNewTripInfo} trip_id = {this.props.trip_id} />
+          <InputCurrency functionProps = {this.props.functionProps} classes = {this.props.classes} enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
+          <DisplayCurrencies functionProps = {this.props.functionProps} classes = {this.props.classes} currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} setNewTripInfo = {this.props.setNewTripInfo} trip_id = {this.props.trip_id} />
           <br/>
-          <EndTrip classes = {this.props.classes} trip_id = {this.props.trip_id} history = {this.props.history} />
         </form>
       </div>
       );
@@ -422,17 +422,17 @@ class EditTrip extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
             this.props.setNewTripInfo(res);
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("Updated");
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
     }
 
@@ -533,17 +533,17 @@ class EditTrip extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
             this.props.setNewTripInfo(res);
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("User Removed");
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
       this.props.deleteUser(e);
       this.toggleDeleteUserDialog(id);
@@ -592,17 +592,17 @@ class EditTrip extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
             this.props.setNewTripInfo(res);
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("Updated");
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
     }
 
@@ -802,17 +802,17 @@ class EditTrip extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
             this.props.setNewTripInfo(res);
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("Currency Removed");
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
 
     }
@@ -887,17 +887,17 @@ class EditTrip extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
           response.json().then(res => {
             this.props.setNewTripInfo(res);
-            alert("Success");
+            this.props.functionProps["toggleSuccessCallback"]("Updated");
           });
         }
       })
       .catch(error => {
         console.log(error);
-        alert("Oops! Something went wrong");
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
     }
 
@@ -1004,45 +1004,45 @@ class EditTrip extends React.Component {
 
   }
 
-  class EndTrip extends React.Component {
-    constructor(props) {
-      super(props);
-      this.endTrip = this.endTrip.bind(this);
-    }
+  // class EndTrip extends React.Component {
+  //   constructor(props) {
+  //     super(props);
+  //     this.endTrip = this.endTrip.bind(this);
+  //   }
     
-    endTrip(e) {
-      fetch("https://accountant.tubalt.com/api/trips/endtrip", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          trip_id : this.props.trip_id,
-        })
-      })
-      .then(response => {
-        if (response.status === 401) {
-          response.json().then(res => alert(res.message));
-        } else {
-          response.json().then(res => {
-            this.props.history.push("/home");
-          });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        alert("Oops! Something went wrong");
-      });
-    } 
+  //   endTrip(e) {
+  //     fetch("https://accountant.tubalt.com/api/trips/endtrip", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json"
+  //       },
+  //       body: JSON.stringify({
+  //         trip_id : this.props.trip_id,
+  //       })
+  //     })
+  //     .then(response => {
+  //       if (response.status === 401) {
+  //         response.json().then(res => alert(res.message));
+  //       } else {
+  //         response.json().then(res => {
+  //           this.props.history.push("/home");
+  //         });
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.log(error);
+  //       alert("Oops! Something went wrong");
+  //     });
+  //   } 
 
-    render() {
-      return(
-      <div>
-        <Button type = "button" color="primary" variant="contained" size="large" fullWidth onClick={this.endTrip}>End Trip</Button>
-      </div>
-      );
-    }
-  }
+  //   render() {
+  //     return(
+  //     <div>
+  //       <Button type = "button" color="primary" variant="contained" size="large" fullWidth onClick={this.endTrip}>End Trip</Button>
+  //     </div>
+  //     );
+  //   }
+  // }
 
   EditTrip.propTypes = {
     classes: PropTypes.object.isRequired,

@@ -29,7 +29,7 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        this.props.updatePageName("Current Trips");
+        this.props.functionProps["updatePageName"]("Current Trips");
         const user = getUser();
         this.setState({
             user_id: user.user_id,

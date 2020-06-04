@@ -13,9 +13,10 @@ import AddEntry from './Components/AddEntry';
 import ViewLedger from './Components/ViewLedger';
 import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
-import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText} from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
+import Alert from './Components/Alert';
 
 const styles = theme => ({
   root: {
@@ -52,11 +53,19 @@ class App extends Component {
       this.state = {
         pageName: 'The Accountant',
         drawerState: false,
+        successCallback: false,
+        failCallback: false,
+        successCallbackMessage: "",
+        failCallbackMessage: "",
       }
       this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
       this.handleLogout = this.handleLogout.bind(this);
       this.updatePageName = this.updatePageName.bind(this);
+      this.toggleSuccessCallback = this.toggleSuccessCallback.bind(this);
+      this.toggleFailCallback = this.toggleFailCallback.bind(this);
+      this.closeSuccessCallback = this.closeSuccessCallback.bind(this);
+      this.closeFailCallback = this.closeFailCallback.bind(this);
     }
     componentDidMount() {
         const token = getToken();
@@ -93,8 +102,41 @@ class App extends Component {
       this.setState({pageName: name});
     }
 
+    toggleSuccessCallback(message) {
+      let newState = true;
+      this.setState({
+        successCallback: newState,
+        successCallbackMessage: message,
+      });
+    }
+
+    toggleFailCallback(message) {
+      let newState = true;
+      this.setState({
+        failCallback: newState,
+        failCallbackMessage: message,
+      });
+    }
+
+    closeSuccessCallback() {
+      this.setState({
+        successCallback: false,
+      });
+    }
+    
+    closeFailCallback() {
+      this.setState({
+        failCallback: false,
+      });
+    }
+
     render() {
         const { classes } = this.props;
+        const functionProps = {
+          updatePageName: this.updatePageName,
+          toggleSuccessCallback: this.toggleSuccessCallback,
+          toggleFailCallback: this.toggleFailCallback
+        }
         return (
             <div className="App">
               <BrowserRouter>
@@ -134,17 +176,27 @@ class App extends Component {
                   </div> */}
                   <div className="content">
                     <Switch>
-                      <Route exact path="/" render={(props) => <Welcome {...props} updatePageName={this.updatePageName} />} />
-                      <Route path="/viewledger" render={(props) => <ViewLedger {...props} updatePageName={this.updatePageName} />} />
-                      <PrivateRoute path="/home" component={Home} updatePageName={this.updatePageName} />
-                      <PrivateRoute path="/pasttrips" component={PastTrips} updatePageName={this.updatePageName} />
-                      <PrivateRoute path="/addtrip" component={AddTrip} updatePageName={this.updatePageName} />
-                      <PrivateRoute path ="/edittrip" component = {EditTrip} updatePageName={this.updatePageName} />
-                      <PrivateRoute path="/addentry" component ={AddEntry} updatePageName={this.updatePageName} />
-                      <PrivateRoute path = "/editentry" component = {EditEntry} updatePageName={this.updatePageName} />
-                      <PublicRoute path="/login" component={Login} updatePageName={this.updatePageName} />
-                      <Route path="/signup" render={(props) => <Signup {...props} updatePageName={this.updatePageName} />}  />
+                      <Route exact path="/" render={(props) => <Welcome {...props} functionProps={functionProps} />} />
+                      <Route path="/viewledger" render={(props) => <ViewLedger {...props} functionProps={functionProps} />} />
+                      <PrivateRoute path="/home" component={Home} functionProps={functionProps} />
+                      <PrivateRoute path="/pasttrips" component={PastTrips} functionProps={functionProps} />
+                      <PrivateRoute path="/addtrip" component={AddTrip} functionProps={functionProps} />
+                      <PrivateRoute path ="/edittrip" component = {EditTrip} functionProps={functionProps} />
+                      <PrivateRoute path="/addentry" component ={AddEntry} functionProps={functionProps} />
+                      <PrivateRoute path = "/editentry" component = {EditEntry} functionProps={functionProps} />
+                      <PublicRoute path="/login" component={Login} functionProps={functionProps} />
+                      <Route path="/signup" render={(props) => <Signup {...props} functionProps={functionProps} />}  />
                     </Switch>
+                    <Snackbar open={this.state.successCallback} autoHideDuration={3000} onClose={this.closeSuccessCallback}>
+                      <Alert onClose={this.closeSuccessCallback} severity="success">
+                        {this.state.successCallbackMessage}
+                      </Alert>
+                    </Snackbar>
+                    <Snackbar open={this.state.failCallback} autoHideDuration={3000} onClose={this.closeFailCallback}>
+                      <Alert onClose={this.closeFailCallback} severity="error">
+                        {this.state.failCallbackMessage}
+                      </Alert>
+                    </Snackbar>
                   </div>
                 </div>
               </BrowserRouter>

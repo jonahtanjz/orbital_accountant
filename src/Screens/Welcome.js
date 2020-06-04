@@ -2,7 +2,7 @@ import React from 'react';
  
 class Welcome extends React.Component {
     componentDidMount() {
-        this.props.updatePageName("The Accountant");
+        this.props.functionProps["updatePageName"]("The Accountant");
     }
     render() {
         return (

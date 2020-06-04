@@ -48,7 +48,7 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    this.props.updatePageName("Login");
+    this.props.functionProps["updatePageName"]("Login");
   }
 
   onChange = (e) => {
