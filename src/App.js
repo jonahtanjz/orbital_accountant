@@ -13,10 +13,11 @@ import AddEntry from './Components/AddEntry';
 import ViewLedger from './Components/ViewLedger';
 import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
-import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar} from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
 import Alert from './Components/Alert';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 
 const styles = theme => ({
   root: {
@@ -44,6 +45,9 @@ const styles = theme => ({
   },
   drawerListItemTextActive: {
     backgroundColor: "rgba(0, 131, 226, 0.2)"
+  },
+  deleteIcon: {
+    color: "#FFF",
   }
 });
 
@@ -57,6 +61,10 @@ class App extends Component {
         failCallback: false,
         successCallbackMessage: "",
         failCallbackMessage: "",
+        trip_id: -1,
+        transaction_id: -1,
+        deleteTransactionDialog: false,
+        refreshPage: false,
       }
       this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
@@ -66,6 +74,11 @@ class App extends Component {
       this.toggleFailCallback = this.toggleFailCallback.bind(this);
       this.closeSuccessCallback = this.closeSuccessCallback.bind(this);
       this.closeFailCallback = this.closeFailCallback.bind(this);
+      this.deleteTransaction = this.deleteTransaction.bind(this);
+      this.updateTripData = this.updateTripData.bind(this);
+      this.toggleDeleteTransactionDialog = this.toggleDeleteTransactionDialog.bind(this);
+      this.toggleRefreshPage = this.toggleRefreshPage.bind(this);
+
     }
     componentDidMount() {
         const token = getToken();
@@ -130,12 +143,63 @@ class App extends Component {
       });
     }
 
+    deleteTransaction() {
+      this.toggleDeleteTransactionDialog();
+      fetch("https://accountant.tubalt.com/api/trips/deletetransaction", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            transaction_id : this.state.transaction_id,
+          })
+        })
+        .then(response => {
+          if (response.status === 401) {
+            response.json().then(res => this.toggleFailCallback(res.message));
+          } else {
+            response.json().then(res => {
+              this.toggleSuccessCallback("Deleted");
+              this.toggleRefreshPage();
+            });
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.toggleFailCallback("Oops! Something went wrong");
+        });
+    }
+
+    updateTripData(data) {
+      this.setState({
+        trip_id: data["trip_id"],
+        transaction_id: data["transaction_id"],
+      });
+    }
+
+    toggleDeleteTransactionDialog() {
+      let newState = !this.state.deleteTransactionDialog;
+      this.setState({
+        deleteTransactionDialog: newState,
+      });
+    }
+
+    toggleRefreshPage() {
+      let newState = !this.state.refreshPage;
+      this.setState({
+        refreshPage: newState,
+      });
+    }
+
     render() {
         const { classes } = this.props;
         const functionProps = {
           updatePageName: this.updatePageName,
           toggleSuccessCallback: this.toggleSuccessCallback,
-          toggleFailCallback: this.toggleFailCallback
+          toggleFailCallback: this.toggleFailCallback,
+          updateTripData: this.updateTripData,
+          refreshPage: this.state.refreshPage,
+          toggleRefreshPage: this.toggleRefreshPage
         }
         return (
             <div className="App">
@@ -149,6 +213,30 @@ class App extends Component {
                     <Typography variant="h6" className={classes.title}>
                       {this.state.pageName}
                     </Typography>
+                    { (this.state.pageName === "Edit Transaction")
+                        ? <React.Fragment>
+                            <IconButton onClick={this.toggleDeleteTransactionDialog}>
+                              <DeleteOutlineIcon className={classes.deleteIcon} />
+                            </IconButton>
+                            <Dialog open={this.state.deleteTransactionDialog} onClose={this.toggleDeleteTransactionDialog} aria-labelledby="form-dialog-title">
+                              <DialogTitle id="form-dialog-title">Delete Transaction?</DialogTitle>
+                              <DialogContent>
+                                <DialogContentText>
+                                  Are you sure you want to delete this transaction? This action cannot be undone.
+                                </DialogContentText>
+                              </DialogContent>
+                              <DialogActions>
+                                <Button onClick={this.toggleDeleteTransactionDialog} color="primary">
+                                  No, Cancel
+                                </Button>
+                                <Button onClick={this.deleteTransaction} color="primary" autoFocus>
+                                  Yes, Delete
+                                </Button>
+                              </DialogActions>
+                            </Dialog>
+                          </React.Fragment>
+                        : null  
+                    }
                   </Toolbar>
                 </AppBar>
                 <SwipeableDrawer

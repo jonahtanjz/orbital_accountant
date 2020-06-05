@@ -45,10 +45,16 @@ class EditEntry extends React.Component {
     this.updateDesc = this.updateDesc.bind(this);
     this.changeCurrency = this.changeCurrency.bind(this);
     this.deleteTransaction = this.deleteTransaction.bind(this);
+    this.whenRefresh = this.whenRefresh.bind(this);
   }
   //Loads up trip and transaction data to pre-fill forms.
   componentDidMount() {
     this.props.functionProps["updatePageName"]("Edit Transaction");
+    let newData = {
+      trip_id: this.props.location.state.trip_id,
+      transaction_id: this.props.location.state.transaction_id
+    }
+    this.props.functionProps["updateTripData"](newData);
     fetch("https://accountant.tubalt.com/api/trips/gettransaction?transactionid="+ this.props.location.state.transaction_id + "&trip_id=" + this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {
@@ -321,8 +327,15 @@ class EditEntry extends React.Component {
         this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
   }
+
+  whenRefresh() {
+    this.props.functionProps["toggleRefreshPage"]();
+    this.props.history.push("/viewledger",{trip_id : this.props.location.state.trip_id});
+  }
+
   //Renders the components for EditEntry
   render() {
+    if (this.props.functionProps.refreshPage) {this.whenRefresh();}
     const submitButton = (<input class="button" type = "submit" value = "Submit"/> ) ;
     const { classes } = this.props;
     return (
@@ -406,9 +419,6 @@ class EditEntry extends React.Component {
             {submitButton}
           </Grid>
           <br/>
-          <Grid item>
-            <button class = "delbutton" type = "button" onClick ={this.deleteTransaction}>Delete</button>
-          </Grid>
         </form>
         </Grid>
       </div>
