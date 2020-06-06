@@ -11,6 +11,7 @@ import PastTrips from './Screens/PastTrips';
 import AddTrip from './Components/AddTrip';
 import AddEntry from './Components/AddEntry';
 import ViewLedger from './Components/ViewLedger';
+import SuggestedPayments from './Components/SuggestedPayments';
 import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
 import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText} from '@material-ui/core';
@@ -266,6 +267,7 @@ class App extends Component {
                     <Switch>
                       <Route exact path="/" render={(props) => <Welcome {...props} functionProps={functionProps} />} />
                       <Route path="/viewledger" render={(props) => <ViewLedger {...props} functionProps={functionProps} />} />
+                      <Route path="/suggestedpayments" render={(props) => <SuggestedPayments {...props} functionProps={functionProps} />} />
                       <PrivateRoute path="/home" component={Home} functionProps={functionProps} />
                       <PrivateRoute path="/pasttrips" component={PastTrips} functionProps={functionProps} />
                       <PrivateRoute path="/addtrip" component={AddTrip} functionProps={functionProps} />
