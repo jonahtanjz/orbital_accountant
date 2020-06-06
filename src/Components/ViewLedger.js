@@ -1,10 +1,17 @@
 import React from 'react';
 import { getUser } from '../Utils/Common';
 import { withRouter } from 'react-router-dom';
-import { Grid, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, MenuItem, InputLabel } from '@material-ui/core';
+import { Grid, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, MenuItem, Button, InputLabel } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import PropTypes from 'prop-types';
 import { Edit } from '@material-ui/icons';
 import '../CSS/Login.css';
+
+const styles = theme => ({
+    selectPerson: {
+      width: "150px",
+    },
+  });
 
 class ViewLedger extends React.Component {
     constructor(props) {
@@ -45,10 +52,11 @@ class ViewLedger extends React.Component {
         let chooseName = this.state.users.map((person)=>{
                 return(<MenuItem key ={person.name} value = {person.name}>{person.name}</MenuItem>);
                 
-        })
+        });
         let filteredTransactions = this.state.transactions.filter((entry) =>
             entry.payee === this.state.selectedName || entry.payer=== this.state.selectedName
         );
+        let { classes } = this.props;
 
         return(
             <div>
@@ -60,7 +68,7 @@ class ViewLedger extends React.Component {
                     alignItems="center">
                     <Grid item>
                         <InputLabel id="select-person-label">Select Person</InputLabel>
-                        <Select
+                        <Select className = {classes.selectPerson}
                             labelId="select-person-label"
                             id="select-person"
                             value={this.state.selectedName}
@@ -69,9 +77,13 @@ class ViewLedger extends React.Component {
                             {chooseName}
                         </Select>
                     </Grid>
+                    <br/>
                     <Grid item>
-                        <SuggestPay users= {this.state.users} transactions = {this.state.transactions} currency = {this.state.currency}/>
+                        <Button color = 'primary' onClick = {() => this.props.history.push('/suggestedpayments',{trip_id : this.state.trip.trip_id})}>
+                            Suggeted Payments
+                        </Button>
                     </Grid>
+                    <br/>
                     <Grid item>
                         <Ledger currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
                     </Grid>
@@ -138,15 +150,7 @@ class DisplayTable extends React.Component {
             total = total + value;
             let valueColor =( (value > 0) ? "" : "secondary");
             return(
-                // <tr>
-                //     <td>{entry.description}</td>
-                //     <td>{value.toFixed(2)}</td>
-                //     <td>{entry.payee}</td>
-                //     <td>{entry.payer}</td>
-                //     <td>{entry.currency}</td>
-                //     <td>{conversion}</td>
-                //     <td><button onClick = {() => this.props.history.push("/editentry",{transaction_id : entry.transaction_id, trip_id : this.props.trip.trip_id})}>Edit</button></td>
-                // </tr>
+
                 <TableRow key={entry.description}>
                     <TableCell colSpan={3}>{entry.description}</TableCell>
                     <TableCell align="right">
@@ -155,10 +159,8 @@ class DisplayTable extends React.Component {
                         </Typography>
                     </TableCell>
                     <TableCell>
-                        {/* <button onClick = {() => this.props.history.push("/editentry",{transaction_id : entry.transaction_id, trip_id : this.props.trip.trip_id})}>
-                            Edit
-                        </button> */}
-                        <IconButton aria-label="delete" onClick = {() => this.props.history.push("/editentry",{transaction_id : entry.transaction_id, trip_id : this.props.trip.trip_id})}>
+
+                        <IconButton size="small" aria-label="edit" onClick = {() => this.props.history.push("/editentry",{transaction_id : entry.transaction_id, trip_id : this.props.trip.trip_id})}>
                             <Edit/>
                         </IconButton>
                     </TableCell>
@@ -181,21 +183,6 @@ class DisplayTable extends React.Component {
                 <Typography >{"Ledger of " + this.props.otherPerson}</Typography>
                 </ExpansionPanelSummary>
                 <ExpansionPanelDetails>
-                    {/* <table>
-                        <tbody>
-                            <tr>
-                                <th>Description</th>
-                                <th>Amount</th>
-                                <th>Payee</th>
-                                <th>Payer</th>
-                            </tr>
-                            {table}
-                            <tr>
-                                <td>{"Total" + desc}</td>
-                                <td>{total.toFixed(2)}</td>
-                            </tr>
-                        </tbody>
-                    </table> */}
                     <TableContainer >
                         <Table size="small"  aria-label="spanning table">
                             <TableHead>
@@ -204,16 +191,21 @@ class DisplayTable extends React.Component {
                                     Description
                                     </TableCell>
                                     <TableCell align="right">Amount</TableCell>
+                                    <TableCell/>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {table}
                                 <TableRow>
-                                    <TableCell colSpan={1} />
-                                    <TableCell colSpan={2}>{"Total" + desc}</TableCell>
+                                    
+                                    <TableCell colSpan={3}>
+                                        <p class= "totalDesc">
+                                            {"Total" + desc}
+                                        </p>
+                                    </TableCell>
                                     <TableCell colSpan={2} align="right">
                                         <Typography>
-                                            {total.toFixed(2)}
+                                            {Math.abs(total).toFixed(2)}
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
@@ -332,4 +324,9 @@ class UndoEndTrip extends React.Component {
         }
     }
   }
-export default withRouter(ViewLedger);
+
+  ViewLedger.propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+
+export default withStyles(styles)(withRouter(ViewLedger));
