@@ -1,7 +1,22 @@
 import React from 'react';
-import { getUser } from '../Utils/Common';
 import { withRouter } from 'react-router-dom';
+import { withStyles, Grid, Card, CardActionArea, CardMedia } from '@material-ui/core';
+import  PropTypes  from 'prop-types';
 
+
+const styles = themes => ({
+    card : {
+      maxWidth: 600,
+      minWidth: 40,
+      backgroundColor : '#edf3f8',
+      borderRadius: "10px",
+      marginTop: '30px'
+    },
+    media: {
+        width : '100%',
+        height: 100,
+      },
+  });
 
 class SuggestedPayments extends React.Component {
     constructor(props) {
@@ -30,6 +45,7 @@ class SuggestedPayments extends React.Component {
     }
 
     render() {
+        const { classes } = this.props;
         let total = {}
         this.state.users.map((user) => {
             total[user.name] = 0
@@ -66,21 +82,62 @@ class SuggestedPayments extends React.Component {
             
                 if (amt.toFixed(2) != 0) {
                     return(
-                    <span>{total[0]+ " Pays $" + amt.toFixed(2) + " -> "}</span>
+                        <div>
+                        <Grid item>
+                            {total[0]}
+                        </Grid>
+                        <Grid container item spacing = {0} direction = "row" justify="center" alignItems="center">
+                            <Grid item>
+                                <Card className = {classes.card}>
+                                    <CardActionArea>
+                                        <CardMedia
+                                        className={classes.media}
+                                        // image={require('../images/tubalt_logo.png')}
+                                        image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAbFBMVEX///8AAAClpaXR0dH5+fm9vb3z8/Pu7u6xsbGpqamEhITb29tiYmJRUVHFxcV2dnaOjo5dXV2ZmZnl5eVoaGiUlJRKSko2NjYeHh7V1dWvr6+goKAsLCyAgIAjIyMODg46Ojpubm5CQkIWFhYetmp8AAAD/UlEQVR4nO2a6VrqQBBECQSCiCziiru+/zteQRDIdE0GvoROeev87ox9spZDdzpCiP+LYjibzoYD7zYao5hnP4wL71aaoZ/tmHg30wSTbJ+edzv1M8gOyb0bqp1pyXDk3VDd5FkZ747qZhIY/rUnsRsYLr1bqpnQsOvdUs3IkB8Z8iNDfmTIjwz5kSE/MuRHhvzIkB8Z8iNDfmTIjwz5kSE/MuRHhvzIkB8Z8iNDfmTIjwz5kSE/MuRHhvzIkB8Z8iNDfmTIjwz5kSE/MuRHhvzIkB8Z8iNDfmTIjwz5kSE/MuRHhvzIkB8Z8iNDfmTIjwz5kSE/MuRHhvzIkB8Z8iNDfmTIjwz5kSE/MuRHhvzIkB8Z8iNDfmTIjwz5kSE/MuRHhvzIkB8Z8iNDfmTIjwz5kSE/MuSH2LDoX8+6k8qyEwzzSfd75UEtXZ7OYr7pd1ZReLRhPtrU3RS1dXsCw13Db5fRymMNL/cqq++QxugftNyLlR5p2DsodVMsSj33I7XHGfZLtV436rzc9AWuPcrwolz7UX/zKZQv4TfXsPgYw+twYZ836jBsJBuh4iMMR8a6sQegOW6NTrIpKE43nFrL4pujSaxznWVzuzjZMHi411R9bpvBeFxW3JnFqYZ39qJPTYpAyq/0Lfe5UZxmmN+DNX2+iDnoJnswPl9JhsUDWtI6aWfgBfWTLYLaFMMFXO/lHDoG8CJmWRBSEwwvjXV8L2Gn84h7KofUasOesQo6X+cjctpL3+hKQ/Te8hWMPTrZ8qCwynCJFwof6rOCX3+H37AKwye4ivViPi/5M2xuP6TGDe14tOLZ7SWzxydsby+kRg3NKLrGDkhnx46SK8a/NTHDMTwehNzzcwNbvNqWRAyv4NE3PjoWON1sQyo0hFHUL8mYmP8rrnn9+fccGQ5e4ZG3nkIhwdbKL2/r7xkwXLzB4yKbPj5YexobVpnENoxkoqG3UMgEd9sDhpEo6rgLjInk8IlpGDknj94yNpGQ2g9v4mEkaztHUUzxBXsOgw+OQl/uURQzwCE1nWfvH9Ti4CuTyqe3QhU4g6VxVf0nvMEhNYUWRVEMDqnVtCqKYmYnC/ps3p8A3pOI47N3fxKRkBqhhVEUEwlkkFZGUUwkVAOigw5tJBJSTVobRTHGz/wRWhxFMZENijKv7Y6ikPw9UfC9Ddu+p5EWUgmiKAZv9u4YVy/TZvCG/RY0n0JDVUiliaIYMJSywWcUqGZiIZUqimLwpprPuFoDoJBKF0Ux9u696wRC3Vg5nDBrxwhCKmsUxZR+CTXH+9jZH6xsyQRC3ewmGlozgVA3HxtB+iiK+ZkMguPuf4HVREPLJhDqZlma6PuD/LHvvBAihX9PnSbD2C0urgAAAABJRU5ErkJggg=="
+                                        title="Logo"
+                                        />
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                            <Grid>
+                                <p>Pays</p>
+                                <p>{"$" + amt.toFixed(2)}</p>
+                            </Grid>
+                        </Grid>
+                        {/* {total[0]+ " Pays $" + amt.toFixed(2) + " -> "} */}
+                        </div>
                     );
                 } else {
                     return(
-                    <span>{total[0]}</span>
+                        <Grid container item direction = "row" justify="center" alignItems="center">
+                            <Grid item>
+                                {total[0]}
+                            </Grid>
+                            <Grid item>
+                                <Card className = {classes.card}>
+
+                                </Card>
+                            </Grid>
+                        </Grid>
                     );
                 }
 
         });
         return(
-            <div>
+            <Grid
+                container
+                direction="column"
+                justify="center"
+                alignItems="center"
+            >
                 {display}
-            </div>
+            </Grid>
         );
     }
 }
 
-export default withRouter(SuggestedPayments);
+SuggestedPayments.propTypes = {
+    classes: PropTypes.object.isRequired,
+  };
+  
+  export default withStyles(styles)(withRouter(SuggestedPayments));
