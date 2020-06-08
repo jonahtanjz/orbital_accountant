@@ -521,37 +521,45 @@ class NameList extends React.Component {
         </option>
         );
     } );
-    const options = this.props.display.map((person) => {
-      return (
-        <MenuItem key={person.name} value = {person.name}>
-          <Checkbox checked = {this.props.display.filter((otherPerson) => otherPerson["display"]).map(otherPerson=>otherPerson["name"]).indexOf(person.name) > -1 }/>
-          <ListItemText primary={person.name} />
-          
-        </MenuItem>
-        );
-    } );
+
     //Only selected users as value
     const value = this.props.display.filter((person) => person["display"]).map((person) => {
       return person["name"];
     })
 
+    //Loads Options for dropdown list
+    const options = this.props.display.map((person) => {
+      return ( 
+        { label: person["name"], value: person["name"] }
+      );
+    });
+    //Loads the values selected
+    const display = this.props.display.filter((person) => person["display"]).map(person => {
+        return(
+            { label: person["name"], value: person["name"] }
+        );
+    });
+
     return (
-      <FormControl>
-        <Select
-          id="NameList"
-          multiple
-          native = {(this.props.isMobile)}
-          value={value}
-          onChange={this.onChange}
-          input={<Input />}
-          renderValue={(selected) => selected.join(', ')}
-          //MenuProps={MenuProps}
-        >
-          {(this.props.isMobile) ? optionsMobile : options}
-        </Select>
-      </FormControl>
-      // <ReactMultiSelectCheckboxes 
-      // className = {this.props.classes.dropDownSelect} value = {value} options = {options} onChange = {this.onChange} />
+      <div>
+      {(this.props.isMobile)
+      ?<FormControl>
+      <Select
+        id="NameList"
+        multiple
+        native
+        value={value}
+        onChange={this.onChange}
+        input={<Input />}
+        renderValue={(selected) => selected.join(', ')}
+        //MenuProps={MenuProps}
+      >
+        {optionsMobile}
+      </Select>
+    </FormControl>
+      :<ReactMultiSelectCheckboxes className = {this.props.classes.dropDownSelect} value = {display} options = {options} onChange = {this.onChange} />
+      }
+      </div>
     );
   }
 }

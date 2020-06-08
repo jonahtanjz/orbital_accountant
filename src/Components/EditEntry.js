@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom';
-import { Grid, withStyles, Typography, TextField, InputAdornment, MenuItem, Select, InputLabel, FormControlLabel, Checkbox } from '@material-ui/core';
+import { Grid, withStyles, Typography, TextField, Input, InputAdornment, MenuItem, Select, NativeSelect, InputLabel, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
 import { ChatOutlined } from '@material-ui/icons'
 import '../CSS/Login.css'
 
@@ -35,6 +35,7 @@ class EditEntry extends React.Component {
       equal : false,
       desc : "",
       trip : {},
+      isMobile : false,
     }
     this.onChangePay = this.onChangePay.bind(this);
     this.onChangeConsume = this.onChangeConsume.bind(this);
@@ -49,6 +50,11 @@ class EditEntry extends React.Component {
   }
   //Loads up trip and transaction data to pre-fill forms.
   componentDidMount() {
+    if (window.screen.availWidth < 769) {
+      this.setState({
+        isMobile: true,
+      });
+    }
     this.props.functionProps["updatePageName"]("Edit Transaction");
     let newData = {
       trip_id: this.props.location.state.trip_id,
@@ -154,12 +160,25 @@ class EditEntry extends React.Component {
     pay.forEach((person)=>{
         person["display"] = false;
     });
-    for (let i = 0; i < e.length; i++) {
-      pay.forEach((person)=>{
-        if (person["name"] === e[i].value) {
-          person["display"] = true;
+    if (this.state.isMobile) {
+      const { options } = e.target;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          pay.forEach((person)=>{
+            if (person["name"] === options[i].value) {
+              person["display"] = true;
+            }
+          });
         }
-      });
+      }
+    } else {
+      for (let i = 0; i < e.length; i++) {
+        pay.forEach((person)=>{
+          if (person["name"] === e[i].value) {
+            person["display"] = true;
+          }
+        });
+      }
     }
     this.setState({
       pay : pay,
@@ -171,12 +190,25 @@ class EditEntry extends React.Component {
     consume.forEach((person)=>{
       person["display"] = false;
     });
-    for (let i = 0; i < e.length; i++) {
-      consume.forEach((person)=>{
-        if (person["name"] === e[i].value) {
-          person["display"] = true;
+    if (this.state.isMobile) {
+      const { options } = e.target;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          consume.forEach((person)=>{
+            if (person["name"] === options[i].value) {
+              person["display"] = true;
+            }
+          });
         }
-      });
+      }
+    } else {
+      for (let i = 0; i < e.length; i++) {
+        consume.forEach((person)=>{
+          if (person["name"] === e[i].value) {
+            person["display"] = true;
+          }
+        });
+      }
     }
     this.setState({
       consume : consume,
@@ -375,6 +407,7 @@ class EditEntry extends React.Component {
             onChange = {this.onChangePay}
             display = {this.state.pay}
             classes = {classes}
+            isMobile = {this.state.isMobile}
             />
           </Grid>
           <br/>
@@ -392,6 +425,7 @@ class EditEntry extends React.Component {
             onChange = {this.onChangeConsume}
             display = {this.state.consume}
             classes = {classes}
+            isMobile = {this.state.isMobile}
             />
           </Grid>
           <br/>
@@ -407,6 +441,7 @@ class EditEntry extends React.Component {
             changeCurrency = {this.changeCurrency}
             selectedCurrency = {this.state.selectedCurrency}
             classes = {classes}
+            isMobile = {this.state.isMobile}
             />
           </Grid>
           <Grid item>
@@ -469,24 +504,45 @@ class CurrencyList extends React.Component {
   }
 
   render () {
-    const currencyDisplay = this.props.currency.map((curr) => 
+    let currencyDisplay;
+    if (this.props.isMobile) {
+    
+      currencyDisplay = this.props.currency.map((curr) => 
+      <option id = {curr} name = {curr} value = {curr}>{curr}</option>
+      );
+    } else {
+      currencyDisplay = this.props.currency.map((curr) => 
       <MenuItem id = {curr} name = {curr} value = {curr}>{curr}</MenuItem>
-    );
+      );
+    }
     return (
       <div>
-        <InputLabel id="curr-label">Currency</InputLabel>
-        <Select
-          size = "sm"
-          className = {this.props.classes.currSelect}
-          variant = "outlined"
-          id = "curr"
-          labelId = "curr-label"
-          onChange={this.changeCurrency}
-          value = {this.props.selectedCurrency}
-          >
+      <InputLabel id="curr-label">Currency</InputLabel>
+      {(this.props.isMobile) 
+        ? <NativeSelect
+        size = "sm"
+        className = {this.props.classes.currSelect}
+        variant = "outlined"
+        id = "curr"
+        labelId = "curr-label"
+        onChange={this.changeCurrency}
+        value = {this.props.selectedCurrency}
+        >
           {currencyDisplay}
-        </Select>
-      </div>
+        </NativeSelect> 
+        : <Select
+        size = "sm"
+        className = {this.props.classes.currSelect}
+        variant = "outlined"
+        id = "curr"
+        labelId = "curr-label"
+        onChange={this.changeCurrency}
+        value = {this.props.selectedCurrency}
+        >
+          {currencyDisplay}
+        </Select> 
+        }
+        </div>
     );
   }
 }
@@ -553,9 +609,39 @@ class NameList extends React.Component {
             { label: person["name"], value: person["name"] }
         );
     });
+
+    const optionsMobile = this.props.display.map((person) => {
+      return (
+        <option key={person.name} value = {person.name}>
+          {person.name}
+        </option>
+        );
+    });
+
+    const value = this.props.display.filter((person) => person["display"]).map((person) => {
+      return person["name"];
+    })
     
     return (
-      <ReactMultiSelectCheckboxes className = {this.props.classes.dropDownSelect} value = {display} options = {options} onChange = {this.onChange} />
+      <div>
+      {(this.props.isMobile)
+      ?<FormControl>
+      <Select
+        id="NameList"
+        multiple
+        native
+        value={value}
+        onChange={this.onChange}
+        input={<Input />}
+        renderValue={(selected) => selected.join(', ')}
+        //MenuProps={MenuProps}
+      >
+        {optionsMobile}
+      </Select>
+    </FormControl>
+      :<ReactMultiSelectCheckboxes className = {this.props.classes.dropDownSelect} value = {display} options = {options} onChange = {this.onChange} />
+      }
+      </div>
     );
   }
 }
