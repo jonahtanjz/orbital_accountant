@@ -2,8 +2,8 @@ import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom'
 import  PropTypes  from 'prop-types';
-import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core';
-import { ChatOutlined } from '@material-ui/icons'
+import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControl, Select, ListItemText, FormControlLabel, Checkbox, Input } from '@material-ui/core';
+import { ChatOutlined, Check, EcoTwoTone } from '@material-ui/icons'
 import '../CSS/Login.css'
 
 const styles = themes => ({
@@ -122,13 +122,17 @@ class AddEntry extends React.Component {
   }
   //Updates display in pay array
   onChangePay(e) {
+    console.log(e.target.value);
     let pay = this.state.pay.slice();
     pay.forEach((person)=>{
         person["display"] = false;
     });
-    for (let i = 0; i < e.length; i++) {
+    for (let i = 0; i < e.target.value.length; i++) {
+      console.log("for");
       pay.forEach((person)=>{
-        if (person["name"] === e[i].value) {
+        console.log("foreach");
+        if (person["name"] === e.target.value[i]) {
+          console.log("if");
           person["display"] = true;
         }
       });
@@ -144,9 +148,9 @@ class AddEntry extends React.Component {
     consume.forEach((person)=>{
         person["display"] = false;
     });
-    for (let i = 0; i < e.length; i++) {
+    for (let i = 0; i < e.target.value.length; i++) {
       consume.forEach((person)=>{
-        if (person["name"] === e[i].value) {
+        if (person["name"] === e.target.value[i]) {
           person["display"] = true;
         }
       });
@@ -455,16 +459,42 @@ class NameList extends React.Component {
   render() {
     //All users as options
     const options = this.props.display.map((person) => {
-      return ( { label: person["name"], value: person["name"] });
+      return (
+        <option key={person.name} value = {person.name}>
+          {/* <Checkbox checked = {this.props.display.filter((otherPerson) => otherPerson["display"]).map(otherPerson=>otherPerson["name"]).indexOf(person.name) > -1 }/>
+          <ListItemText primary={person.name} /> */}
+          {person.name}
+        </option>
+        );
     } );
     //Only selected users as value
     const value = this.props.display.filter((person) => person["display"]).map((person) => {
-      return ( { label: person["name"], value: person["name"] });
+      return person["name"];
     })
 
     return (
-      <ReactMultiSelectCheckboxes 
-      className = {this.props.classes.dropDownSelect} value = {value} options = {options} onChange = {this.onChange} />
+      <FormControl>
+        <Select
+          id="NameList"
+          multiple
+          native
+          value={value}
+          onChange={this.onChange}
+          input={<Input />}
+          renderValue={(selected) => selected.join(', ')}
+          //MenuProps={MenuProps}
+        >
+          {options}
+          {/* {names.map((name) => (
+            <MenuItem key={name} value={name}>
+              <Checkbox checked={personName.indexOf(name) > -1} />
+              <ListItemText primary={name} />
+            </MenuItem>
+          ))} */}
+        </Select>
+      </FormControl>
+      // <ReactMultiSelectCheckboxes 
+      // className = {this.props.classes.dropDownSelect} value = {value} options = {options} onChange = {this.onChange} />
     );
   }
 }
