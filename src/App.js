@@ -266,7 +266,8 @@ class App extends Component {
                   <div className="content">
                     <Switch>
                       <Route exact path="/" render={(props) => <Welcome {...props} functionProps={functionProps} />} />
-                      <Route path="/viewledger" render={(props) => <ViewLedger {...props} functionProps={functionProps} />} />
+                      <Route path="/viewledger/:trip_id" render={(props) => <ViewLedger {...props} functionProps={functionProps} />} />
+                      <Route path="/viewledger/" render={(props) => <ViewLedger {...props} functionProps={functionProps} />} />
                       <Route path="/suggestedpayments" render={(props) => <SuggestedPayments {...props} functionProps={functionProps} />} />
                       <PrivateRoute path="/home" component={Home} functionProps={functionProps} />
                       <PrivateRoute path="/pasttrips" component={PastTrips} functionProps={functionProps} />
