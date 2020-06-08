@@ -145,13 +145,13 @@ class AddEntry extends React.Component {
         }
       }
     } else {
-      for (let i = 0; i < e.target.value.length; i++) {
+      for (let i = 0; i < e.length; i++) {
         pay.forEach((person)=>{
-          if (person["name"] === e.target.value[i]) {
+          if (person["name"] === e[i].value) {
             person["display"] = true;
           }
         });
-      } 
+      }
     }
     console.log(pay);
     this.setState({
@@ -176,9 +176,9 @@ class AddEntry extends React.Component {
         }
       }
     } else {
-      for (let i = 0; i < e.target.value.length; i++) {
+      for (let i = 0; i < e.length; i++) {
         consume.forEach((person)=>{
-          if (person["name"] === e.target.value[i]) {
+          if (person["name"] === e[i].value) {
             person["display"] = true;
           }
         });
