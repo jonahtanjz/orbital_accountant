@@ -2,8 +2,8 @@ import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom'
 import  PropTypes  from 'prop-types';
-import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core';
-import { ChatOutlined } from '@material-ui/icons'
+import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControl, Select, ListItemText, FormControlLabel, Checkbox, Input } from '@material-ui/core';
+import { ChatOutlined, Check, EcoTwoTone } from '@material-ui/icons'
 import '../CSS/Login.css'
 
 const styles = themes => ({
@@ -36,7 +36,8 @@ class AddEntry extends React.Component {
       selectedCurrency : "",
       equal : false,
       desc : "",
-      trip : {}
+      trip : {},
+      isMobile: false,
     }
     //Bindings
     this.onChangePay = this.onChangePay.bind(this);
@@ -52,6 +53,11 @@ class AddEntry extends React.Component {
   }
   //To fetch data when component mounts
   componentDidMount() {
+    if (window.screen.availWidth < 769) {
+      this.setState({
+        isMobile: true,
+      });
+    }
     this.props.functionProps["updatePageName"]("Add Transactions");
     fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid="+this.props.location.state.trip_id)
       .then(response => response.json())
@@ -122,16 +128,30 @@ class AddEntry extends React.Component {
   }
   //Updates display in pay array
   onChangePay(e) {
+    console.log(e.target);
     let pay = this.state.pay.slice();
     pay.forEach((person)=>{
-        person["display"] = false;
+      person["display"] = false;
     });
-    for (let i = 0; i < e.length; i++) {
-      pay.forEach((person)=>{
-        if (person["name"] === e[i].value) {
-          person["display"] = true;
+    if(this.state.isMobile) {
+      const { options } = e.target;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          pay.forEach((person)=>{
+            if (person["name"] === options[i].value) {
+              person["display"] = true;
+            }
+          });
         }
-      });
+      }
+    } else {
+      for (let i = 0; i < e.target.value.length; i++) {
+        pay.forEach((person)=>{
+          if (person["name"] === e.target.value[i]) {
+            person["display"] = true;
+          }
+        });
+      } 
     }
     console.log(pay);
     this.setState({
@@ -142,14 +162,27 @@ class AddEntry extends React.Component {
   onChangeConsume(e) {
     let consume = this.state.consume.slice();
     consume.forEach((person)=>{
-        person["display"] = false;
+      person["display"] = false;
     });
-    for (let i = 0; i < e.length; i++) {
-      consume.forEach((person)=>{
-        if (person["name"] === e[i].value) {
-          person["display"] = true;
+    if (this.state.isMobile) {
+      const { options } = e.target;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          consume.forEach((person)=>{
+            if (person["name"] === options[i].value) {
+              person["display"] = true;
+            }
+          });
         }
-      });
+      }
+    } else {
+      for (let i = 0; i < e.target.value.length; i++) {
+        consume.forEach((person)=>{
+          if (person["name"] === e.target.value[i]) {
+            person["display"] = true;
+          }
+        });
+      }
     }
     this.setState({
       consume : consume,
@@ -322,6 +355,7 @@ class AddEntry extends React.Component {
                 classes = {classes}
                 display = {this.state.pay}
                 onChange = {this.onChangePay}
+                isMobile = {this.state.isMobile}
                 />
               </Grid>
               <br/>
@@ -339,6 +373,7 @@ class AddEntry extends React.Component {
                 classes = {classes}
                 display = {this.state.consume}
                 onChange = {this.onChangeConsume}
+                isMobile = {this.state.isMobile}
                 />
               </Grid>
               <br/>
@@ -354,6 +389,7 @@ class AddEntry extends React.Component {
                 changeCurrency = {this.changeCurrency}
                 selectedCurrency = {this.state.selectedCurrency}
                 classes = {classes}
+                isMobile = {this.state.isMobile}
                 />
               </Grid>
               <Grid item>
@@ -418,13 +454,22 @@ class CurrencyList extends React.Component {
   }
 
   render () {
-    const currencyDisplay = this.props.currency.map((curr) => 
+    let currencyDisplay;
+    if (this.props.isMobile) {
+    
+      currencyDisplay = this.props.currency.map((curr) => 
       <option id = {curr} name = {curr} value = {curr}>{curr}</option>
-    );
+      );
+    } else {
+      currencyDisplay = this.props.currency.map((curr) => 
+      <MenuItem id = {curr} name = {curr} value = {curr}>{curr}</MenuItem>
+      );
+    }
     return (
       <div>
         <InputLabel id="curr-label">Currency</InputLabel>
-        <NativeSelect
+        {(this.props.isMobile) 
+        ? <NativeSelect
         size = "sm"
         className = {this.props.classes.currSelect}
         variant = "outlined"
@@ -434,7 +479,20 @@ class CurrencyList extends React.Component {
         value = {this.props.selectedCurrency}
         >
           {currencyDisplay}
-        </NativeSelect>
+        </NativeSelect> 
+        : <Select
+        size = "sm"
+        className = {this.props.classes.currSelect}
+        variant = "outlined"
+        id = "curr"
+        labelId = "curr-label"
+        onChange={this.changeCurrency}
+        value = {this.props.selectedCurrency}
+        >
+          {currencyDisplay}
+        </Select> 
+        }
+        
      </div>
     );
   }
@@ -454,17 +512,46 @@ class NameList extends React.Component {
   
   render() {
     //All users as options
+    const optionsMobile = this.props.display.map((person) => {
+      return (
+        <option key={person.name} value = {person.name}>
+          {/* <Checkbox checked = {this.props.display.filter((otherPerson) => otherPerson["display"]).map(otherPerson=>otherPerson["name"]).indexOf(person.name) > -1 }/>
+          <ListItemText primary={person.name} /> */}
+          {person.name}
+        </option>
+        );
+    } );
     const options = this.props.display.map((person) => {
-      return ( { label: person["name"], value: person["name"] });
+      return (
+        <MenuItem key={person.name} value = {person.name}>
+          <Checkbox checked = {this.props.display.filter((otherPerson) => otherPerson["display"]).map(otherPerson=>otherPerson["name"]).indexOf(person.name) > -1 }/>
+          <ListItemText primary={person.name} />
+          
+        </MenuItem>
+        );
     } );
     //Only selected users as value
     const value = this.props.display.filter((person) => person["display"]).map((person) => {
-      return ( { label: person["name"], value: person["name"] });
+      return person["name"];
     })
 
     return (
-      <ReactMultiSelectCheckboxes 
-      className = {this.props.classes.dropDownSelect} value = {value} options = {options} onChange = {this.onChange} />
+      <FormControl>
+        <Select
+          id="NameList"
+          multiple
+          native = {(this.props.isMobile)}
+          value={value}
+          onChange={this.onChange}
+          input={<Input />}
+          renderValue={(selected) => selected.join(', ')}
+          //MenuProps={MenuProps}
+        >
+          {(this.props.isMobile) ? optionsMobile : options}
+        </Select>
+      </FormControl>
+      // <ReactMultiSelectCheckboxes 
+      // className = {this.props.classes.dropDownSelect} value = {value} options = {options} onChange = {this.onChange} />
     );
   }
 }
