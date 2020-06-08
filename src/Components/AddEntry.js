@@ -20,7 +20,24 @@ const styles = themes => ({
     backgroundColor: "white",
     height: 40,
     border: "none",
+    marginTop: "5px"
   },
+  currSelectMobile: {
+    width: 330,
+    borderRadius: 10,
+    backgroundColor: "white",
+    height: 40,
+    border: "none",
+    borderBottom: "none",
+    paddingLeft: "10px",
+    marginTop: "5px"
+  },
+  multiSelectMobile: {
+    width: "330px",
+    backgroundColor: "#FFF",
+    borderRadius: "10px",
+    paddingLeft: "10px",
+  }
 });
 
 
@@ -471,7 +488,7 @@ class CurrencyList extends React.Component {
         {(this.props.isMobile) 
         ? <NativeSelect
         size = "sm"
-        className = {this.props.classes.currSelect}
+        className = {this.props.classes.currSelectMobile}
         variant = "outlined"
         id = "curr"
         labelId = "curr-label"
@@ -546,12 +563,14 @@ class NameList extends React.Component {
       ?<FormControl>
       <Select
         id="NameList"
+        variant="outlined"
         multiple
         native
         value={value}
         onChange={this.onChange}
         input={<Input />}
         renderValue={(selected) => selected.join(', ')}
+        className={this.props.classes.multiSelectMobile}
         //MenuProps={MenuProps}
       >
         {optionsMobile}

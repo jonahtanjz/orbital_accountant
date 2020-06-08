@@ -20,6 +20,22 @@ const styles = themes => ({
     height: 40,
     border: "none",
   },
+  currSelectMobile: {
+    width: 330,
+    borderRadius: 10,
+    backgroundColor: "white",
+    height: 40,
+    border: "none",
+    borderBottom: "none",
+    paddingLeft: "10px",
+    marginTop: "5px"
+  },
+  multiSelectMobile: {
+    width: "330px",
+    backgroundColor: "#FFF",
+    borderRadius: "10px",
+    paddingLeft: "10px",
+  }
 });
 
 //Main component to render when editing transactions in the trips
@@ -521,7 +537,7 @@ class CurrencyList extends React.Component {
       {(this.props.isMobile) 
         ? <NativeSelect
         size = "sm"
-        className = {this.props.classes.currSelect}
+        className = {this.props.classes.currSelectMobile}
         variant = "outlined"
         id = "curr"
         labelId = "curr-label"
@@ -634,6 +650,7 @@ class NameList extends React.Component {
         onChange={this.onChange}
         input={<Input />}
         renderValue={(selected) => selected.join(', ')}
+        className={this.props.classes.multiSelectMobile}
         //MenuProps={MenuProps}
       >
         {optionsMobile}
