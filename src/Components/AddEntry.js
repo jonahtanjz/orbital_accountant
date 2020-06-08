@@ -128,21 +128,34 @@ class AddEntry extends React.Component {
   }
   //Updates display in pay array
   onChangePay(e) {
-    console.log(e.target.value);
+    console.log(e.target);
     let pay = this.state.pay.slice();
-    // if(this.state.isMobile) {
-    //   if (e.target.value == null){
-    //     pay.forEach((person)=>{
-    //       person["display"] = false;
-    //     });
-    //   } else {
-    //     pay.forEach((person)=>{
-    //       if (person["name"] === e.target.value) {
-    //         person["display"] = !person["display"];
-    //       }
-    //     });
-    //   }
-    // } else {
+    if(this.state.isMobile) {
+      pay.forEach((person)=>{
+        person["display"] = false;
+      });
+      const { options } = e.target;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          pay.forEach((person)=>{
+            if (person["name"] === options[i].value) {
+              person["display"] = true;
+            }
+          });
+        }
+      }
+      // if (e.target.value == null){
+      //   pay.forEach((person)=>{
+      //     person["display"] = false;
+      //   });
+      // } else {
+      //   pay.forEach((person)=>{
+      //     if (person["name"] === e.target.value) {
+      //       person["display"] = !person["display"];
+      //     }
+      //   });
+      // }
+    } else {
       pay.forEach((person)=>{
         person["display"] = false;
       });
@@ -153,7 +166,7 @@ class AddEntry extends React.Component {
           }
         });
       } 
-    // }
+    }
     console.log(pay);
     this.setState({
       pay : pay,
