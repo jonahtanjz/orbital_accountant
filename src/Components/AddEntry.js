@@ -36,7 +36,8 @@ class AddEntry extends React.Component {
       selectedCurrency : "",
       equal : false,
       desc : "",
-      trip : {}
+      trip : {},
+      isMobile: false,
     }
     //Bindings
     this.onChangePay = this.onChangePay.bind(this);
@@ -52,6 +53,11 @@ class AddEntry extends React.Component {
   }
   //To fetch data when component mounts
   componentDidMount() {
+    if (window.screen.availWidth < 769) {
+      this.setState({
+        isMobile: true,
+      });
+    }
     this.props.functionProps["updatePageName"]("Add Transactions");
     fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid="+this.props.location.state.trip_id)
       .then(response => response.json())
@@ -124,18 +130,23 @@ class AddEntry extends React.Component {
   onChangePay(e) {
     console.log(e.target.value);
     let pay = this.state.pay.slice();
-    pay.forEach((person)=>{
-        person["display"] = false;
-    });
-    for (let i = 0; i < e.target.value.length; i++) {
-      console.log("for");
+    if(this.state.isMobile) {
       pay.forEach((person)=>{
-        console.log("foreach");
-        if (person["name"] === e.target.value[i]) {
-          console.log("if");
-          person["display"] = true;
+        if (person["name"] === e.target.value) {
+          person["display"] = !person["display"];
         }
       });
+    } else {
+      pay.forEach((person)=>{
+        person["display"] = false;
+      });
+      for (let i = 0; i < e.target.value.length; i++) {
+        pay.forEach((person)=>{
+          if (person["name"] === e.target.value[i]) {
+            person["display"] = true;
+          }
+        });
+      } 
     }
     console.log(pay);
     this.setState({
@@ -146,7 +157,7 @@ class AddEntry extends React.Component {
   onChangeConsume(e) {
     let consume = this.state.consume.slice();
     consume.forEach((person)=>{
-        person["display"] = false;
+      person["display"] = false;
     });
     for (let i = 0; i < e.target.value.length; i++) {
       consume.forEach((person)=>{
@@ -326,6 +337,7 @@ class AddEntry extends React.Component {
                 classes = {classes}
                 display = {this.state.pay}
                 onChange = {this.onChangePay}
+                isMobile = {this.state.isMobile}
                 />
               </Grid>
               <br/>
@@ -343,6 +355,7 @@ class AddEntry extends React.Component {
                 classes = {classes}
                 display = {this.state.consume}
                 onChange = {this.onChangeConsume}
+                isMobile = {this.state.isMobile}
                 />
               </Grid>
               <br/>
@@ -458,13 +471,22 @@ class NameList extends React.Component {
   
   render() {
     //All users as options
-    const options = this.props.display.map((person) => {
+    const optionsMobile = this.props.display.map((person) => {
       return (
         <option key={person.name} value = {person.name}>
           {/* <Checkbox checked = {this.props.display.filter((otherPerson) => otherPerson["display"]).map(otherPerson=>otherPerson["name"]).indexOf(person.name) > -1 }/>
           <ListItemText primary={person.name} /> */}
           {person.name}
         </option>
+        );
+    } );
+    const options = this.props.display.map((person) => {
+      return (
+        <MenuItem key={person.name} value = {person.name}>
+          <Checkbox checked = {this.props.display.filter((otherPerson) => otherPerson["display"]).map(otherPerson=>otherPerson["name"]).indexOf(person.name) > -1 }/>
+          <ListItemText primary={person.name} />
+          
+        </MenuItem>
         );
     } );
     //Only selected users as value
@@ -477,20 +499,14 @@ class NameList extends React.Component {
         <Select
           id="NameList"
           multiple
-          native
+          native = {(this.props.isMobile)}
           value={value}
           onChange={this.onChange}
           input={<Input />}
           renderValue={(selected) => selected.join(', ')}
           //MenuProps={MenuProps}
         >
-          {options}
-          {/* {names.map((name) => (
-            <MenuItem key={name} value={name}>
-              <Checkbox checked={personName.indexOf(name) > -1} />
-              <ListItemText primary={name} />
-            </MenuItem>
-          ))} */}
+          {(this.props.isMobile) ? optionsMobile : options}
         </Select>
       </FormControl>
       // <ReactMultiSelectCheckboxes 
