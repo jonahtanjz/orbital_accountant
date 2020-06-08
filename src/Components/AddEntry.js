@@ -131,11 +131,17 @@ class AddEntry extends React.Component {
     console.log(e.target.value);
     let pay = this.state.pay.slice();
     if(this.state.isMobile) {
-      pay.forEach((person)=>{
-        if (person["name"] === e.target.value) {
-          person["display"] = !person["display"];
-        }
-      });
+      if (e.target.value == null){
+        pay.forEach((person)=>{
+          person["display"] = false;
+        });
+      } else {
+        pay.forEach((person)=>{
+          if (person["name"] === e.target.value) {
+            person["display"] = !person["display"];
+          }
+        });
+      }
     } else {
       pay.forEach((person)=>{
         person["display"] = false;
