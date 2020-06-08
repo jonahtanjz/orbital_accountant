@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom'
 import  PropTypes  from 'prop-types';
-import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, Select, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core';
+import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControlLabel, Checkbox } from '@material-ui/core';
 import { ChatOutlined } from '@material-ui/icons'
 import '../CSS/Login.css'
 
@@ -424,7 +424,7 @@ class CurrencyList extends React.Component {
     return (
       <div>
         <InputLabel id="curr-label">Currency</InputLabel>
-        <Select
+        <NativeSelect
         size = "sm"
         className = {this.props.classes.currSelect}
         variant = "outlined"
@@ -434,7 +434,7 @@ class CurrencyList extends React.Component {
         value = {this.props.selectedCurrency}
         >
           {currencyDisplay}
-        </Select>
+        </NativeSelect>
      </div>
     );
   }
