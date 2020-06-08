@@ -419,7 +419,7 @@ class CurrencyList extends React.Component {
 
   render () {
     const currencyDisplay = this.props.currency.map((curr) => 
-      <MenuItem id = {curr} name = {curr} value = {curr}>{curr}</MenuItem>
+      <option id = {curr} name = {curr} value = {curr}>{curr}</option>
     );
     return (
       <div>
