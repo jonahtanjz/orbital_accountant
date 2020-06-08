@@ -130,10 +130,10 @@ class AddEntry extends React.Component {
   onChangePay(e) {
     console.log(e.target);
     let pay = this.state.pay.slice();
+    pay.forEach((person)=>{
+      person["display"] = false;
+    });
     if(this.state.isMobile) {
-      pay.forEach((person)=>{
-        person["display"] = false;
-      });
       const { options } = e.target;
       for (let i = 0; i < options.length; i++) {
         if (options[i].selected) {
@@ -144,21 +144,7 @@ class AddEntry extends React.Component {
           });
         }
       }
-      // if (e.target.value == null){
-      //   pay.forEach((person)=>{
-      //     person["display"] = false;
-      //   });
-      // } else {
-      //   pay.forEach((person)=>{
-      //     if (person["name"] === e.target.value) {
-      //       person["display"] = !person["display"];
-      //     }
-      //   });
-      // }
     } else {
-      pay.forEach((person)=>{
-        person["display"] = false;
-      });
       for (let i = 0; i < e.target.value.length; i++) {
         pay.forEach((person)=>{
           if (person["name"] === e.target.value[i]) {
@@ -178,12 +164,25 @@ class AddEntry extends React.Component {
     consume.forEach((person)=>{
       person["display"] = false;
     });
-    for (let i = 0; i < e.target.value.length; i++) {
-      consume.forEach((person)=>{
-        if (person["name"] === e.target.value[i]) {
-          person["display"] = true;
+    if (this.state.isMobile) {
+      const { options } = e.target;
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          consume.forEach((person)=>{
+            if (person["name"] === options[i].value) {
+              person["display"] = true;
+            }
+          });
         }
-      });
+      }
+    } else {
+      for (let i = 0; i < e.target.value.length; i++) {
+        consume.forEach((person)=>{
+          if (person["name"] === e.target.value[i]) {
+            person["display"] = true;
+          }
+        });
+      }
     }
     this.setState({
       consume : consume,
@@ -390,6 +389,7 @@ class AddEntry extends React.Component {
                 changeCurrency = {this.changeCurrency}
                 selectedCurrency = {this.state.selectedCurrency}
                 classes = {classes}
+                isMobile = {this.state.isMobile}
                 />
               </Grid>
               <Grid item>
@@ -454,13 +454,22 @@ class CurrencyList extends React.Component {
   }
 
   render () {
-    const currencyDisplay = this.props.currency.map((curr) => 
+    let currencyDisplay;
+    if (this.props.isMobile) {
+    
+      currencyDisplay = this.props.currency.map((curr) => 
       <option id = {curr} name = {curr} value = {curr}>{curr}</option>
-    );
+      );
+    } else {
+      currencyDisplay = this.props.currency.map((curr) => 
+      <MenuItem id = {curr} name = {curr} value = {curr}>{curr}</MenuItem>
+      );
+    }
     return (
       <div>
         <InputLabel id="curr-label">Currency</InputLabel>
-        <NativeSelect
+        {(this.props.isMobile) 
+        ? <NativeSelect
         size = "sm"
         className = {this.props.classes.currSelect}
         variant = "outlined"
@@ -470,7 +479,20 @@ class CurrencyList extends React.Component {
         value = {this.props.selectedCurrency}
         >
           {currencyDisplay}
-        </NativeSelect>
+        </NativeSelect> 
+        : <Select
+        size = "sm"
+        className = {this.props.classes.currSelect}
+        variant = "outlined"
+        id = "curr"
+        labelId = "curr-label"
+        onChange={this.changeCurrency}
+        value = {this.props.selectedCurrency}
+        >
+          {currencyDisplay}
+        </Select> 
+        }
+        
      </div>
     );
   }
