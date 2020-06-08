@@ -27,8 +27,9 @@ class ViewLedger extends React.Component {
     }
 
     componentDidMount() {
+        const trip_id = (this.props.match.params.trip_id ) ? this.props.match.params.trip_id : this.props.location.state.trip_id;
         this.props.functionProps["updatePageName"]("Ledger");
-        fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + this.props.location.state.trip_id)
+        fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + trip_id)
         .then(response => response.json())
         .then(response => {
             console.log(response);

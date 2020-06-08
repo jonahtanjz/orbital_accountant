@@ -25,7 +25,7 @@ const styles = themes => ({
   },
   media: {
     width : '100%',
-    height: 320
+    height: 200
   },
   loginForm: {
     marginTop: '20px'
@@ -116,7 +116,7 @@ class Login extends React.Component {
           <CardActionArea>
             <CardMedia
               className={classes.media}
-              image={require('../images/tubalt_logo.png')}
+              image={require('../images/et.png')}
               title="Logo"
             />
         </CardActionArea>
