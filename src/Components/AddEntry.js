@@ -130,19 +130,19 @@ class AddEntry extends React.Component {
   onChangePay(e) {
     console.log(e.target.value);
     let pay = this.state.pay.slice();
-    if(this.state.isMobile) {
-      if (e.target.value == null){
-        pay.forEach((person)=>{
-          person["display"] = false;
-        });
-      } else {
-        pay.forEach((person)=>{
-          if (person["name"] === e.target.value) {
-            person["display"] = !person["display"];
-          }
-        });
-      }
-    } else {
+    // if(this.state.isMobile) {
+    //   if (e.target.value == null){
+    //     pay.forEach((person)=>{
+    //       person["display"] = false;
+    //     });
+    //   } else {
+    //     pay.forEach((person)=>{
+    //       if (person["name"] === e.target.value) {
+    //         person["display"] = !person["display"];
+    //       }
+    //     });
+    //   }
+    // } else {
       pay.forEach((person)=>{
         person["display"] = false;
       });
@@ -153,7 +153,7 @@ class AddEntry extends React.Component {
           }
         });
       } 
-    }
+    // }
     console.log(pay);
     this.setState({
       pay : pay,
