@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom'
 import  PropTypes  from 'prop-types';
-import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControl, Select, ListItemText, FormControlLabel, Checkbox, Input } from '@material-ui/core';
+import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControl, Select, ListItemText, FormControlLabel, Checkbox, Input, Button } from '@material-ui/core';
 import { ChatOutlined, Check, EcoTwoTone } from '@material-ui/icons'
 import '../CSS/Login.css'
 
@@ -30,13 +30,20 @@ const styles = themes => ({
     border: "none",
     borderBottom: "none",
     paddingLeft: "10px",
-    marginTop: "5px"
+    marginTop: "5px",
+    boxShadow: "0 1px 1px 1px rgba(0,0,0,0.08)",
   },
   multiSelectMobile: {
     width: "330px",
+    minHeight: "40px",
     backgroundColor: "#FFF",
     borderRadius: "10px",
     paddingLeft: "10px",
+    borderBottom: "none !important",
+    boxShadow: "0 1px 1px 1px rgba(0,0,0,0.08)",
+  },
+  inputAmtField: {
+    width: 330
   }
 });
 
@@ -324,7 +331,7 @@ class AddEntry extends React.Component {
   }
   //Renders the Componenets needed for AddEntry form
   render() {
-    const submitButton = (<input class = "button" type = "submit" value = "Submit"/> ) ;
+    const submitButton = (<Button className="button" variant="contained" color="primary" type="submit">Submit</Button> ) ;
     const { classes } = this.props;
     return (
       <div>
@@ -380,6 +387,7 @@ class AddEntry extends React.Component {
                 <AmountDisplay
                 display = {this.state.pay}
                 onChange = {this.updatePay}
+                classes={classes}
                 />
               </Grid>
               <Grid item>
@@ -398,6 +406,7 @@ class AddEntry extends React.Component {
                 <AmountDisplay
                 display = {this.state.consume}
                 onChange = {this.updateConsume}
+                classes={classes}
                 />
               </Grid>
               <Grid item>
@@ -409,12 +418,15 @@ class AddEntry extends React.Component {
                 isMobile = {this.state.isMobile}
                 />
               </Grid>
+              <br/>
               <Grid item>
                 <Equals 
                 changeEqual = {this.changeEqual} 
                 equal = {this.state.equal} 
                 />
               </Grid>
+              <br/>
+              <br/>
               <Grid item>
                 {submitButton}
               </Grid>
@@ -483,7 +495,7 @@ class CurrencyList extends React.Component {
       );
     }
     return (
-      <div>
+      <div className="multiSelectContainer">
         <InputLabel id="curr-label">Currency</InputLabel>
         {(this.props.isMobile) 
         ? <NativeSelect
@@ -558,7 +570,7 @@ class NameList extends React.Component {
     });
     console.log(value);
     return (
-      <div>
+      <div className="multiSelectContainer">
       {(this.props.isMobile)
       ?<FormControl>
       <Select
@@ -610,6 +622,7 @@ class AmountDisplay extends React.Component {
           label ={person["name"]}
           value = {person["amount"]}
           helperText = "Input Amount"
+          className={this.props.classes.inputAmtField}
           />
           <br/><br/>
         </div>
