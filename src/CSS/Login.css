@@ -102,7 +102,7 @@ body {
 }
 
 .MuiNativeSelect-select:focus {
-    background-color: #FFF !important;
+    background-color: transparent !important;
 }
 
 .multiSelectContainer > .MuiFormControl-root > .MuiInput-underline > .MuiSelect-select:focus {
