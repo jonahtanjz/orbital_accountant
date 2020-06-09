@@ -556,7 +556,7 @@ class NameList extends React.Component {
             { label: person["name"], value: person["name"] }
         );
     });
-
+    console.log(value);
     return (
       <div>
       {(this.props.isMobile)
@@ -569,7 +569,7 @@ class NameList extends React.Component {
         value={value}
         onChange={this.onChange}
         input={<Input />}
-        renderValue={(selected) => selected.join(', ')}
+        //renderValue={(selected) => selected.join(', ')}
         className={this.props.classes.multiSelectMobile}
         //MenuProps={MenuProps}
       >
