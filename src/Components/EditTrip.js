@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { getUser } from '../Utils/Common';
-import { TextField, Button, Chip, withStyles, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@material-ui/core';
+import { TextField, Button, Chip, withStyles, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, CircularProgress } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
@@ -94,6 +94,15 @@ const styles = theme => ({
   },
   iconButtons: {
     marginTop: "5px"
+  },
+  loadingCircleContainer: {
+    width: "100%",
+    textAlign: "center"
+  },
+  loadingCircle: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: "250px",
   }
 });
 
@@ -109,6 +118,7 @@ class EditTrip extends React.Component {
         originalUser : [],
         trip_id : 0,
         owner_id : 0,
+        loaded: false,
       }
       this.addUser = this.addUser.bind(this);
       this.addCurrency = this.addCurrency.bind(this);
@@ -138,6 +148,7 @@ class EditTrip extends React.Component {
                 currencyNames : response.currency.map(currency=>currency.name),
                 trip_id: this.props.location.state.trip_id,
                 owner_id: response.trip[0].owner,
+                loaded: true,
             });
         })
 
@@ -327,6 +338,13 @@ class EditTrip extends React.Component {
   
     render() {
       const { classes } = this.props;
+      if (!this.state.loaded) { 
+        return (
+          <div className={classes.loadingCircleContainer}>
+            <CircularProgress className={classes.loadingCircle} />
+          </div>
+        );
+      }
       return(
         <TripForm 
         onSubmit = {this.onSubmit}

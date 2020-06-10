@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { withStyles, Grid, Button, Typography } from '@material-ui/core';
+import { withStyles, Grid, Button, Typography, CircularProgress } from '@material-ui/core';
 import  PropTypes  from 'prop-types';
 
 
@@ -16,6 +16,15 @@ const styles = themes => ({
         width : '100%',
         height: 100,
       },
+    loadingCircleContainer: {
+        width: "100%",
+        textAlign: "center"
+    }, 
+    loadingCircle: {
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginTop: "250px",
+    }  
   });
 
 class SuggestedPayments extends React.Component {
@@ -26,6 +35,7 @@ class SuggestedPayments extends React.Component {
             transactions : [],
             currency : [],
             trip : [],
+            loaded: false,
         }
     }
 
@@ -40,12 +50,20 @@ class SuggestedPayments extends React.Component {
                 users :response.users ,
                 transactions : response.transactions,
                 currency : response.currency,
+                loaded: true,
             });
         })
     }
 
     render() {
         const { classes } = this.props;
+        if (!this.state.loaded) { 
+            return (
+              <div className={classes.loadingCircleContainer}>
+                <CircularProgress className={classes.loadingCircle} />
+              </div>
+            );
+        }
         let total = {}
         this.state.users.map((user) => {
             total[user.name] = 0

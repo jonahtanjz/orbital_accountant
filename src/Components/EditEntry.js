@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom';
-import { Grid, withStyles, Typography, TextField, Input, InputAdornment, MenuItem, Select, NativeSelect, InputLabel, FormControl, FormControlLabel, Checkbox, Button } from '@material-ui/core';
+import { Grid, withStyles, Typography, TextField, Input, InputAdornment, MenuItem, Select, NativeSelect, InputLabel, FormControl, FormControlLabel, Checkbox, Button, CircularProgress } from '@material-ui/core';
 import { ChatOutlined } from '@material-ui/icons'
 import '../CSS/Login.css'
 
@@ -42,7 +42,16 @@ const styles = themes => ({
   },
   inputAmtField: {
     width: 330
-  }
+  },
+  loadingCircleContainer: {
+    width: "100%",
+    textAlign: "center"
+  }, 
+  loadingCircle: {
+      marginLeft: "auto",
+      marginRight: "auto",
+      marginTop: "250px",
+  } 
 });
 
 //Main component to render when editing transactions in the trips
@@ -59,6 +68,7 @@ class EditEntry extends React.Component {
       desc : "",
       trip : {},
       isMobile : false,
+      loaded: false,
     }
     this.onChangePay = this.onChangePay.bind(this);
     this.onChangeConsume = this.onChangeConsume.bind(this);
@@ -132,6 +142,7 @@ class EditEntry extends React.Component {
           consume: consume,
           desc : response.transactions[0].description,
           equal : (response.transactions[0].equal == 1) ? true : false,
+          loaded: true, 
         })
       });
   }
@@ -393,6 +404,13 @@ class EditEntry extends React.Component {
     if (this.props.functionProps.refreshPage) {this.whenRefresh();}
     const submitButton = (<Button className="button" variant="contained" color="primary" type="submit">Submit</Button> ) ;
     const { classes } = this.props;
+    if (!this.state.loaded) { 
+      return (
+        <div className={classes.loadingCircleContainer}>
+          <CircularProgress className={classes.loadingCircle} />
+        </div>
+      );
+    }
     return (
       <div>
         <Grid

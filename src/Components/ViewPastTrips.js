@@ -1,7 +1,7 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
 import {getUser} from '../Utils/Common';
-import {Button, Card, CardContent, Typography, withStyles, Box, Menu, MenuItem, IconButton, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Snackbar} from '@material-ui/core';
+import {Button, Card, CardContent, Typography, withStyles, Box, Menu, MenuItem, IconButton, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText, Snackbar, CircularProgress} from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Alert from './Alert';
 import PropTypes from 'prop-types';
@@ -34,6 +34,11 @@ const styles = themes => ({
   tripsButton: {
     margin: "0 15px 0 0",
     fontWeight: "600"
+  },
+  loadingCircle: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    marginTop: "250px",
   }
 });
 
@@ -49,6 +54,7 @@ class ViewPastTrips extends React.Component {
       restartTripDialog: {},
       successCallback: false,
       failCallback: false,
+      loaded: false,
     }
     this.viewLedger = this.viewLedger.bind(this);
     this.addEntry = this.addEntry.bind(this);
@@ -91,6 +97,7 @@ class ViewPastTrips extends React.Component {
         deleteDialog: newdeleteDialog,
         deleteAllDialog: newdeleteAllDialog,
         restartTripDialog: newRestartTripDialog,
+        loaded: true,
       })
     });
   }
@@ -260,6 +267,11 @@ class ViewPastTrips extends React.Component {
 
   render() {
       const { classes } = this.props;
+      if (!this.state.loaded) { 
+        return (
+          <CircularProgress className={classes.loadingCircle} />
+        );
+      }
       let trips = this.state.trips;
       let displayInactive = trips.filter(trip => trip[0].ended === 1 || trip[0].in_trip === 0).map((trip) => {
           return(

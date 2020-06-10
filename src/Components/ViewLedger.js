@@ -1,7 +1,7 @@
 import React from 'react';
 import { getUser } from '../Utils/Common';
 import { withRouter } from 'react-router-dom';
-import { Grid, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, MenuItem, Button, InputLabel } from '@material-ui/core';
+import { Grid, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, MenuItem, Button, InputLabel, CircularProgress } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PropTypes from 'prop-types';
 import { Edit } from '@material-ui/icons';
@@ -11,6 +11,13 @@ const styles = theme => ({
     selectPerson: {
       width: "150px",
     },
+    loadingCircleContainer: {
+        width: "100%",
+        textAlign: "center"
+    },
+    loadingCircle: {
+        marginTop: "250px",
+      }
   });
 
 class ViewLedger extends React.Component {
@@ -22,6 +29,7 @@ class ViewLedger extends React.Component {
             currency : [],
             transactions : [],
             selectedName : getUser().username,
+            loaded: false
         };
         this.changeSelectedName = this.changeSelectedName.bind(this);
     }
@@ -43,6 +51,7 @@ class ViewLedger extends React.Component {
                 users :response.users ,
                 transactions : response.transactions,
                 currency : response.currency,
+                loaded: true,
             });
         })
     }
@@ -63,7 +72,13 @@ class ViewLedger extends React.Component {
             entry.payee === this.state.selectedName || entry.payer=== this.state.selectedName
         );
         let { classes } = this.props;
-
+        if (!this.state.loaded) { 
+            return (
+              <div className={classes.loadingCircleContainer}>
+                <CircularProgress className={classes.loadingCircle} />
+              </div>
+            );
+        }
         return(
             <div>
                 <Grid

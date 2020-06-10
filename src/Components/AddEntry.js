@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom'
 import  PropTypes  from 'prop-types';
-import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControl, Select, ListItemText, FormControlLabel, Checkbox, Input, Button } from '@material-ui/core';
+import { withStyles, Grid, InputLabel, Typography, TextField, InputAdornment, NativeSelect, MenuItem, FormControl, Select, ListItemText, FormControlLabel, Checkbox, Input, Button, CircularProgress } from '@material-ui/core';
 import { ChatOutlined, Check, EcoTwoTone } from '@material-ui/icons'
 import '../CSS/Login.css'
 
@@ -44,7 +44,16 @@ const styles = themes => ({
   },
   inputAmtField: {
     width: 330
-  }
+  },
+  loadingCircleContainer: {
+    width: "100%",
+    textAlign: "center"
+  }, 
+  loadingCircle: {
+      marginLeft: "auto",
+      marginRight: "auto",
+      marginTop: "250px",
+  }  
 });
 
 
@@ -62,6 +71,7 @@ class AddEntry extends React.Component {
       desc : "",
       trip : {},
       isMobile: false,
+      loaded: false, 
     }
     //Bindings
     this.onChangePay = this.onChangePay.bind(this);
@@ -105,6 +115,7 @@ class AddEntry extends React.Component {
           selectedCurrency : curr[0],
           pay : pay,
           consume : consume,
+          loaded: true,
         })
       });
   }
@@ -333,6 +344,13 @@ class AddEntry extends React.Component {
   render() {
     const submitButton = (<Button className="button" variant="contained" color="primary" type="submit">Submit</Button> ) ;
     const { classes } = this.props;
+    if (!this.state.loaded) { 
+      return (
+        <div className={classes.loadingCircleContainer}>
+          <CircularProgress className={classes.loadingCircle} />
+        </div>
+      );
+    }
     return (
       <div>
         <Grid

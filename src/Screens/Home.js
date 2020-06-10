@@ -24,7 +24,7 @@ class Home extends React.Component {
         this.handleLogout = this.handleLogout.bind(this);
         this.state = {
             user_id: '',
-            username: ''
+            username: '',
         }
     }
 
@@ -51,7 +51,7 @@ class Home extends React.Component {
         return (
             <div>
             <Box display="flex" justifyContent="center" className={classes.homeContainer}>
-                <ViewTrip/>
+                <ViewTrip />
             </Box>
             <Fab className={classes.fab} color="secondary" onClick={() => this.props.history.push('/addtrip')} aria-label="add">
                 <AddIcon />
