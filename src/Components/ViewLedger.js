@@ -28,7 +28,7 @@ class ViewLedger extends React.Component {
             users : [],
             currency : [],
             transactions : [],
-            selectedName : getUser().username,
+            selectedName : getUser() ? getUser().username : null,
             loaded: false
         };
         this.changeSelectedName = this.changeSelectedName.bind(this);
