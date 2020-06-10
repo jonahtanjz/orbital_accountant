@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { withStyles, Grid, Card, CardActionArea, CardMedia } from '@material-ui/core';
+import { withStyles, Grid, Button, Typography } from '@material-ui/core';
 import  PropTypes  from 'prop-types';
 
 
@@ -64,6 +64,7 @@ class SuggestedPayments extends React.Component {
             total[entry.payer] += value;
             return entry;
         });
+        console.log(total);
         const arr = Object.keys(total).map((key) => [key, total[key]]);
         let arr2 =arr.sort((c,d) => {
             let a = c[1];
@@ -84,15 +85,22 @@ class SuggestedPayments extends React.Component {
                     return(
                         <div>
                         <Grid item>
-                            {total[0]}
+                            <Typography align="center" variant = "h6">
+                                {total[0]}
+                            </Typography>
                         </Grid>
-                        <Grid container item spacing = {0} direction = "row" justify="center" alignItems="center">
+                        <Grid container item direction = "row" justify="center" alignItems="center">
+                            <Grid item>
+                                <Button varient = "contained" color= "primary">
+                                    Pay
+                                </Button>
+                            </Grid>
                             <Grid item>
                                 <img src= "https://i.ya-webdesign.com/images/avatar-arrow-png-7.png" width = "100px"/>
                             </Grid>
                             <Grid>
-                                <p>Pays</p>
-                                <p>{"$" + amt.toFixed(2)}</p>
+                                <Typography>Pays</Typography>
+                                <Typography >{"$" + amt.toFixed(2)}</Typography>
                             </Grid>
                         </Grid>
                         {/* {total[0]+ " Pays $" + amt.toFixed(2) + " -> "} */}
@@ -102,7 +110,9 @@ class SuggestedPayments extends React.Component {
                     return(
                         <div>
                             <Grid item>
-                                {total[0]}
+                                <Typography align="center" variant = "h6">
+                                    {total[0]}
+                                </Typography>
                             </Grid>
                         </div>
                     );
