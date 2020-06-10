@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { BrowserRouter, Switch, Route, NavLink, Redirect} from 'react-router-dom';
 import PrivateRoute from './Utils/PrivateRoute';
 import PublicRoute from './Utils/PublicRoute';
-import { getToken, removeUserSession, setUserSession } from './Utils/Common';
+import { getToken, getUser, removeUserSession, setUserSession } from './Utils/Common';
 import Login from './Screens/Login';
 import Home from './Screens/Home';
 import Welcome from './Screens/Welcome';
@@ -14,11 +14,13 @@ import ViewLedger from './Components/ViewLedger';
 import SuggestedPayments from './Components/SuggestedPayments';
 import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
-import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText} from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
 import Alert from './Components/Alert';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { ThreeDRotationSharp } from '@material-ui/icons';
 
 const styles = theme => ({
   root: {
@@ -39,8 +41,7 @@ const styles = theme => ({
   },
   drawerListItemText: {
     textDecoration: "none",
-    color: "#000",
-    fontWeight: 600,
+    color: "rgba(0,0,0,0.87)",
     width: "100%",
     height: "100%"
   },
@@ -49,6 +50,10 @@ const styles = theme => ({
   },
   deleteIcon: {
     color: "#FFF",
+  },
+  welcomeText: {
+    fontFamily: "Roboto",
+    fontWeight: 600
   }
 });
 
@@ -66,6 +71,8 @@ class App extends Component {
         transaction_id: -1,
         deleteTransactionDialog: false,
         refreshPage: false,
+        anchorElLedgerMenu: null,
+        linkDialog: false,
       }
       this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
@@ -79,6 +86,8 @@ class App extends Component {
       this.updateTripData = this.updateTripData.bind(this);
       this.toggleDeleteTransactionDialog = this.toggleDeleteTransactionDialog.bind(this);
       this.toggleRefreshPage = this.toggleRefreshPage.bind(this);
+      this.toggleLedgerMenu = this.toggleLedgerMenu.bind(this);
+      this.toggleLinkDialog = this.toggleLinkDialog.bind(this);
 
     }
     componentDidMount() {
@@ -192,6 +201,19 @@ class App extends Component {
       });
     }
 
+    toggleLedgerMenu(e) {
+      if (Boolean(this.state.anchorElLedgerMenu)) {
+        this.setState({ anchorElLedgerMenu: null });
+      } else {
+        this.setState({ anchorElLedgerMenu: e.currentTarget });
+      }
+    }
+
+    toggleLinkDialog() {
+      let newState = !this.state.linkDialog;
+      this.setState({ linkDialog: newState });
+    }
+
     render() {
         const { classes } = this.props;
         const functionProps = {
@@ -236,7 +258,43 @@ class App extends Component {
                               </DialogActions>
                             </Dialog>
                           </React.Fragment>
-                        : null  
+                        : (this.state.pageName === "Ledger")
+                          ? <React.Fragment>
+                              <IconButton onClick={this.toggleLedgerMenu}>
+                                <MoreVertIcon className={classes.deleteIcon} />
+                              </IconButton>
+                              <Menu
+                                anchorEl={this.state.anchorElLedgerMenu}
+                                keepMounted
+                                open={Boolean(this.state.anchorElLedgerMenu)}
+                                onClick={this.toggleLedgerMenu}
+                              >
+                                <MenuItem onClick={this.toggleLinkDialog}>Generate Ledger Link</MenuItem>
+                                <MenuItem onClick={this.toggleLedgerMenu}>Export Ledger to CSV</MenuItem>
+                              </Menu>
+                              <Dialog open={this.state.linkDialog} onClose={this.toggleLinkDialog} aria-labelledby="form-dialog-title">
+                                <DialogTitle id="form-dialog-title">Generate Link</DialogTitle>
+                                <DialogContent>
+                                  <DialogContentText>
+                                    Paste this link in your browser to view the ledgers
+                                  </DialogContentText>
+                                  <TextField
+                                    autoFocus
+                                    margin="dense"
+                                    label="Link"
+                                    fullWidth
+                                    value={"https://accountant.tubalt.com/viewledger/" + this.state.trip_id}
+                                    disabled
+                                  />
+                                </DialogContent>
+                                <DialogActions>
+                                  <Button onClick={this.toggleLinkDialog} color="primary">
+                                    OK
+                                  </Button>
+                                </DialogActions>
+                              </Dialog>
+                            </React.Fragment>
+                          : null  
                     }
                   </Toolbar>
                 </AppBar>
@@ -246,14 +304,34 @@ class App extends Component {
                   onOpen={this.handleDrawerOpen}
                 >
                   <List className={classes.drawerList} component="nav" aria-label="main navigation">
+                    <ListItem>
+                      <img width="100%" src={require('./images/logo_side.png')} />
+                    </ListItem>
+                    { (getToken()) 
+                      ? <ListItem>
+                          <p className={classes.welcomeText}>
+                            Welcome, {getUser().username}
+                          </p>
+                        </ListItem>
+                      : null  
+                    }
+                    <Divider />
                     <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
-                      <NavLink className={classes.drawerListItemText} activeClassName="active" to="/home">Current Trips</NavLink>
+                      <NavLink className={classes.drawerListItemText} activeClassName="active" to="/home">
+                        <Typography>
+                          Current Trips
+                        </Typography>
+                      </NavLink>
                     </ListItem>
                     <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
-                      <NavLink className={classes.drawerListItemText} activeClassName="active" to="/pasttrips">Past Trips</NavLink>
+                      <NavLink className={classes.drawerListItemText} activeClassName="active" to="/pasttrips">
+                        <Typography>
+                          Past Trips
+                        </Typography>
+                      </NavLink>
                     </ListItem>
                     <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
-                    <ListItemText onClick={this.handleLogout} primary="Logout"/>
+                    <ListItemText primaryTypographyProps={{variant: "body1"}} onClick={this.handleLogout} primary="Logout"/>
                     </ListItem>
                   </List>
                 </SwipeableDrawer>

@@ -29,6 +29,11 @@ class ViewLedger extends React.Component {
     componentDidMount() {
         const trip_id = (this.props.match.params.trip_id ) ? this.props.match.params.trip_id : this.props.location.state.trip_id;
         this.props.functionProps["updatePageName"]("Ledger");
+        let newData = {
+            trip_id: trip_id,
+            transaction_id: -1
+          }
+        this.props.functionProps["updateTripData"](newData);
         fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + trip_id)
         .then(response => response.json())
         .then(response => {
@@ -81,7 +86,7 @@ class ViewLedger extends React.Component {
                     <br/>
                     <Grid item>
                         <Button color = 'primary' onClick = {() => this.props.history.push('/suggestedpayments',{trip_id : this.state.trip.trip_id})}>
-                            Suggeted Payments
+                            Suggested Payments
                         </Button>
                     </Grid>
                     <br/>
