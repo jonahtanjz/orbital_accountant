@@ -5,7 +5,6 @@ import { Grid, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanel
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PropTypes from 'prop-types';
 import { Edit } from '@material-ui/icons';
-import { CSVLink } from "react-csv";
 import '../CSS/Login.css';
 
 const styles = theme => ({
@@ -30,9 +29,11 @@ class ViewLedger extends React.Component {
             currency : [],
             transactions : [],
             selectedName : getUser() ? getUser().username : null,
-            loaded: false
+            loaded: false,
+            updatedCSVData: false,
         };
         this.changeSelectedName = this.changeSelectedName.bind(this);
+        this.updateCSVData = this.updateCSVData.bind(this);
     }
 
     componentDidMount() {
@@ -63,28 +64,37 @@ class ViewLedger extends React.Component {
         });
     }
 
+    updateCSVData() {
+        if (!this.state.updatedCSVData && this.state.loaded){
+            let headers = [{label: "Description", key:"desc"},
+                {label: "Currency", key:"curr"}];
+            this.state.users.forEach((user) => 
+                        headers.push({label: user.name, key: user.name}));
+
+            let data = {};
+            this.state.transactions.forEach((entry)=>{
+                let id = entry.transaction_id;
+                if (! data[id]) {
+                    data[id] = {desc: entry.description, curr: entry.currency}
+                    this.state.users.forEach((user) => {
+                        data[id][user.name] = null;
+                    });
+                }
+                data[id][entry.payer] += (0 - entry.amount);
+                data[id][entry.payee] += entry.amount;
+            })
+            data = Object.values(data)
+            console.log(this.state.trip.trip_name);
+            this.props.functionProps["updateCSVData"](headers,data,this.state.trip.trip_name);
+            this.setState({
+                updatedCSVData: true,
+            })
+        }
+    }
+
 
     render() {
-
-        let headers = [{label: "Description", key:"desc"},
-                    {label: "Currency", key:"curr"}]
-        this.state.users.forEach((user) => 
-                    headers.push({label: user.name, key: user.name}));
-        
-        let data = {};
-        this.state.transactions.forEach((entry)=>{
-            let id = entry.transaction_id;
-            if (! data[id]) {
-                data[id] = {desc: entry.description, curr: entry.currency}
-                this.state.users.forEach((user) => {
-                    data[id][user.name] = null;
-                });
-            }
-            data[id][entry.payer] += (0 - entry.amount);
-            data[id][entry.payee] += entry.amount;
-        })
-        data = Object.values(data)
-
+        this.updateCSVData();
 
         let chooseName = this.state.users.map((person)=>{
                 return(<MenuItem key ={person.name} value = {person.name}>{person.name}</MenuItem>);
