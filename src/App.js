@@ -14,7 +14,7 @@ import ViewLedger from './Components/ViewLedger';
 import SuggestedPayments from './Components/SuggestedPayments';
 import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
-import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField} from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, CSVLink, MenuItem, TextField} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
 import Alert from './Components/Alert';
@@ -73,6 +73,8 @@ class App extends Component {
         refreshPage: false,
         anchorElLedgerMenu: null,
         linkDialog: false,
+        csvHeaders: [],
+        csvData: [],
       }
       this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
@@ -88,7 +90,7 @@ class App extends Component {
       this.toggleRefreshPage = this.toggleRefreshPage.bind(this);
       this.toggleLedgerMenu = this.toggleLedgerMenu.bind(this);
       this.toggleLinkDialog = this.toggleLinkDialog.bind(this);
-
+      this.updateCSVData = this.updateCSVData.bind(this);
     }
     componentDidMount() {
         const token = getToken();
@@ -214,6 +216,13 @@ class App extends Component {
       this.setState({ linkDialog: newState });
     }
 
+    updateCSVData(headers, data) {
+      this.setState({
+        csvHeaders: headers,
+        csvData: data
+      });
+    }
+
     render() {
         const { classes } = this.props;
         const functionProps = {
@@ -222,7 +231,8 @@ class App extends Component {
           toggleFailCallback: this.toggleFailCallback,
           updateTripData: this.updateTripData,
           refreshPage: this.state.refreshPage,
-          toggleRefreshPage: this.toggleRefreshPage
+          toggleRefreshPage: this.toggleRefreshPage,
+          updateCSVData: this.updateCSVData,
         }
         return (
             <div className="App">
@@ -270,7 +280,11 @@ class App extends Component {
                                 onClick={this.toggleLedgerMenu}
                               >
                                 <MenuItem onClick={this.toggleLinkDialog}>Generate Ledger Link</MenuItem>
-                                <MenuItem onClick={this.toggleLedgerMenu}>Export Ledger to CSV</MenuItem>
+                                <MenuItem onClick={this.toggleLedgerMenu}>
+                                  <CSVLink data={this.state.csvData} headers={this.state.csvHeaders}>
+                                    Export Ledger to CSV
+                                  </CSVLink>
+                                </MenuItem>
                               </Menu>
                               <Dialog open={this.state.linkDialog} onClose={this.toggleLinkDialog} aria-labelledby="form-dialog-title">
                                 <DialogTitle id="form-dialog-title">Generate Link</DialogTitle>
