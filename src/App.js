@@ -14,13 +14,15 @@ import ViewLedger from './Components/ViewLedger';
 import SuggestedPayments from './Components/SuggestedPayments';
 import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
-import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, CSVLink, MenuItem, TextField} from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
 import Alert from './Components/Alert';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ThreeDRotationSharp } from '@material-ui/icons';
+import { CSVLink } from "react-csv";
+
 
 const styles = theme => ({
   root: {
@@ -75,6 +77,7 @@ class App extends Component {
         linkDialog: false,
         csvHeaders: [],
         csvData: [],
+        csvTitle: "",
       }
       this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
@@ -216,10 +219,11 @@ class App extends Component {
       this.setState({ linkDialog: newState });
     }
 
-    updateCSVData(headers, data) {
+    updateCSVData(headers, data, title) {
       this.setState({
         csvHeaders: headers,
-        csvData: data
+        csvData: data,
+        csvTitle: title,
       });
     }
 
@@ -281,7 +285,7 @@ class App extends Component {
                               >
                                 <MenuItem onClick={this.toggleLinkDialog}>Generate Ledger Link</MenuItem>
                                 <MenuItem onClick={this.toggleLedgerMenu}>
-                                  <CSVLink data={this.state.csvData} headers={this.state.csvHeaders}>
+                                  <CSVLink data={this.state.csvData} headers={this.state.csvHeaders}  filename={this.state.csvTitle+".csv"}>
                                     Export Ledger to CSV
                                   </CSVLink>
                                 </MenuItem>
