@@ -5,6 +5,7 @@ import { Grid, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanel
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PropTypes from 'prop-types';
 import { Edit } from '@material-ui/icons';
+import { CSVLink } from "react-csv";
 import '../CSS/Login.css';
 
 const styles = theme => ({
@@ -64,6 +65,27 @@ class ViewLedger extends React.Component {
 
 
     render() {
+
+        let headers = [{label: "Description", key:"desc"},
+                    {label: "Currency", key:"curr"}]
+        this.state.users.forEach((user) => 
+                    headers.push({label: user.name, key: user.name}));
+        
+        let data = {};
+        this.state.transactions.forEach((entry)=>{
+            let id = entry.transaction_id;
+            if (! data[id]) {
+                data[id] = {desc: entry.description, curr: entry.currency}
+                this.state.users.forEach((user) => {
+                    data[id][user.name] = null;
+                });
+            }
+            data[id][entry.payer] += (0 - entry.amount);
+            data[id][entry.payee] += entry.amount;
+        })
+        data = Object.values(data)
+
+
         let chooseName = this.state.users.map((person)=>{
                 return(<MenuItem key ={person.name} value = {person.name}>{person.name}</MenuItem>);
                 
@@ -282,7 +304,7 @@ class UndoEndTrip extends React.Component {
             return null;
         }
     }
-  }
+}
 
   ViewLedger.propTypes = {
     classes: PropTypes.object.isRequired,
