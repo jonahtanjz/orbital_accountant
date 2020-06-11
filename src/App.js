@@ -56,6 +56,10 @@ const styles = theme => ({
   welcomeText: {
     fontFamily: "Roboto",
     fontWeight: 600
+  },
+  csvText: {
+    textDecoration: "none",
+    color: "inherit"
   }
 });
 
@@ -285,7 +289,7 @@ class App extends Component {
                               >
                                 <MenuItem onClick={this.toggleLinkDialog}>Generate Ledger Link</MenuItem>
                                 <MenuItem onClick={this.toggleLedgerMenu}>
-                                  <CSVLink data={this.state.csvData} headers={this.state.csvHeaders}  filename={this.state.csvTitle+".csv"}>
+                                  <CSVLink className={classes.csvText} data={this.state.csvData} headers={this.state.csvHeaders} filename={this.state.csvTitle+".csv"}>
                                     Export Ledger to CSV
                                   </CSVLink>
                                 </MenuItem>
