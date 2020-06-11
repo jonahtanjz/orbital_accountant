@@ -35,7 +35,7 @@ const styles = theme => ({
     flexGrow: 1,
   },
   drawerList: {
-    width: 250
+    width: 280
   },
   drawerListItem: {
     margin: "10px 0",
