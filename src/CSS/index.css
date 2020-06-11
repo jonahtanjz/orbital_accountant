@@ -38,6 +38,6 @@ code {
   color: #2c7613;
 }
 
-.App-drawerListItemText-6 {
+.MuiDrawer-paper > .MuiList-root > .MuiListItem-button > a {
   padding-top: 10px;
 }
