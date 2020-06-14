@@ -117,3 +117,15 @@ body {
     border: none;
     box-shadow: 0 1px 1px 1px rgba(0,0,0,0.08);
 }
+
+.singleTransaction {
+    display: flex;
+}
+
+.singleTransaction > div {
+    display: inline-block;
+}
+
+.innerArrow > div {
+    display: block !important;
+}

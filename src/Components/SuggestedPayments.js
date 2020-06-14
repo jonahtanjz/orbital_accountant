@@ -37,6 +37,7 @@ class SuggestedPayments extends React.Component {
             trip : [],
             loaded: false,
         }
+        this.submitPayment = this.submitPayment.bind(this);
     }
 
     componentDidMount() {
@@ -53,6 +54,37 @@ class SuggestedPayments extends React.Component {
                 loaded: true,
             });
         })
+    }
+
+    submitPayment(amt,payer,payee) {
+        //Post request
+        fetch("https://accountant.tubalt.com/api/trips/addtransaction", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+            payees: [[payer,amt]],
+            payers: [[payee,amt]],
+            trip_id: this.state.trip.trip_id,
+            description : "Settlement",
+            currency : "SGD",
+            equal : 0,
+            })
+        })
+        .then(response => {
+            if (response.status === 401) {
+            response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
+            } else {
+            response.json().then(res => {
+                this.props.functionProps["toggleSuccessCallback"]("Success");
+            });
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
+        });
     }
 
     render() {
@@ -82,61 +114,127 @@ class SuggestedPayments extends React.Component {
             total[entry.payer] += value;
             return entry;
         });
-        console.log(total);
-        const arr = Object.keys(total).map((key) => [key, total[key]]);
-        let arr2 =arr.sort((c,d) => {
-            let a = c[1];
-            let b = d[1];
-            if (a > 0 && b > 0) {
-                return a  - b;
-            } else if (a < 0 && b < 0) {
-                return -b + a;
-            } else {
-                return -a + b;
-            }
-        })
-        let amt = 0;
-        let display = arr2.filter((total) => total[1].toFixed(2) !=0 ).map((total) =>{
-            amt += total[1]
-            
-                if (amt.toFixed(2) != 0) {
-                    return(
-                        <div>
-                        <Grid item>
-                            <Typography align="center" variant = "h6">
-                                {total[0]}
-                            </Typography>
-                        </Grid>
-                        <Grid container item direction = "row" justify="center" alignItems="center">
-                            <Grid item>
-                                <Button varient = "contained" color= "primary">
-                                    Pay
-                                </Button>
-                            </Grid>
-                            <Grid item>
-                                <img src= "https://i.ya-webdesign.com/images/avatar-arrow-png-7.png" width = "100px"/>
-                            </Grid>
-                            <Grid>
-                                <Typography>Pays</Typography>
-                                <Typography >{"$" + amt.toFixed(2)}</Typography>
-                            </Grid>
-                        </Grid>
-                        {/* {total[0]+ " Pays $" + amt.toFixed(2) + " -> "} */}
-                        </div>
-                    );
-                } else {
-                    return(
-                        <div>
-                            <Grid item>
-                                <Typography align="center" variant = "h6">
-                                    {total[0]}
-                                </Typography>
-                            </Grid>
-                        </div>
-                    );
-                }
 
-        });
+
+        
+        let arr = [];
+        let knnccb = [];
+        // let arr = Object.keys(total);
+        this.state.users.forEach((user) => {
+            let amt = (total[user.name].toFixed(2));
+            let com = [user.name, parseFloat(amt)];
+            arr.push(com);
+            knnccb.push([user.name,parseFloat(amt)]);
+            });
+        let payeeArr = arr.filter((item)=> item[1] < 0);
+        let payerArr = arr.filter((item)=> item[1] > 0);
+        let consolidatedTransactions = [];
+
+        let copyPayer = payerArr.map(item => [item[0],Math.round(item[1]*100)]);
+        let copyPayee = payeeArr.map(item => [item[0],Math.round(-item[1]*100)]);
+
+        for (let i = 0; i < payerArr.length; i++) {
+            for (let j = 0; j < payeeArr.length; j++) {
+                if (copyPayer[i][1] === 0) {
+                    break;
+                }
+                if (copyPayee[j][1] === 0) {
+                    continue;
+                }
+                let obj = {};
+                obj.payee = copyPayee[j][0];
+                obj.payer = copyPayer[i][0];
+                if (copyPayer[i][1] > copyPayee[j][1]) {
+                    obj.amt = copyPayee[j][1];
+                } else {
+                    obj.amt = copyPayer[i][1];
+                }
+                console.log(obj.amt + obj.amt);
+                copyPayee[j][1] = copyPayee[j][1] - obj.amt;
+                copyPayer[i][1] = copyPayer[i][1] - obj.amt;
+                consolidatedTransactions.push(obj);
+            }
+        }
+
+        let display = consolidatedTransactions.map(trans=> {
+            let finalAmt = (trans.amt/100).toFixed(2)
+            return(
+                <div className="singleTransaction">
+                    <div>
+                        <Typography>{trans.payer}</Typography>
+                    </div>
+                    <div className="innerArrow">
+                        <div>
+                            {finalAmt}
+                        </div>
+                        <div>
+                            <img src= {require('../images/arrow_right.png')} width = "100px"/>
+                        </div>
+                    </div>
+                    <div>
+                        <Typography>{trans.payee}</Typography>
+                    </div>
+                    <div>
+                        <Button  onClick = {() => {this.submitPayment(finalAmt,trans.payer,trans.payee)}}>Pay</Button>
+                    </div>
+                </div>
+            );
+        })
+
+        // const arr3 = Object.keys(total).map((key) => [key, total[key]]);
+        // let arr2 =arr3.sort((c,d) => {
+        //     let a = c[1];
+        //     let b = d[1];
+        //     if (a > 0 && b > 0) {
+        //         return a  - b;
+        //     } else if (a < 0 && b < 0) {
+        //         return -b + a;
+        //     } else {
+        //         return -a + b;
+        //     }
+        // })
+        // let amt = 0;
+        // let display = arr2.filter((total) => total[1].toFixed(2) !=0 ).map((total) =>{
+        //     amt += total[1]
+            
+        //         if (amt.toFixed(2) != 0) {
+        //             return(
+        //                 <div>
+        //                 <Grid item>
+        //                     <Typography align="center" variant = "h6">
+        //                         {total[0]}
+        //                     </Typography>
+        //                 </Grid>
+        //                 <Grid container item direction = "row" justify="center" alignItems="center">
+        //                     <Grid item>
+        //                         <Button varient = "contained" color= "primary">
+        //                             Pay
+        //                         </Button>
+        //                     </Grid>
+        //                     <Grid item>
+        //                         <img src= "https://i.ya-webdesign.com/images/avatar-arrow-png-7.png" width = "100px"/>
+        //                     </Grid>
+        //                     <Grid>
+        //                         <Typography>Pays</Typography>
+        //                         <Typography >{"$" + amt.toFixed(2)}</Typography>
+        //                     </Grid>
+        //                 </Grid>
+        //                 {/* {total[0]+ " Pays $" + amt.toFixed(2) + " -> "} */}
+        //                 </div>
+        //             );
+        //         } else {
+        //             return(
+        //                 <div>
+        //                     <Grid item>
+        //                         <Typography align="center" variant = "h6">
+        //                             {total[0]}
+        //                         </Typography>
+        //                     </Grid>
+        //                 </div>
+        //             );
+        //         }
+        // });
+
         return(
             <Grid
                 container
