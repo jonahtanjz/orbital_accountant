@@ -96,6 +96,26 @@ class ViewLedger extends React.Component {
     render() {
         this.updateCSVData();
 
+        //Calcs totals 
+        let total = {}
+        this.state.users.map((user) => {
+            total[user.name] = 0
+            return user;
+        });
+        this.state.transactions.map((entry) =>{
+            let conversion;
+            let usedCurrency = this.state.currency.filter((curr) => curr.name === entry.currency);
+            if (usedCurrency.length === 0) {
+                conversion = 1;
+            } else {
+                conversion = usedCurrency[0].value;
+            }
+            let value = parseFloat((entry.amount/conversion).toFixed(2));
+            total[entry.payee] = total[entry.payee] - value;
+            total[entry.payer] += value;
+            return entry;
+        });
+
         let chooseName = this.state.users.map((person)=>{
                 return(<MenuItem key ={person.name} value = {person.name}>{person.name}</MenuItem>);
                 
@@ -135,6 +155,12 @@ class ViewLedger extends React.Component {
                         <Button color = 'primary' onClick = {() => this.props.history.push('/suggestedpayments',{trip_id : this.state.trip.trip_id})}>
                             Suggested Payments
                         </Button>
+                    </Grid>
+                    <br/>
+                    <Grid item>
+                        <Typography variant="h5">
+                            {(Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: "+Math.abs(Math.round(total[this.state.selectedName]*100)/100) : "Total to Pay: "+Math.round(total[this.state.selectedName]*100)/100}
+                        </Typography>
                     </Grid>
                     <br/>
                     <Grid item>
