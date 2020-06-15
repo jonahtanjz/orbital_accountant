@@ -1,7 +1,7 @@
 import React from 'react';
 import { getUser } from '../Utils/Common';
 import { withRouter } from 'react-router-dom';
-import { Grid, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, MenuItem, Button, InputLabel, CircularProgress } from '@material-ui/core';
+import { Grid, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, NativeSelect, MenuItem, Button, InputLabel, CircularProgress } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PropTypes from 'prop-types';
 import { Edit } from '@material-ui/icons';
@@ -31,12 +31,18 @@ class ViewLedger extends React.Component {
             selectedName : getUser() ? getUser().username : null,
             loaded: false,
             updatedCSVData: false,
+            isMobile : false,
         };
         this.changeSelectedName = this.changeSelectedName.bind(this);
         this.updateCSVData = this.updateCSVData.bind(this);
     }
 
     componentDidMount() {
+        if (window.screen.availWidth < 769) {
+            this.setState({
+                isMobile: true,
+            });
+        }
         const trip_id = (this.props.match.params.trip_id ) ? this.props.match.params.trip_id : this.props.location.state.trip_id;
         this.props.functionProps["updatePageName"]("Ledger");
         let newData = {
@@ -116,10 +122,6 @@ class ViewLedger extends React.Component {
             return entry;
         });
 
-        let chooseName = this.state.users.map((person)=>{
-                return(<MenuItem key ={person.name} value = {person.name}>{person.name}</MenuItem>);
-                
-        });
         let filteredTransactions = this.state.transactions.filter((entry) =>
             entry.payee === this.state.selectedName || entry.payer=== this.state.selectedName
         );
@@ -140,15 +142,7 @@ class ViewLedger extends React.Component {
                     justify="center"
                     alignItems="center">
                     <Grid item>
-                        <InputLabel id="select-person-label">Select Person</InputLabel>
-                        <Select className = {classes.selectPerson}
-                            labelId="select-person-label"
-                            id="select-person"
-                            value={this.state.selectedName}
-                            onChange={this.changeSelectedName}
-                        >
-                            {chooseName}
-                        </Select>
+                        <SelectLedger classes = {classes} isMobile={this.state.isMobile} changeSelectedName= {this.changeSelectedName} selectedName={this.state.selectedName} users={this.state.users}/>
                     </Grid>
                     <br/>
                     <Grid item>
@@ -173,11 +167,57 @@ class ViewLedger extends React.Component {
     }
 }
 
-class Ledger extends React.Component {
-    constructor(props) {
-        super(props);
+class SelectLedger extends React.Component {
 
+    render() {
+        let selectOptions;
+        let selectObject;
+        if (this.props.isMobile) {
+            selectOptions = this.props.users.map((person)=>{
+                return(<option key ={person.name} value = {person.name}>{person.name}</option>);
+            });
+            selectObject =
+            <div>
+                <InputLabel id="select-person-label">Select Person</InputLabel>
+                <NativeSelect
+                    size = "sm"
+                    className = {this.props.classes.selectPerson}
+                    variant = "outlined"
+                    id = "select-person"
+                    labelId = "select-person-label"
+                    onChange={this.props.changeSelectedName}
+                    value = {this.props.selectedName}
+                    >
+                    {selectOptions}
+                </NativeSelect> 
+            </div>
+        } else {
+            selectOptions = this.props.users.map((person)=>{
+                return(<MenuItem key ={person.name} value = {person.name}>{person.name}</MenuItem>);
+            });
+            selectObject = 
+                <div>
+                    <InputLabel id="select-person-label">Select Person</InputLabel>
+                    <Select className = {this.props.classes.selectPerson}
+                        labelId="select-person-label"
+                        id="select-person"
+                        value={this.props.selectedName}
+                        onChange={this.props.changeSelectedName}
+                        >
+                        {selectOptions}
+                    </Select>
+                </div>
+        }
+        
+        return(
+            <div>
+                {selectObject}
+            </div>
+        );
     }
+}
+
+class Ledger extends React.Component {
 
     render() {
         let displayLedger = this.props.users.map((person)=>{
@@ -246,12 +286,7 @@ class DisplayTable extends React.Component {
                 </TableRow>
             );
         });
-        let desc;
-        if (total > 0) {
-            desc = " To Receive"
-        } else {
-            desc = " To Pay"
-        }
+        let totalColor = ((total > 0) ? "" : "secondary");
         return(
             <ExpansionPanel>
                 <ExpansionPanelSummary
@@ -279,12 +314,12 @@ class DisplayTable extends React.Component {
                                     
                                     <TableCell colSpan={3}>
                                         <p class= "totalDesc">
-                                            {"Total" + desc}
+                                            {"Total: "}
                                         </p>
                                     </TableCell>
                                     <TableCell colSpan={2} align="right">
-                                        <Typography>
-                                            {Math.abs(total).toFixed(2)}
+                                        <Typography color = {totalColor}>
+                                            {(total).toFixed(2)}
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
