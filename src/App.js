@@ -302,7 +302,6 @@ class App extends Component {
                                     Paste this link in your browser to view the ledgers
                                   </DialogContentText>
                                   <TextField
-                                    autoFocus
                                     id = "ledgerLink"
                                     margin="dense"
                                     label="Link"
