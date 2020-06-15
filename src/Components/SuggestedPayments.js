@@ -24,7 +24,13 @@ const styles = themes => ({
         marginLeft: "auto",
         marginRight: "auto",
         marginTop: "250px",
-    }  
+    },
+    settledText: {
+        marginTop: "100px",
+    },
+    paperContainer: {
+        borderRadius: "10px",
+    }
   });
 
 class SuggestedPayments extends React.Component {
@@ -183,7 +189,7 @@ class SuggestedPayments extends React.Component {
             let finalAmt = (trans.amt/100).toFixed(2)
             return(
                 <React.Fragment>
-                    <Paper>
+                    <Paper className={classes.paperContainer}>
                         <div className="singleTransaction">
                             <div className="payment-info-container">
                                 <div className="payer-container">
@@ -304,7 +310,11 @@ class SuggestedPayments extends React.Component {
                 alignItems="center"
             >
                 <div>
-                    {display}
+                    {
+                        display.length === 0
+                        ? <Typography className={classes.settledText} variant="h5">All Payments Settled</Typography>
+                        : display
+                    }
                 </div>
             </Grid>
         );

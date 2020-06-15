@@ -46,6 +46,7 @@ code {
   display: table;
   height: 100%;
   width: 100%;
+  word-break: break-word;
 }
 
 .payer-name, .payee-name, .pay-button {
@@ -56,7 +57,7 @@ code {
 
 .amount-to-pay {
   text-align: center;
-  padding-top: 19px;
+  padding-top: 24px;
 }
 
 .payment-info-container {
