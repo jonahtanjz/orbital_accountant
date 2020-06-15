@@ -468,7 +468,7 @@ class EditTrip extends React.Component {
             //? <div><span>{this.props.tripName}</span> <button type = "button" onClick = {this.toggleEditing}>Edit</button> </div>
 
             : <div>
-                <TextField className={this.props.classes.tripNameField} id="tripName" label="Trip Name" variant="outlined" value = {this.state.editingText} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/>
+                <TextField autoFocus className={this.props.classes.tripNameField} id="tripName" label="Trip Name" variant="outlined" value = {this.state.editingText} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/>
                 <IconButton className={this.props.classes.iconButtons} color="primary" onClick = {this.editTripName}>
                   <DoneIcon />
                 </IconButton> 
