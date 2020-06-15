@@ -64,7 +64,8 @@ class SuggestedPayments extends React.Component {
         })
     }
 
-    submitPayment(amt,payer,payee) {
+    submitPayment(amt,payer,payee, key) {
+        this.togglePaymentDialog(key);
         //Post request
         fetch("https://accountant.tubalt.com/api/trips/makepayment", {
             method: "POST",
@@ -239,7 +240,7 @@ class SuggestedPayments extends React.Component {
                         <Button onClick={() => this.togglePaymentDialog(trans.key)} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={() => this.submitPayment(finalAmt,trans.payer,trans.payee)} color="primary" autoFocus>
+                        <Button onClick={() => this.submitPayment(finalAmt,trans.payer,trans.payee, trans.key)} color="primary" autoFocus>
                             Pay
                         </Button>
                         </DialogActions>
