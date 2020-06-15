@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { withStyles, Grid, Button, Typography, CircularProgress } from '@material-ui/core';
+import { withStyles, Grid, Button, Typography, CircularProgress, Paper, Dialog, DialogTitle, DialogActions, DialogContent, DialogContentText } from '@material-ui/core';
 import  PropTypes  from 'prop-types';
 
 
@@ -36,8 +36,10 @@ class SuggestedPayments extends React.Component {
             currency : [],
             trip : [],
             loaded: false,
+            paymentDialog: {},
         }
         this.submitPayment = this.submitPayment.bind(this);
+        this.togglePaymentDialog = this.togglePaymentDialog.bind(this);
     }
 
     componentDidMount() {
@@ -58,7 +60,7 @@ class SuggestedPayments extends React.Component {
 
     submitPayment(amt,payer,payee) {
         //Post request
-        fetch("https://accountant.tubalt.com/api/trips/addtransaction", {
+        fetch("https://accountant.tubalt.com/api/trips/makepayment", {
             method: "POST",
             headers: {
             "Content-Type": "application/json"
@@ -76,7 +78,13 @@ class SuggestedPayments extends React.Component {
             if (response.status === 401) {
             response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
             } else {
-            response.json().then(res => {
+            response.json().then(response => {
+                this.setState({
+                    trip : response.trip[0] ,
+                    users :response.users ,
+                    transactions : response.transactions,
+                    currency : response.currency,
+                });
                 this.props.functionProps["toggleSuccessCallback"]("Success");
             });
             }
@@ -85,6 +93,18 @@ class SuggestedPayments extends React.Component {
             console.log(error);
             this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
         });
+    }
+
+    togglePaymentDialog(key) {
+        if (this.state.paymentDialog[key] === undefined) {
+            let newPaymentDialog = this.state.paymentDialog;
+            newPaymentDialog[key] = true;
+            this.setState({ paymentDialog: newPaymentDialog });
+        } else {
+            let newPaymentDialog = this.state.paymentDialog;
+            newPaymentDialog[key] = !this.state.paymentDialog[key];
+            this.setState({ paymentDialog: newPaymentDialog });
+        }
     }
 
     render() {
@@ -132,6 +152,7 @@ class SuggestedPayments extends React.Component {
 
         let copyPayer = payerArr.map(item => [item[0],Math.round(item[1]*100)]);
         let copyPayee = payeeArr.map(item => [item[0],Math.round(-item[1]*100)]);
+        let counterKey = 0;
 
         for (let i = 0; i < payerArr.length; i++) {
             for (let j = 0; j < payeeArr.length; j++) {
@@ -142,6 +163,7 @@ class SuggestedPayments extends React.Component {
                     continue;
                 }
                 let obj = {};
+                obj.key = counterKey;
                 obj.payee = copyPayee[j][0];
                 obj.payer = copyPayer[i][0];
                 if (copyPayer[i][1] > copyPayee[j][1]) {
@@ -153,31 +175,70 @@ class SuggestedPayments extends React.Component {
                 copyPayee[j][1] = copyPayee[j][1] - obj.amt;
                 copyPayer[i][1] = copyPayer[i][1] - obj.amt;
                 consolidatedTransactions.push(obj);
+                counterKey++;
             }
         }
 
-        let display = consolidatedTransactions.map(trans=> {
+        let display = consolidatedTransactions.map(trans => {
             let finalAmt = (trans.amt/100).toFixed(2)
             return(
-                <div className="singleTransaction">
-                    <div>
-                        <Typography>{trans.payer}</Typography>
-                    </div>
-                    <div className="innerArrow">
-                        <div>
-                            {finalAmt}
+                <React.Fragment>
+                    <Paper>
+                        <div className="singleTransaction">
+                            <div className="payment-info-container">
+                                <div className="payer-container">
+                                    <div className="payer-name">
+                                        <Typography>{trans.payer}</Typography>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="innerArrow payment-info-container">
+                                <div className="amount-to-pay">
+                                    ${finalAmt}
+                                </div>
+                                <div>
+                                    <img src= {require('../images/arrow_right.png')} width = "100px"/>
+                                </div>
+                            </div>
+                            <div className="payment-info-container">
+                                <div className="payee-container">
+                                    <div className="payee-name">
+                                        <Typography>{trans.payee}</Typography>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="payment-info-button-container">
+                                <div className="pay-button-container">
+                                    <div className="pay-button">
+                                        <Button color="primary" onClick = {() => this.togglePaymentDialog(trans.key)}>Pay</Button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <img src= {require('../images/arrow_right.png')} width = "100px"/>
-                        </div>
-                    </div>
-                    <div>
-                        <Typography>{trans.payee}</Typography>
-                    </div>
-                    <div>
-                        <Button  onClick = {() => {this.submitPayment(finalAmt,trans.payer,trans.payee)}}>Pay</Button>
-                    </div>
-                </div>
+                    </Paper>
+                    <Dialog
+                    open={this.state.paymentDialog[trans.key]}
+                    onClose={() => this.togglePaymentDialog(trans.key)}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    >
+                        <DialogTitle id="alert-dialog-title">Pay {trans.payee}?</DialogTitle>
+                        <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Make a payment to this user? Once completed, this transaction will be 
+                            recorded as "Settlement". 
+                        </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                        <Button onClick={() => this.togglePaymentDialog(trans.key)} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={() => this.submitPayment(finalAmt,trans.payer,trans.payee)} color="primary" autoFocus>
+                            Pay
+                        </Button>
+                        </DialogActions>
+                </Dialog>
+              </React.Fragment>
             );
         })
 

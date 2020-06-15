@@ -120,6 +120,10 @@ body {
 
 .singleTransaction {
     display: flex;
+    width: 335px;
+    justify-content: center;
+    margin: 20px 0px;
+    height: 140px;
 }
 
 .singleTransaction > div {

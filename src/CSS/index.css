@@ -41,3 +41,28 @@ code {
 .MuiDrawer-paper > .MuiList-root > .MuiListItem-button > a {
   padding-top: 10px;
 }
+
+.payer-container, .payee-container, .pay-button-container {
+  display: table;
+  height: 100%;
+  width: 100%;
+}
+
+.payer-name, .payee-name, .pay-button {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.amount-to-pay {
+  text-align: center;
+  padding-top: 19px;
+}
+
+.payment-info-container {
+  width: 30%;
+}
+
+.pay-button {
+  padding-top: 2px;
+}
