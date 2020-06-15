@@ -14,7 +14,7 @@ import ViewLedger from './Components/ViewLedger';
 import SuggestedPayments from './Components/SuggestedPayments';
 import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
-import { AppBar, Toolbar, IconButton, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField} from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, InputAdornment, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
 import Alert from './Components/Alert';
@@ -22,6 +22,7 @@ import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ThreeDRotationSharp } from '@material-ui/icons';
 import { CSVLink } from "react-csv";
+import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
 
 
 const styles = theme => ({
@@ -301,12 +302,28 @@ class App extends Component {
                                     Paste this link in your browser to view the ledgers
                                   </DialogContentText>
                                   <TextField
-                                    autoFocus
+                                    id = "ledgerLink"
                                     margin="dense"
                                     label="Link"
                                     fullWidth
+                                    InputProps = {{
+                                      endAdornment: 
+                                        (<InputAdornment position="end">
+                                          <IconButton
+                                            aria-label="Copy"
+                                            edge="end"
+                                            onClick = {() =>{ 
+                                              let copyText = document.getElementById("ledgerLink")
+                                              copyText.select();
+                                              copyText.setSelectionRange(0, 99999);
+                                              document.execCommand("copy");
+                                              }
+                                            }>
+                                              <AssignmentOutlinedIcon/>
+                                          </IconButton>
+                                        </InputAdornment>),
+                                    }}
                                     value={"https://accountant.tubalt.com/viewledger/" + this.state.trip_id}
-                                    disabled
                                   />
                                 </DialogContent>
                                 <DialogActions>
