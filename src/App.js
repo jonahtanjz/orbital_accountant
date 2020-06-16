@@ -249,9 +249,12 @@ class App extends Component {
                 <div>
                 <AppBar position="static">
                   <Toolbar>
-                    <IconButton onClick={this.handleDrawerOpen} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                      <MenuIcon />
-                    </IconButton>
+                    { (getToken())
+                      ? <IconButton onClick={this.handleDrawerOpen} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                          <MenuIcon />
+                        </IconButton>
+                      : null
+                    }  
                     <Typography variant="h6" className={classes.title}>
                       {this.state.pageName}
                     </Typography>
@@ -337,43 +340,43 @@ class App extends Component {
                     }
                   </Toolbar>
                 </AppBar>
-                <SwipeableDrawer
-                  open={this.state.drawerState}
-                  onClose={this.handleDrawerClose}
-                  onOpen={this.handleDrawerOpen}
-                >
-                  <List className={classes.drawerList} component="nav" aria-label="main navigation">
-                    <ListItem>
-                      <img width="100%" src={require('./images/logo_side.png')} />
-                    </ListItem>
-                    { (getToken()) 
-                      ? <ListItem>
-                          <p className={classes.welcomeText}>
-                            Welcome, {getUser().username}
-                          </p>
+                { (getToken()) 
+                  ? <SwipeableDrawer
+                      open={this.state.drawerState}
+                      onClose={this.handleDrawerClose}
+                      onOpen={this.handleDrawerOpen}
+                    >
+                      <List className={classes.drawerList} component="nav" aria-label="main navigation">
+                        <ListItem>
+                          <img width="100%" src={require('./images/logo_side.png')} />
                         </ListItem>
-                      : null  
-                    }
-                    <Divider />
-                    <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
-                      <NavLink className={classes.drawerListItemText} activeClassName="active" to="/home">
-                        <Typography>
-                          Current Trips
-                        </Typography>
-                      </NavLink>
-                    </ListItem>
-                    <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
-                      <NavLink className={classes.drawerListItemText} activeClassName="active" to="/pasttrips">
-                        <Typography>
-                          Past Trips
-                        </Typography>
-                      </NavLink>
-                    </ListItem>
-                    <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
-                    <ListItemText primaryTypographyProps={{variant: "body1"}} onClick={this.handleLogout} primary="Logout"/>
-                    </ListItem>
-                  </List>
-                </SwipeableDrawer>
+                          <ListItem>
+                              <p className={classes.welcomeText}>
+                                Welcome, {getUser().username}
+                              </p>
+                          </ListItem>
+                        <Divider />
+                        <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
+                          <NavLink className={classes.drawerListItemText} activeClassName="active" to="/home">
+                            <Typography>
+                              Current Trips
+                            </Typography>
+                          </NavLink>
+                        </ListItem>
+                        <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
+                          <NavLink className={classes.drawerListItemText} activeClassName="active" to="/pasttrips">
+                            <Typography>
+                              Past Trips
+                            </Typography>
+                          </NavLink>
+                        </ListItem>
+                        <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
+                        <ListItemText primaryTypographyProps={{variant: "body1"}} onClick={this.handleLogout} primary="Logout"/>
+                        </ListItem>
+                      </List>
+                    </SwipeableDrawer>
+                  : null
+                }  
                   {/* <div className="header">
                     <NavLink activeClassName="active" to="/home">Home</NavLink>
                     <NavLink className={classes.drawerListItemText} activeClassName="active" to="/pasttrips">Past Trips</NavLink>
@@ -382,7 +385,8 @@ class App extends Component {
                   </div> */}
                   <div className="content">
                     <Switch>
-                      <Route exact path="/" render={(props) => <Welcome {...props} functionProps={functionProps} />} />
+                      {/* <Route exact path="/" render={(props) => <Welcome {...props} functionProps={functionProps} />} /> */}
+                      <PrivateRoute exact path="/" component={Home} functionProps={functionProps} />
                       <Route path="/viewledger/:trip_id" render={(props) => <ViewLedger {...props} functionProps={functionProps} />} />
                       <Route path="/viewledger/" render={(props) => <ViewLedger {...props} functionProps={functionProps} />} />
                       <Route path="/suggestedpayments" render={(props) => <SuggestedPayments {...props} functionProps={functionProps} />} />
