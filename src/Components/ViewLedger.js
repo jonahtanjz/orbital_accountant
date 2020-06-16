@@ -168,7 +168,7 @@ class ViewLedger extends React.Component {
                     </Grid>
                     <br/>
                     <Grid item>
-                        <Paper className={filteredTransaction.length === 0 ? classes.totalToPayNoLedger : classes.totalToPay}>
+                        <Paper className={filteredTransactions.length === 0 ? classes.totalToPayNoLedger : classes.totalToPay}>
                             <Typography variant="h6">
                                 {(Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: S$"+Math.abs(Math.round(total[this.state.selectedName]*100)/100) : "Total to Pay: S$"+Math.round(total[this.state.selectedName]*100)/100}
                             </Typography>
