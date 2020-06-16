@@ -24,6 +24,12 @@ const styles = theme => ({
         padding: "20px",
         borderRadius: "10px 10px 0 0",
     },
+    totalToPayNoLedger: {
+        width: "295px",
+        textAlign: "center",
+        padding: "20px",
+        borderRadius: "10px",
+    },
     ledgerExpansion: {
         width: "335px",
         borderRadius: "0 !important",
@@ -162,7 +168,7 @@ class ViewLedger extends React.Component {
                     </Grid>
                     <br/>
                     <Grid item>
-                        <Paper className={classes.totalToPay}>
+                        <Paper className={filteredTransaction.length === 0 ? classes.totalToPayNoLedger : classes.totalToPay}>
                             <Typography variant="h6">
                                 {(Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: S$"+Math.abs(Math.round(total[this.state.selectedName]*100)/100) : "Total to Pay: S$"+Math.round(total[this.state.selectedName]*100)/100}
                             </Typography>
