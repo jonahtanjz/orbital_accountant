@@ -134,3 +134,11 @@ body {
 .innerArrow > div {
     display: block !important;
 }
+
+/* .withRouter\(ViewLedger\)-ledgerExpansion-15 :last-child {
+    border-radius: 0 0 10px 10px !important;
+} */
+
+.ledgerTable > div:last-child > div {
+    border-radius: 0 0 10px 10px !important;
+}

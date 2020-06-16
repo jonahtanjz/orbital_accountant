@@ -1,7 +1,7 @@
 import React from 'react';
 import { getUser } from '../Utils/Common';
 import { withRouter } from 'react-router-dom';
-import { Grid, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, NativeSelect, MenuItem, Button, InputLabel, CircularProgress } from '@material-ui/core';
+import { Grid, Paper, withStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Typography, TableContainer, Table, TableHead, TableBody, TableCell, TableRow, IconButton, Select, NativeSelect, MenuItem, Button, InputLabel, CircularProgress } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import PropTypes from 'prop-types';
 import { Edit } from '@material-ui/icons';
@@ -17,7 +17,17 @@ const styles = theme => ({
     },
     loadingCircle: {
         marginTop: "250px",
-      }
+    },
+    totalToPay: {
+        width: "295px",
+        textAlign: "center",
+        padding: "20px",
+        borderRadius: "10px 10px 0 0",
+    },
+    ledgerExpansion: {
+        width: "335px",
+        borderRadius: "0 !important",
+    },
   });
 
 class ViewLedger extends React.Component {
@@ -152,13 +162,12 @@ class ViewLedger extends React.Component {
                     </Grid>
                     <br/>
                     <Grid item>
-                        <Typography variant="h5">
-                            {(Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: "+Math.abs(Math.round(total[this.state.selectedName]*100)/100) : "Total to Pay: "+Math.round(total[this.state.selectedName]*100)/100}
-                        </Typography>
-                    </Grid>
-                    <br/>
-                    <Grid item>
-                        <Ledger currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
+                        <Paper className={classes.totalToPay}>
+                            <Typography variant="h6">
+                                {(Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: S$"+Math.abs(Math.round(total[this.state.selectedName]*100)/100) : "Total to Pay: S$"+Math.round(total[this.state.selectedName]*100)/100}
+                            </Typography>
+                        </Paper>
+                        <Ledger classes={classes} currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
                     </Grid>
                     <br/>
                 </Grid>
@@ -229,7 +238,7 @@ class Ledger extends React.Component {
             if (entries.length !== 0) { 
                 return (
                 <div>
-                    <DisplayTable currency = {this.props.currency} otherPerson = {personName} transactions = {entries} self ={this.props.self} history = {this.props.history} trip = {this.props.trip} />
+                    <DisplayTable classes={this.props.classes} currency = {this.props.currency} otherPerson = {personName} transactions = {entries} self ={this.props.self} history = {this.props.history} trip = {this.props.trip} />
                 </div>
                 );
             } else {
@@ -238,7 +247,7 @@ class Ledger extends React.Component {
                 
         });
         return(
-            <div>
+            <div className="ledgerTable">
                 {displayLedger}
             </div>
         );
@@ -288,7 +297,7 @@ class DisplayTable extends React.Component {
         });
         let totalColor = ((total > 0) ? "" : "secondary");
         return(
-            <ExpansionPanel>
+            <ExpansionPanel className={this.props.classes.ledgerExpansion}>
                 <ExpansionPanelSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
