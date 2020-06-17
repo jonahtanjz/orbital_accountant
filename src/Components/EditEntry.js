@@ -271,6 +271,7 @@ class EditEntry extends React.Component {
   //Submits Post request to API
   onSubmit(e) {
     e.preventDefault();
+    let equal = this.state.equal || (this.state.consume.filter((person)=> person.display).length === 1)
     //Checking for empty pay
     if (this.state.pay.filter((person)=> person.display).length === 0) {
       alert("Please select the people who payed.")
@@ -292,12 +293,12 @@ class EditEntry extends React.Component {
       return null;
     }
     //Checking for no amounts entered in consume array when is not equal 
-    if (this.state.consume.filter((person)=> person.display && (! person.amount)).length !== 0 && (! this.state.equal)) {
+    if (this.state.consume.filter((person)=> person.display && (! person.amount)).length !== 0 && (! equal)) {
       alert("Please enter the amounts for people who consumed.")
       return null;
     }
     //Checking for valid amounts in consume array 
-    if (this.state.consume.filter((person) => person.display && this.validateExpression(person.amount)).length !== 0 && (! this.state.equal)) {
+    if (this.state.consume.filter((person) => person.display && this.validateExpression(person.amount)).length !== 0 && (! equal)) {
       alert("Please enter a valid expression");
       return null;
     }
@@ -309,7 +310,7 @@ class EditEntry extends React.Component {
     //Calculates (if equal) and formats consume array
     let newConsume = [];
     try {
-      if (this.state.equal) {
+      if (equal) {
         let pay = this.state.pay.slice().filter(person => person["display"]);
         let consume = this.state.consume.slice().filter(person => person["display"]);
         let total = 0;
