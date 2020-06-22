@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactMultiSelectCheckboxes from 'react-multiselect-checkboxes';
 import {withRouter} from 'react-router-dom';
-import { Grid, withStyles, Typography, TextField, Input, InputAdornment, MenuItem, Select, NativeSelect, InputLabel, FormControl, FormControlLabel, Checkbox, Button, CircularProgress } from '@material-ui/core';
-import { ChatOutlined } from '@material-ui/icons'
-import '../CSS/Login.css'
+import { Tooltip, Grid, withStyles, Typography, TextField, Input, InputAdornment, MenuItem, Select, NativeSelect, InputLabel, FormControl, FormControlLabel, Checkbox, Button, CircularProgress } from '@material-ui/core';
+import { ChatOutlined } from '@material-ui/icons';
+import '../CSS/Login.css';
+import HelpIcon from '@material-ui/icons/Help';
 
 const styles = themes => ({
   textField: {
@@ -51,7 +52,19 @@ const styles = themes => ({
       marginLeft: "auto",
       marginRight: "auto",
       marginTop: "250px",
-  } 
+  },
+  tooltipDesign: {
+    maxWidth: "150px",
+    fontSize: "12px",
+    padding: "10px 15px",
+    whiteSpace: "pre-wrap"
+  },
+  tooltipIcon: {
+    marginTop: "2px",
+  },
+  payerPayeeTitle: {
+    marginBottom: "5px"
+  }
 });
 
 //Main component to render when editing transactions in the trips
@@ -441,9 +454,18 @@ class EditEntry extends React.Component {
             />
           </Grid>
           <br/>
-          <Grid item>
-            <Typography align = "left">People who paid:</Typography>
-          </Grid>
+          <Grid className={classes.payerPayeeTitle} container item>
+                <Typography align= "left">
+                  Payees: &nbsp;
+                </Typography>
+                <Tooltip classes={{ tooltip: classes.tooltipDesign }} leaveTouchDelay="10000" enterTouchDelay="10" 
+                  title={'Payees are people who have paid for the rest in this transaction.\n\n'
+                         + 'For each of the payees, enter the exact amount that they have paid.\n\n'
+                         + 'Simple calculations can be done in the input boxes (+, -, *, /).'}
+                  arrow>
+                  <HelpIcon className={classes.tooltipIcon} color="disabled" fontSize="small" />
+                </Tooltip>
+              </Grid>
           <Grid item>
             <NameList 
             onChange = {this.onChangePay}
@@ -460,9 +482,19 @@ class EditEntry extends React.Component {
             classes={classes}
             />
           </Grid>
-          <Grid item>
-            <Typography align= "left">People who consumed:</Typography>
-          </Grid>
+          <Grid className={classes.payerPayeeTitle} container item>
+                <Typography align= "left">
+                  Payers: &nbsp;
+                </Typography>
+                <Tooltip classes={{ tooltip: classes.tooltipDesign }} leaveTouchDelay="10000" enterTouchDelay="10" 
+                  title={'Payers are people whose bills got paid in this transaction.\n\n' +  
+                         'For each of the payers, enter the exact amount or ratio that they have consumed. \n\n' + 
+                         'Simple calculations can be done in the input boxes (+, -, *, /). \n\n' + 
+                          'If all payers consumed the same amount, check the "Split bill equally" box below and leave the input boxes empty.'}
+                  arrow>
+                  <HelpIcon className={classes.tooltipIcon} color="disabled" fontSize="small" />
+                </Tooltip>
+              </Grid>
           <Grid item>
             <NameList 
             onChange = {this.onChangeConsume}

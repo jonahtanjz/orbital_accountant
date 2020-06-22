@@ -21,7 +21,8 @@ const styles = themes => ({
     minWidth: 350,
     backgroundColor : 'white',
     borderRadius: "10px",
-    marginTop: '30px'
+    marginTop: '30px',
+    paddingBottom: '10px'
   },
   media: {
     width : '100%',

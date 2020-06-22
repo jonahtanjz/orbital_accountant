@@ -39,7 +39,11 @@ const styles = themes => ({
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: "250px",
-  }
+  },
+  noTripsText: {
+    marginTop: "100px",
+    color: "#717171",
+},
 });
 
 class ViewPastTrips extends React.Component {
@@ -385,7 +389,11 @@ class ViewPastTrips extends React.Component {
 
       return(
           <Box className={classes.mainContainer}>
-              {displayInactive}
+              {
+                displayInactive.length === 0
+                ? <Typography className={classes.noTripsText} variant="h5">No Past Trips</Typography>
+                : displayInactive
+              }
               <Snackbar open={this.state.successCallback} autoHideDuration={3000} onClose={this.handleSuccessCallbackClose}>
                   <Alert onClose={this.handleSuccessCallbackClose} severity="success">
                     Success!

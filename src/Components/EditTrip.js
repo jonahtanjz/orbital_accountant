@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { getUser } from '../Utils/Common';
-import { TextField, Button, Chip, withStyles, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, CircularProgress } from '@material-ui/core';
+import { Tooltip, Grid, TextField, Button, Chip, withStyles, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, CircularProgress } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
+import HelpIcon from '@material-ui/icons/Help';
 
 const styles = theme => ({
   root: {
@@ -45,6 +46,7 @@ const styles = theme => ({
     textAlign: "left",
     paddingLeft: "3px",
     marginTop: "20px",
+    marginBottom: "10px",
     fontWeight: "bolder",
     color: "rgba(88, 88, 88, 1)"
 
@@ -103,6 +105,18 @@ const styles = theme => ({
     marginLeft: "auto",
     marginRight: "auto",
     marginTop: "250px",
+  },
+  tooltipDesign: {
+    maxWidth: "150px",
+    fontSize: "12px",
+    padding: "10px 15px",
+    whiteSpace: "pre-wrap"
+  },
+  tooltipDesignUser: {
+    marginTop: "22px"
+  },
+  tooltipIcon: {
+    marginTop: "2px",
   }
 });
 
@@ -752,7 +766,14 @@ class EditTrip extends React.Component {
       });
       return(
         <div className={this.props.classes.currency}>
-          <Typography className={this.props.classes.peopleTitle}>On this trip: </Typography>
+          <Grid container item>
+            <Typography className={this.props.classes.peopleTitle}>On this trip:&nbsp;</Typography>
+              <Tooltip classes={{ tooltip: this.props.classes.tooltipDesign }} leaveTouchDelay="10000" enterTouchDelay="10" 
+                title={'To edit the username, click on the user you wish to edit below.'}
+                arrow>
+                <HelpIcon className={this.props.classes.tooltipDesignUser} color="disabled" fontSize="small" />
+              </Tooltip>
+          </Grid>
           {displayUsers}
         </div>
       );
@@ -777,7 +798,18 @@ class EditTrip extends React.Component {
     render() {
       return(
         <div>
-          <Typography className={this.props.classes.currencyLabel}>Currency: </Typography>
+          <Grid container item>
+              <Typography className={this.props.classes.currencyLabel} align= "left">
+                Currency: &nbsp;
+              </Typography>
+              <Tooltip classes={{ tooltip: this.props.classes.tooltipDesign }} leaveTouchDelay="10000" enterTouchDelay="10" 
+                title={'Enter the currency name and the value compared to 1 SGD. \n\n'
+                        + 'For example, if 1 SGD = 0.72 USD, then enter USD as the name and 0.72 as the value. \n\n'
+                        + 'To edit the currency name or value, click on the currency you wish to edit below.'}
+                arrow>
+                <HelpIcon className={this.props.classes.tooltipIcon} color="disabled" fontSize="small" />
+              </Tooltip>
+          </Grid>
           <div className={this.props.classes.currencyContainer}>
             <TextField className={this.props.classes.currencyField} id = "currency" label="Name" onKeyPress ={this.enterCheck} />
             <TextField className={this.props.classes.currencyField} type="number" id = "currencyVal" label="Value" onKeyPress ={this.enterCheck} />

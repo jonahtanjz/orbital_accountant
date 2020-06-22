@@ -27,6 +27,7 @@ const styles = themes => ({
     },
     settledText: {
         marginTop: "100px",
+        color: "#717171",
     },
     paperContainer: {
         borderRadius: "10px",

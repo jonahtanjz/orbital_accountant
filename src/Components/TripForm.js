@@ -1,7 +1,8 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { TextField, Button, Chip, withStyles, Typography } from '@material-ui/core';
+import { TextField, Button, Chip, withStyles, Typography, Tooltip, Grid } from '@material-ui/core';
 import PropTypes from 'prop-types';
+import HelpIcon from '@material-ui/icons/Help';
 
 const styles = theme => ({
   root: {
@@ -76,6 +77,15 @@ const styles = theme => ({
   },
   createTripButton: {
     width: "330px"
+  },
+  tooltipDesign: {
+    maxWidth: "150px",
+    fontSize: "12px",
+    padding: "10px 15px",
+    whiteSpace: "pre-wrap"
+  },
+  tooltipIcon: {
+    marginTop: "2px",
   }
 });
 
@@ -196,7 +206,17 @@ class TripForm extends React.Component {
     render() {
       return(
         <div>
-          <Typography className={this.props.classes.currencyLabel}>Currency: </Typography>
+          <Grid container item>
+                <Typography className={this.props.classes.currencyLabel} align= "left">
+                  Currency: &nbsp;
+                </Typography>
+                <Tooltip classes={{ tooltip: this.props.classes.tooltipDesign }} leaveTouchDelay="10000" enterTouchDelay="10" 
+                  title={'Enter the currency name and the value compared to 1 SGD. \n\n'
+                          + 'For example, if 1 SGD = 0.72 USD, then enter USD as the name and 0.72 as the value.'}
+                  arrow>
+                  <HelpIcon className={this.props.classes.tooltipIcon} color="disabled" fontSize="small" />
+                </Tooltip>
+          </Grid>
           <div className={this.props.classes.currencyContainer}>
             <TextField className={this.props.classes.currencyField} id = "currency" label="Name" onKeyPress ={this.enterCheck} />
             <TextField className={this.props.classes.currencyField} type="number" id = "currencyVal" label="Value" onKeyPress ={this.enterCheck} />
