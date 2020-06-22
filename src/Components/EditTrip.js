@@ -110,7 +110,8 @@ const styles = theme => ({
     maxWidth: "150px",
     fontSize: "12px",
     padding: "10px 15px",
-    whiteSpace: "pre-wrap"
+    whiteSpace: "pre-wrap",
+    backgroundColor: "rgba(50, 50, 50, 1)",
   },
   tooltipDesignUser: {
     marginTop: "22px"
