@@ -128,7 +128,7 @@ class TripForm extends React.Component {
     render() {
       return(
         <div>
-          <TextField required className={this.props.classes.tripNameField} id="tripName" label="Trip Name" variant="outlined" value = {this.props.tripName} onChange = {this.updateTripName} onKeyPress ={this.enterCheck} />
+          <TextField required className={this.props.classes.tripNameField} id="tripName" label="Trip Name" variant="outlined" value = {this.props.tripName} onChange = {this.updateTripName} onKeyDown ={this.enterCheck} />
         </div>
       );
     }
@@ -154,7 +154,7 @@ class TripForm extends React.Component {
     render() {
       return (
         <div>
-        <TextField className={this.props.classes.usernameField} label="Username" id = "username" onKeyPress={this.enterCheck} />
+        <TextField className={this.props.classes.usernameField} label="Username" id = "username" onKeyDown={this.enterCheck} />
         <Button className={this.props.classes.addUserButton} size="small" variant="contained" color="primary" type="button" onClick={this.addUser}>Add</Button>
         </div>
       );
@@ -219,8 +219,8 @@ class TripForm extends React.Component {
                 </Tooltip>
           </Grid>
           <div className={this.props.classes.currencyContainer}>
-            <TextField className={this.props.classes.currencyField} id = "currency" label="Name" onKeyPress ={this.enterCheck} />
-            <TextField className={this.props.classes.currencyField} type="number" id = "currencyVal" label="Value" onKeyPress ={this.enterCheck} />
+            <TextField className={this.props.classes.currencyField} id = "currency" label="Name" onKeyDown ={this.enterCheck} />
+            <TextField className={this.props.classes.currencyField} type="number" id = "currencyVal" label="Value" onKeyDown ={this.enterCheck} />
             <Button className={this.props.classes.addCurrencyButton} size="small" variant="contained" color="primary" type = "button" onClick = {this.addCurrency}>
               Add
             </Button>

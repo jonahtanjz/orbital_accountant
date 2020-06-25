@@ -94,8 +94,13 @@ class ViewTrips extends React.Component {
         newdeleteAllDialog[i] = false;
         newEndTripDialog[i] = false;
       }
+      let trips = response.trips.filter(trip => trip[0].deleted === 0);
+      let newTrips = [];
+      for ( let i = trips.length - 1; i >= 0; i--){
+        newTrips.push(trips[i]);
+      }
       this.setState({
-        trips : response.trips.filter(trip => trip[0].deleted === 0),
+        trips : newTrips,
         user_id : user,
         anchorEl: newAnchorEl,
         deleteDialog: newdeleteDialog,

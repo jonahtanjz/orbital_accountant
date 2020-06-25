@@ -406,10 +406,10 @@ class AddEntry extends React.Component {
               <br/>
               <Grid className={classes.payerPayeeTitle} container item>
                 <Typography align= "left">
-                  Payees: &nbsp;
+                  Paid By: &nbsp;
                 </Typography>
                 <Tooltip classes={{ tooltip: classes.tooltipDesign }} leaveTouchDelay="10000" enterTouchDelay="10" 
-                  title={'Payees are people who have paid for the rest in this transaction.\n\n'
+                  title={'This is for people who have paid for the rest in this transaction.\n\n'
                          + 'For each of the payees, enter the exact amount that they have paid.\n\n'
                          + 'Simple calculations can be done in the input boxes (+, -, *, /).'}
                   arrow>
@@ -434,10 +434,10 @@ class AddEntry extends React.Component {
               </Grid>
               <Grid className={classes.payerPayeeTitle} container item>
                 <Typography align= "left">
-                  Payers: &nbsp;
+                  Split Between: &nbsp;
                 </Typography>
                 <Tooltip classes={{ tooltip: classes.tooltipDesign }} leaveTouchDelay="10000" enterTouchDelay="10" 
-                  title={'Payers are people whose bills got paid in this transaction.\n\n' +  
+                  title={'This is for people whose bills got paid in this transaction.\n\n' +  
                          'For each of the payers, enter the exact amount or ratio that they have consumed. \n\n' + 
                          'Simple calculations can be done in the input boxes (+, -, *, /). \n\n' + 
                           'If all payers consumed the same amount, check the "Split bill equally" box below and leave the input boxes empty.'}

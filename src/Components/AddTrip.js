@@ -99,16 +99,16 @@ class AddTrip extends React.Component {
         alert("Please enter the users for the trip.");
         return null;
       }
-      //Check for empty currencies
-      if (this.state.currencies.length === 0) {
-        alert("Please enter the currencies for the trip.");
-        return null;
-      }
       let users = this.state.currentUsers;
       let username = getUser().username
       if (!users.includes(username)) {
         users.push(username);
       }
+      //Print values to check
+      console.log(users);
+      console.log(this.state.tripName);
+      console.log(this.state.currencies);
+      console.log(this.state.user_id);
       fetch("https://accountant.tubalt.com/api/trips/newtrip", {
         method: "POST",
         headers: {
@@ -151,6 +151,10 @@ class AddTrip extends React.Component {
       let currNames = this.state.currencyNames.slice();
       let newCurrencyName = document.getElementById('currency').value;
       let newCurrencyValue = document.getElementById('currencyVal').value;
+      if (newCurrencyName.toUpperCase() === "SGD") {
+        alert("SGD will automatically be added into your currencies.");
+        return;
+      }
       if (newCurrencyName === "" || newCurrencyValue === "") {
         alert("Please enter a valid currency");
         return;
@@ -158,9 +162,16 @@ class AddTrip extends React.Component {
       document.getElementById('currency').value = '';
       document.getElementById('currencyVal').value = '';
       let newCurr = [ newCurrencyName, newCurrencyValue]
-      if (currNames.includes(newCurrencyName)){return;}
-      currencies.push(newCurr);
-      currNames.push(newCurrencyName);
+      if (currNames.includes(newCurrencyName)){
+        currencies.forEach((curr)=> {
+          if (curr[0] === newCurrencyName) {
+            curr[1] = newCurrencyValue;
+          }
+        });
+      } else {
+        currencies.push(newCurr);
+        currNames.push(newCurrencyName);
+      }
       this.setState({
         currencyNames : currNames,
         currencies : currencies,
