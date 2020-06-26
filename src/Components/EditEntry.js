@@ -372,7 +372,7 @@ class EditEntry extends React.Component {
       } else {
         response.json().then(res => {
           this.props.functionProps["toggleSuccessCallback"]("Success");
-          this.props.history.push("/viewledger",{trip_id : this.props.location.state.trip_id});
+          this.props.history.goBack();
         });
       }
     })

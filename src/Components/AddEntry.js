@@ -346,7 +346,7 @@ class AddEntry extends React.Component {
       } else {
         response.json().then(res => {
           this.props.functionProps["toggleSuccessCallback"]("Success");
-          this.props.history.push("/home");
+          this.props.history.goBack();
         });
       }
     })
