@@ -170,7 +170,7 @@ class ViewLedger extends React.Component {
                     <Grid item>
                         <Paper className={filteredTransactions.length === 0 ? classes.totalToPayNoLedger : classes.totalToPay}>
                             <Typography variant="h6">
-                                {this.state.selectedName === null ? "Select a person above" : (Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: S$"+Math.abs(Math.round(total[this.state.selectedName]*100)/100) : "Total to Pay: S$"+Math.round(total[this.state.selectedName]*100)/100}
+                                {this.state.selectedName === null ? "Select a person above" : (Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: S$"+Math.abs(Math.round(total[this.state.selectedName]*100)/100).toFixed(2) : "Total to Pay: S$"+ Math.abs(Math.round(total[this.state.selectedName]*100)/100).toFixed(2) }
                             </Typography>
                         </Paper>
                         <Ledger classes={classes} currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
