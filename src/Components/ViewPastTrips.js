@@ -143,8 +143,13 @@ class ViewPastTrips extends React.Component {
           response.json().then(res => alert(res.message));
         } else {
           response.json().then(res => {
+            let trips = res.trips.filter(trip => trip[0].deleted === 0);
+            let newTrips = [];
+            for ( let i = trips.length - 1; i >= 0; i--){
+              newTrips.push(trips[i]);
+            }
             this.setState({
-              trips : res.trips.filter(trip => trip[0].deleted === 0),
+              trips : newTrips,
             });
             this.handleSuccessCallback();
           });
@@ -186,8 +191,13 @@ class ViewPastTrips extends React.Component {
         response.json().then(res => alert(res.message));
       } else {
         response.json().then(res => {
+          let trips = res.trips.filter(trip => trip[0].deleted === 0);
+          let newTrips = [];
+          for ( let i = trips.length - 1; i >= 0; i--){
+            newTrips.push(trips[i]);
+          }
           this.setState({
-            trips : res.trips.filter(trip => trip[0].deleted === 0),
+            trips : newTrips,
           });
           this.handleSuccessCallback();
         });
@@ -239,8 +249,13 @@ class ViewPastTrips extends React.Component {
         response.json().then(res => alert(res.message));
       } else {
         response.json().then(res => {
+          let trips = res.trips.filter(trip => trip[0].deleted === 0);
+          let newTrips = [];
+          for ( let i = trips.length - 1; i >= 0; i--){
+            newTrips.push(trips[i]);
+          }
           this.setState({
-            trips : res.trips.filter(trip => trip[0].deleted === 0),
+            trips : newTrips,
           });
           this.handleSuccessCallback();
         });
