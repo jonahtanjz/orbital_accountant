@@ -104,11 +104,6 @@ class AddTrip extends React.Component {
       if (!users.includes(username)) {
         users.push(username);
       }
-      //Print values to check
-      console.log(users);
-      console.log(this.state.tripName);
-      console.log(this.state.currencies);
-      console.log(this.state.user_id);
       fetch("https://accountant.tubalt.com/api/trips/newtrip", {
         method: "POST",
         headers: {
