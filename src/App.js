@@ -136,6 +136,7 @@ class App extends Component {
         pageName: name,
         deleteTransactionDialog: false,
         linkDialog: false,
+        anchorElLedgerMenu: null
       });
     }
 
