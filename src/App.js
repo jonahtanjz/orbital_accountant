@@ -132,7 +132,11 @@ class App extends Component {
     } 
 
     updatePageName(name) {
-      this.setState({pageName: name});
+      this.setState({
+        pageName: name,
+        deleteTransactionDialog: false,
+        linkDialog: false,
+      });
     }
 
     toggleSuccessCallback(message) {
