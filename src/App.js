@@ -14,6 +14,9 @@ import ViewLedger from './Components/ViewLedger';
 import SuggestedPayments from './Components/SuggestedPayments';
 import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
+import Settings from './Screens/Settings';
+import ChangePassword from './Components/ChangePassword';
+import ChangeUsername from './Components/ChangeUsername';
 import { AppBar, Toolbar, IconButton, InputAdornment, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
@@ -396,11 +399,14 @@ class App extends Component {
                       <Route path="/viewledger/" render={(props) => <ViewLedger {...props} functionProps={functionProps} />} />
                       <Route path="/suggestedpayments" render={(props) => <SuggestedPayments {...props} functionProps={functionProps} />} />
                       <PrivateRoute path="/home" component={Home} functionProps={functionProps} />
+                      <PrivateRoute path="/settings" component={Settings} functionProps={functionProps} />
                       <PrivateRoute path="/pasttrips" component={PastTrips} functionProps={functionProps} />
                       <PrivateRoute path="/addtrip" component={AddTrip} functionProps={functionProps} />
                       <PrivateRoute path ="/edittrip" component = {EditTrip} functionProps={functionProps} />
                       <PrivateRoute path="/addentry" component ={AddEntry} functionProps={functionProps} />
                       <PrivateRoute path = "/editentry" component = {EditEntry} functionProps={functionProps} />
+                      <PrivateRoute path = "/changeusername" component = {ChangeUsername} functionProps={functionProps} />
+                      <PrivateRoute path = "/changepassword" component = {ChangePassword} functionProps={functionProps} />
                       <PublicRoute path="/login" component={Login} functionProps={functionProps} />
                       <Route path="/signup" render={(props) => <Signup {...props} functionProps={functionProps} />}  />
                     </Switch>
