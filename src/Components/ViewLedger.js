@@ -34,6 +34,9 @@ const styles = theme => ({
         width: "335px",
         borderRadius: "0 !important",
     },
+    paymentAmtTitle: {
+        wordBreak: "break-word"
+    }
   });
 
 class ViewLedger extends React.Component {
@@ -169,7 +172,7 @@ class ViewLedger extends React.Component {
                     <br/>
                     <Grid item>
                         <Paper className={filteredTransactions.length === 0 ? classes.totalToPayNoLedger : classes.totalToPay}>
-                            <Typography variant="h6">
+                            <Typography className={classes.paymentAmtTitle} variant="h6">
                                 {this.state.selectedName === null ? "Select a person above" : (Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: S$"+Math.abs(Math.round(total[this.state.selectedName]*100)/100).toFixed(2) : "Total to Pay: S$"+ Math.abs(Math.round(total[this.state.selectedName]*100)/100).toFixed(2) }
                             </Typography>
                         </Paper>

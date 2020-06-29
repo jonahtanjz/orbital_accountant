@@ -67,3 +67,7 @@ code {
 .pay-button {
   padding-top: 2px;
 }
+
+p, span, td {
+  word-break: break-word;
+}

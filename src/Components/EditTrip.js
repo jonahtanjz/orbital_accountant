@@ -62,7 +62,8 @@ const styles = theme => ({
     color: "rgba(117, 117, 117, 0.7)"
   },
   peopleChip: {
-    margin: "5px"
+    margin: "5px",
+    maxWidth: "100%"
   },
   currencyContainer: {
     marginTop: "10px",
@@ -85,7 +86,8 @@ const styles = theme => ({
     color: "rgba(117, 117, 117, 0.7)"
   },
   currencyChip: {
-    margin: "5px"
+    margin: "5px",
+    maxWidth: "100%"
   },
   createTripButton: {
     width: "330px"
