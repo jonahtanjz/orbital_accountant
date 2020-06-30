@@ -145,6 +145,7 @@ class ViewLedger extends React.Component {
             entry.payee === this.state.selectedName || entry.payer=== this.state.selectedName
         );
         let { classes } = this.props;
+        let usernames = this.state.users.map(user => user.name);
         if (!this.state.loaded) { 
             return (
               <div className={classes.loadingCircleContainer}>
@@ -173,7 +174,7 @@ class ViewLedger extends React.Component {
                     <Grid item>
                         <Paper className={filteredTransactions.length === 0 ? classes.totalToPayNoLedger : classes.totalToPay}>
                             <Typography className={classes.paymentAmtTitle} variant="h6">
-                                {this.state.selectedName === null ? "Select a person above" : (Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: S$"+Math.abs(Math.round(total[this.state.selectedName]*100)/100).toFixed(2) : "Total to Pay: S$"+ Math.abs(Math.round(total[this.state.selectedName]*100)/100).toFixed(2) }
+                                {(this.state.selectedName === null || !usernames.includes(this.state.selectedName) /*|| isNaN(Math.round(total[this.state.selectedName]*100)/100)*/) ? "Select a person above" : (Math.round(total[this.state.selectedName]*100)/100 < 0) ? "Total to Receive: S$"+Math.abs(Math.round(total[this.state.selectedName]*100)/100).toFixed(2) : "Total to Pay: S$"+ Math.abs(Math.round(total[this.state.selectedName]*100)/100).toFixed(2) }
                             </Typography>
                         </Paper>
                         <Ledger classes={classes} currency = {this.state.currency} users={this.state.users} transactions={filteredTransactions} self={this.state.selectedName} history = {this.props.history} trip = {this.state.trip} />
