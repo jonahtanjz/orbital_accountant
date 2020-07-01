@@ -51,6 +51,11 @@ class SuggestedPayments extends React.Component {
 
     componentDidMount() {
         this.props.functionProps["updatePageName"]("Suggested Payments");
+        if (!this.props.location.state) {
+            this.props.functionProps["toggleFailCallback"]("Invalid link. Please try again.");
+            setTimeout(()=>this.props.history.push("/"),3000);
+            return;
+        }
         fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
@@ -62,6 +67,10 @@ class SuggestedPayments extends React.Component {
                 currency : response.currency,
                 loaded: true,
             });
+        })
+        .catch(err => {
+            this.props.functionProps["toggleFailCallback"]("Invalid link. Please try again.");
+            setTimeout(()=>this.props.history.push("/"),3000);
         })
     }
 

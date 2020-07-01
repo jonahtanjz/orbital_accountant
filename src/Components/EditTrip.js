@@ -149,6 +149,11 @@ class EditTrip extends React.Component {
     }
 
     componentDidMount() {
+      if (!this.props.location.state) {
+        this.props.functionProps["toggleFailCallback"]("Invalid link. Please try again.");
+        setTimeout(()=>this.props.history.push("/"),3000);
+        return;
+      }
       this.props.functionProps["updatePageName"]("Edit Trip");
         const user = getUser();
         this.setState({

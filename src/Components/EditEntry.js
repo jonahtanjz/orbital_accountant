@@ -97,6 +97,11 @@ class EditEntry extends React.Component {
   }
   //Loads up trip and transaction data to pre-fill forms.
   componentDidMount() {
+    if (!this.props.location.state) {
+      this.props.functionProps["toggleFailCallback"]("Invalid link. Please try again.");
+      setTimeout(()=>this.props.history.push("/"),3000);
+      return;
+    }
     if (window.screen.availWidth < 769) {
       this.setState({
         isMobile: true,
