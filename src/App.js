@@ -408,7 +408,7 @@ class App extends Component {
                       <PrivateRoute path = "/changeusername" component = {ChangeUsername} functionProps={functionProps} />
                       <PrivateRoute path = "/changepassword" component = {ChangePassword} functionProps={functionProps} />
                       <PublicRoute path="/login" component={Login} functionProps={functionProps} />
-                      <Route path="/signup" render={(props) => <Signup {...props} functionProps={functionProps} />}  />
+                      <PublicRoute path="/signup" component={Signup} functionProps={functionProps}  />
                     </Switch>
                     <Snackbar open={this.state.successCallback} autoHideDuration={3000} onClose={this.closeSuccessCallback}>
                       <Alert onClose={this.closeSuccessCallback} severity="success">

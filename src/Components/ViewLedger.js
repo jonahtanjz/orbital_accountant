@@ -81,6 +81,10 @@ class ViewLedger extends React.Component {
                 loaded: true,
             });
         })
+        .catch(err => {
+            this.props.functionProps["toggleFailCallback"]("Invalid ledger link. Please try again.");
+            setTimeout(()=>this.props.history.push("/"),3000);
+        })
     }
 
     changeSelectedName(e) {
