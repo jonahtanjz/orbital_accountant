@@ -136,6 +136,8 @@ class EditTrip extends React.Component {
         trip_id : 0,
         owner_id : 0,
         loaded: false,
+        userToAdd: "",
+        isUserDialog: false,
       }
       this.addUser = this.addUser.bind(this);
       this.addCurrency = this.addCurrency.bind(this);
@@ -146,6 +148,8 @@ class EditTrip extends React.Component {
       this.enterCheck = this.enterCheck.bind(this);
       this.changeUserName = this.changeUserName.bind(this);
       this.setNewTripInfo = this.setNewTripInfo.bind(this);
+      this.addNonOrExistingUser = this.addNonOrExistingUser.bind(this);
+      this.toggleIsUserDialog = this.toggleIsUserDialog.bind(this);
     }
 
     componentDidMount() {
@@ -315,17 +319,45 @@ class EditTrip extends React.Component {
         alert("Please enter a name.");
         return;
       }
-      if (this.state.currentUsers.filter((person) => person.name === newName && person.in_trip === 1).length !== 0) {
+      if (this.state.currentUsers.filter((person) => person.name.toUpperCase() === newName.toUpperCase() && person.in_trip === 1).length !== 0) {
         alert("Name already included.");
         return;
       }
+      fetch("https://accountant.tubalt.com/api/users/checkusername", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: newName
+        })
+      })
+      .then(response => response.json())
+      .then(res => {
+        if (res.exists) {
+          this.setState({
+            isUserDialog: true,
+            userToAdd: newName
+          })
+        } else {
+          this.addNonOrExistingUser(false, false, newName);
+        }
+      });
+    }
+
+    addNonOrExistingUser(status, toggle, name) {
+      if (toggle) {this.toggleIsUserDialog();}
+      let newUser = {
+        username: (toggle ? this.state.userToAdd : name),
+        hasAccount: status
+      };
       fetch("https://accountant.tubalt.com/api/trips/adduser", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          username : newName,
+          user : newUser,
           trip_id : this.state.trip_id,
         })
       })
@@ -343,7 +375,13 @@ class EditTrip extends React.Component {
         console.log(error);
         this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
+    }
 
+    toggleIsUserDialog() {
+      let newState = !this.state.isUserDialog;
+      this.setState({
+        isUserDialog: newState
+      });
     }
 
     changeUserName(e) {
@@ -368,25 +406,44 @@ class EditTrip extends React.Component {
         );
       }
       return(
-        <TripForm 
-        onSubmit = {this.onSubmit}
-        enterCheck = {this.enterCheck}
-        updateTripName = {this.updateTripName}
-        tripName = {this.state.tripName}
-        addUser = {this.addUser}
-        deleteUser = {this.deleteUser}
-        currentUsers = {this.state.currentUsers}
-        changeUserName = {this.changeUserName}
-        addCurrency = {this.addCurrency}
-        currencies = {this.state.currencies}
-        deleteCurrency = {this.deleteCurrency}
-        trip_id = {this.state.trip_id}
-        setNewTripInfo = {this.setNewTripInfo}
-        history = {this.props.history}
-        owner_id = {this.state.owner_id}
-        classes = { classes }
-        functionProps = {this.props.functionProps}
-        />
+        <React.Fragment>
+          <TripForm 
+          onSubmit = {this.onSubmit}
+          enterCheck = {this.enterCheck}
+          updateTripName = {this.updateTripName}
+          tripName = {this.state.tripName}
+          addUser = {this.addUser}
+          deleteUser = {this.deleteUser}
+          currentUsers = {this.state.currentUsers}
+          changeUserName = {this.changeUserName}
+          addCurrency = {this.addCurrency}
+          currencies = {this.state.currencies}
+          deleteCurrency = {this.deleteCurrency}
+          trip_id = {this.state.trip_id}
+          setNewTripInfo = {this.setNewTripInfo}
+          history = {this.props.history}
+          owner_id = {this.state.owner_id}
+          classes = { classes }
+          functionProps = {this.props.functionProps}
+          />
+          <Dialog open={this.state.isUserDialog} onClose={this.toggleIsUserDialog} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Does {this.state.userToAdd} have an account?</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                The username entered matches a user account. Does {this.state.userToAdd} have an account? If yes, add {this.state.userToAdd} as a user and this trip will automatically be added to this user's trip. 
+                If not, add {this.state.userToAdd} as a non-user.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => this.addNonOrExistingUser(false, true, null)} color="primary">
+                Add as Non-User
+              </Button>
+              <Button onClick={() => this.addNonOrExistingUser(true, true, null)} color="primary" autoFocus>
+                Add as user
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </React.Fragment>
       );
     }
   }
@@ -540,6 +597,9 @@ class EditTrip extends React.Component {
         editingText: {},
         deleteUserDialog: {},
         ownerDialog: false,
+        isUserDialog: false,
+        userToAdd: "",
+        linkIdToEdit: 0,
       };
       this.deleteUser = this.deleteUser.bind(this);
       this.toggleEditing = this.toggleEditing.bind(this);
@@ -547,6 +607,8 @@ class EditTrip extends React.Component {
       this.changeUserName = this.changeUserName.bind(this);
       this.toggleDeleteUserDialog = this.toggleDeleteUserDialog.bind(this);
       this.toggleOwnerDialog = this.toggleOwnerDialog.bind(this);
+      this.addNonOrExistingUser = this.addNonOrExistingUser.bind(this);
+      this.toggleIsUserDialog = this.toggleIsUserDialog.bind(this);
     }
 
     deleteUser(e, id) {
@@ -608,17 +670,46 @@ class EditTrip extends React.Component {
 
     submitEditedName(id) {
       this.toggleEditing(id);
-      let link_id = id;
-      let newName = this.state.editingText[link_id];
+      let newName = this.state.editingText[id];
       if (!newName) {
         alert("Please enter a valid name.");
         return null;
       }
-      console.log(this.props.currentUsers);
-      if (this.props.currentUsers.filter(person => person.in_trip === 1 && person.name === newName).length > 0) {
+      if (this.props.currentUsers.filter(person => person.id !== id).filter(person => person.in_trip === 1 && person.name.toUpperCase() === newName.toUpperCase()).length > 0) {
         alert("Name already exists");
         return null;
       }
+      fetch("https://accountant.tubalt.com/api/users/checkusername", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: newName
+        })
+      })
+      .then(response => response.json())
+      .then(res => {
+        if (res.exists) {
+          this.setState({
+            isUserDialog: true,
+            userToAdd: newName,
+            linkIdToEdit: id
+          });
+        } else {
+          this.addNonOrExistingUser(false, false, newName, id);
+        }
+      });
+    }
+
+    addNonOrExistingUser(status, toggle, name, id) {
+      if (toggle) {this.toggleIsUserDialog();}
+      let link_id = (toggle ? this.state.linkIdToEdit : id);
+      let newName = (toggle ? this.state.userToAdd : name);
+      let newUser = {
+        username: newName,
+        hasAccount: status
+      };
       fetch("https://accountant.tubalt.com/api/trips/edittripuser", {
         method: "POST",
         headers: {
@@ -626,7 +717,7 @@ class EditTrip extends React.Component {
         },
         body: JSON.stringify({
           id : link_id,
-          newUsername : newName,
+          newUser : newUser,
           trip_id : this.props.trip_id,
         })
       })
@@ -643,6 +734,13 @@ class EditTrip extends React.Component {
       .catch(error => {
         console.log(error);
         this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
+      });
+    }
+
+    toggleIsUserDialog() {
+      let newState = !this.state.isUserDialog;
+      this.setState({
+        isUserDialog: newState
       });
     }
 
@@ -721,6 +819,24 @@ class EditTrip extends React.Component {
                   </Button>
                   <Button onClick={(e) => this.deleteUser(e, user.id)} color="primary" autoFocus>
                     Remove
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
+              <Dialog open={this.state.isUserDialog} onClose={this.toggleIsUserDialog} aria-labelledby="form-dialog-title">
+                <DialogTitle id="form-dialog-title">Does {this.state.userToAdd} have an account?</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    The username entered matches a user account. Does {this.state.userToAdd} have an account? If yes, add {this.state.userToAdd} as a user and this trip will automatically be added to {this.state.userToAdd}'s trip. 
+                    If not, add {this.state.userToAdd} as a non-user.
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => this.addNonOrExistingUser(false, true, null, null)} color="primary">
+                    Add as Non-User
+                  </Button>
+                  <Button onClick={() => this.addNonOrExistingUser(true, true, null, null)} color="primary" autoFocus>
+                    Add as user
                   </Button>
                 </DialogActions>
               </Dialog>

@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { getUser } from '../Utils/Common';
 import TripForm from './TripForm';
-import { Box, withStyles } from '@material-ui/core';
+import { Box, withStyles, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Button } from '@material-ui/core';
 import PropTypes from 'prop-types';
 
 const styles = theme => ({
@@ -25,6 +25,8 @@ class AddTrip extends React.Component {
         currencies : [],
         currencyNames : [],
         tripName : "",
+        userToAdd: "",
+        isUserDialog: false
       }
       this.addUser = this.addUser.bind(this);
       this.addCurrency = this.addCurrency.bind(this);
@@ -33,6 +35,8 @@ class AddTrip extends React.Component {
       this.deleteCurrency = this.deleteCurrency.bind(this);
       this.deleteUser = this.deleteUser.bind(this);
       this.enterCheck = this.enterCheck.bind(this);
+      this.toggleIsUserDialog = this.toggleIsUserDialog.bind(this);
+      this.addNonOrExistingUser = this.addNonOrExistingUser.bind(this);
     }
 
     componentDidMount() {
@@ -57,9 +61,9 @@ class AddTrip extends React.Component {
   
     deleteUser(name, e) {
       e.preventDefault();
-      let userName = name
+      let userName = name;
       let usernames = this.state.currentUsers;
-      let index = usernames.findIndex((x) => {
+      let index = usernames.map(user => user.username).findIndex((x) => {
         return x === userName
       });
       usernames.splice(index,1);
@@ -100,8 +104,11 @@ class AddTrip extends React.Component {
         return null;
       }
       let users = this.state.currentUsers;
-      let username = getUser().username
-      if (!users.includes(username)) {
+      let username = {
+        username: getUser().username,
+        hasAccount: true
+      }
+      if (!users.map(user => user.username).includes(username)) {
         users.push(username);
       }
       fetch("https://accountant.tubalt.com/api/trips/newtrip", {
@@ -175,20 +182,75 @@ class AddTrip extends React.Component {
   
     addUser(e) {
       e.preventDefault();
-      let curr = this.state.currentUsers.slice();
+      let curr = this.state.currentUsers.slice().map(user => user.username.toUpperCase());
       let newName = document.getElementById('username').value;
       document.getElementById('username').value = '';
       if (newName === "") {
         alert("Please enter a name.");
         return;
       }
-      if (curr.includes(newName)) {
+      if (curr.includes(newName.toUpperCase())) {
         alert("Name already included.");
         return;
       }
-      curr.push(newName);
+      if (newName.toUpperCase() === getUser().username.toUpperCase()) {
+        let currUsers = this.state.currentUsers.slice()
+        let newUser = {
+          username: newName,
+          hasAccount: true
+        }
+        currUsers.push(newUser);
+        this.setState({
+          currentUsers: currUsers,
+        });
+        return;
+      }
+      fetch("https://accountant.tubalt.com/api/users/checkusername", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: newName
+        })
+      })
+      .then(response => response.json())
+      .then(res => {
+        if (res.exists) {
+          this.setState({
+            isUserDialog: true,
+            userToAdd: newName
+          })
+        } else {
+          let currUsers = this.state.currentUsers.slice()
+          let newUser = {
+            username: newName,
+            hasAccount: false
+          }
+          currUsers.push(newUser);
+          this.setState({
+            currentUsers : currUsers,
+          });
+        }
+      });
+    }
+
+    toggleIsUserDialog() {
+      let newState = !this.state.isUserDialog;
+      this.setState({ isUserDialog: newState });
+    }
+
+    addNonOrExistingUser(status) {
+      this.toggleIsUserDialog();
+      let curr = this.state.currentUsers.slice();
+      let newUser = {
+        username: this.state.userToAdd,
+        hasAccount: status
+      }
+      curr.push(newUser);
       this.setState({
-        currentUsers : curr,
+        currentUsers: curr,
+        userToAdd: ""
       });
     }
   
@@ -208,6 +270,23 @@ class AddTrip extends React.Component {
             currencies = {this.state.currencies}
             deleteCurrency = {this.deleteCurrency}
             />
+            <Dialog open={this.state.isUserDialog} onClose={this.toggleIsUserDialog} aria-labelledby="form-dialog-title">
+              <DialogTitle id="form-dialog-title">Does {this.state.userToAdd} have an account?</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  The username entered matches a user account. Does {this.state.userToAdd} have an account? If yes, add {this.state.userToAdd} as a user and this trip will automatically be added to {this.state.userToAdd}'s trip. 
+                  If not, add {this.state.userToAdd} as a non-user.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => this.addNonOrExistingUser(false)} color="primary">
+                  Add as Non-User
+                </Button>
+                <Button onClick={() => this.addNonOrExistingUser(true)} color="primary" autoFocus>
+                  Add as user
+                </Button>
+              </DialogActions>
+            </Dialog>
         </Box>
       );
     }

@@ -176,7 +176,7 @@ class TripForm extends React.Component {
     render() {
       const displayUsers = this.props.currentUsers.map((user) => {
         return (
-          <Chip className={this.props.classes.peopleChip} color="primary" onDelete={(e) => this.deleteUser(user, e)} label={user} />
+          <Chip className={this.props.classes.peopleChip} color="primary" onDelete={(e) => this.deleteUser(user.username, e)} label={user.username} />
         );
       });
       return(
