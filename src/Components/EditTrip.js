@@ -822,24 +822,6 @@ class EditTrip extends React.Component {
                   </Button>
                 </DialogActions>
               </Dialog>
-
-              <Dialog open={this.state.isUserDialog} onClose={this.toggleIsUserDialog} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Does {this.state.userToAdd} have an account?</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    The username entered matches a user account. Does {this.state.userToAdd} have an account? If yes, add {this.state.userToAdd} as a user and this trip will automatically be added to {this.state.userToAdd}'s trip. 
-                    If not, add {this.state.userToAdd} as a non-user.
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => this.addNonOrExistingUser(false, true, null, null)} color="primary">
-                    Add as Non-User
-                  </Button>
-                  <Button onClick={() => this.addNonOrExistingUser(true, true, null, null)} color="primary" autoFocus>
-                    Add as user
-                  </Button>
-                </DialogActions>
-              </Dialog>
             </React.Fragment>
           );
         } else {
@@ -899,6 +881,23 @@ class EditTrip extends React.Component {
               </Tooltip>
           </Grid>
           {displayUsers}
+          <Dialog open={this.state.isUserDialog} onClose={this.toggleIsUserDialog} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-dialog-title">Does {this.state.userToAdd} have an account?</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                The username entered matches a user account. Does {this.state.userToAdd} have an account? If yes, add {this.state.userToAdd} as a user and this trip will automatically be added to {this.state.userToAdd}'s trip. 
+                If not, add {this.state.userToAdd} as a non-user.
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => this.addNonOrExistingUser(false, true, null, null)} color="primary">
+                Add as Non-User
+              </Button>
+              <Button onClick={() => this.addNonOrExistingUser(true, true, null, null)} color="primary" autoFocus>
+                Add as user
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       );
     }
