@@ -430,7 +430,7 @@ class EditTrip extends React.Component {
             <DialogTitle id="form-dialog-title">Does {this.state.userToAdd} have an account?</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                The username entered matches a user account. Does {this.state.userToAdd} have an account? If yes, add {this.state.userToAdd} as a user and this trip will automatically be added to this user's trip. 
+                The username entered matches a user account. Does {this.state.userToAdd} have an account? If yes, add {this.state.userToAdd} as a user and this trip will automatically be added to {this.state.userToAdd}'s trip. 
                 If not, add {this.state.userToAdd} as a non-user.
               </DialogContentText>
             </DialogContent>
