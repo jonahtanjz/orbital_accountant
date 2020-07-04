@@ -379,6 +379,13 @@ class App extends Component {
                           </NavLink>
                         </ListItem>
                         <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
+                          <NavLink className={classes.drawerListItemText} activeClassName="active" to="/settings">
+                            <Typography>
+                              Settings
+                            </Typography>
+                          </NavLink>
+                        </ListItem>
+                        <ListItem className={classes.drawerListItem} onClick={this.handleDrawerClose} button>
                         <ListItemText primaryTypographyProps={{variant: "body1"}} onClick={this.handleLogout} primary="Logout"/>
                         </ListItem>
                       </List>

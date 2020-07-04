@@ -111,36 +111,36 @@ class ChangePassword extends React.Component {
         return(
             <div className={classes.page}>
                 <Paper className={classes.paper} >
-                <TextField 
-                    className={classes.textfield}
-                    variant="outlined"
-                    onChange={this.onChangeVal} 
-                    value={this.state.oldPassword} 
-                    name="oldPassword" 
-                    label="Current Password" />
-                <br/>
-                <TextField 
-                    className={classes.textfield}
-                    variant="outlined"
-                    onChange={this.onChangeVal} 
-                    value={this.state.newPassword} 
-                    name="newPassword" 
-                    label="New Password" />
-                <br/>
-                <TextField 
-                    className={classes.textfield}
-                    variant="outlined"
-                    error = { this.state.validated || this.state.cPassword !== ''} 
-                    onChange={this.onChangeVal} 
-                    value={this.state.cPassword} 
-                    name="cPassword" 
-                    label="Confirm Password" />
-                <Typography color= "error">
-                    {this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}
-                </Typography>   
-                <Button className={classes.button} color="primary" variant="contained" onClick={this.onSubmit}> Submit </Button>
-                <br/>
-                <Button className={classes.button} color="disabled" variant="contained" onClick={this.onCancel}>Cancel</Button>
+                    <TextField 
+                        className={classes.textfield}
+                        variant="outlined"
+                        onChange={this.onChangeVal} 
+                        value={this.state.oldPassword} 
+                        name="oldPassword" 
+                        label="Current Password" />
+                    <br/>
+                    <TextField 
+                        className={classes.textfield}
+                        variant="outlined"
+                        onChange={this.onChangeVal} 
+                        value={this.state.newPassword} 
+                        name="newPassword" 
+                        label="New Password" />
+                    <br/>
+                    <TextField 
+                        className={classes.textfield}
+                        variant="outlined"
+                        error = { this.state.validated || this.state.cPassword !== ''} 
+                        onChange={this.onChangeVal} 
+                        value={this.state.cPassword} 
+                        name="cPassword" 
+                        label="Confirm Password" />
+                    <Typography color= "error">
+                        {this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}
+                    </Typography>   
+                    <Button className={classes.button} color="primary" variant="contained" onClick={this.onSubmit}> Submit </Button>
+                    <br/>
+                    <Button className={classes.button} color="disabled" variant="contained" onClick={this.onCancel}>Cancel</Button>
                 </Paper>
             </div>
         );
