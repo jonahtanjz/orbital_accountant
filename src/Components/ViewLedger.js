@@ -199,6 +199,7 @@ class SelectLedger extends React.Component {
             selectOptions = this.props.users.map((person)=>{
                 return(<option key ={person.name} value = {person.name}>{person.name}</option>);
             });
+            selectOptions.unshift(<option hidden disabled selected value></option>);
             selectObject =
             <div>
                 <InputLabel id="select-person-label">Select Person</InputLabel>
