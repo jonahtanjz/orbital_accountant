@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, withStyles, Paper, Grid, IconButton, Typography, Divider, Switch } from '@material-ui/core';
+import { Button, withStyles, Paper, Grid, IconButton, Typography, Divider, Switch, CircularProgress } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { ToggleOn, ToggleOff, AlternateEmail } from '@material-ui/icons';
@@ -33,7 +33,12 @@ const styles = theme => ({
     },
     notificationContainer: {
         height: "52px"
-    }
+    },
+    loadingCircle: {
+        marginLeft: "auto",
+        marginRight: "auto",
+        marginTop: "250px",
+    },
 });
 
 class Settings extends React.Component {
@@ -41,6 +46,7 @@ class Settings extends React.Component {
         super(props);
         this.state ={
             notification: false,
+            loaded: false,
         }
         this.changeUsername = this.changeUsername.bind(this);
         this.changePassword = this.changePassword.bind(this);
@@ -51,7 +57,8 @@ class Settings extends React.Component {
         this.props.functionProps["updatePageName"]("Settings");
         let notificationState = await getPushSubscription(getUser().user_id);
         this.setState({
-            notification: notificationState
+            notification: notificationState,
+            loaded: true
         })
     }
 
@@ -65,8 +72,12 @@ class Settings extends React.Component {
     }
     
     async toggleNoti(){
+        let currentNotificationState = this.state.notification;
+        this.setState({
+            notification: !currentNotificationState
+        })
         let notificationState;
-        if (this.state.notification) {
+        if (currentNotificationState) {
             notificationState = await pushUnsubscribe(getUser().user_id);
         } else {
             notificationState = await subscribeUser(getUser().user_id);
@@ -78,6 +89,11 @@ class Settings extends React.Component {
 
     render() {
         const { classes } = this.props;
+        if (!this.state.loaded) { 
+            return (
+              <CircularProgress className={classes.loadingCircle} />
+            );
+        }
         return(
             <div className={classes.homeContainer}>
                 <Paper className={classes.paper}>
