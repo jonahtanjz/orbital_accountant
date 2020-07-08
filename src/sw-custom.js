@@ -67,51 +67,44 @@ if ("function" === typeof importScripts) {
         }
       });
 
-      function getUser() {
-        const userStr = localStorage.getItem('user');
-        if (userStr) return JSON.parse(userStr);
-      }
-
-      console.log(getUser().user_id);
-
-      self.addEventListener('pushsubscriptionchange', function(e) {
-        navigator.serviceWorker.ready.then(function(reg) {
-          reg.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: "BEihlKsIj93XnvJwx8kgF13l6ZdNJlAyY0zqGA8Tzzq_iYvy1KccHEZCwUKY6L3BPV7qmOkA_9arNjTD_6xYVlE"
-          }).then(function(sub) {
-            fetch("https://accountant.tubalt.com/api/users/pushsubscribe", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                user_id: getUser().user_id,
-                pushSubscription: sub.toJSON()
-              })
-            })
-            .then(response => {
-              if (response.status === 401) {
-                response.json().then(res => alert(res.message));
-              } else {
-                response.json().then(res => {
-                  console.log("Success");
-                });
-              }
-            })
-            .catch(error => {
-              console.log(error);
-              alert("Oops! Something went wrong");
-            });
-          }).catch(function(e) {
-            if (Notification.permission === 'denied') {
-              console.warn('Permission for notifications was denied');
-            } else {
-              console.error('Unable to subscribe to push', e);
-            }
-          });
-        });
-      });
+      // self.addEventListener('pushsubscriptionchange', function(e) {
+      //   navigator.serviceWorker.ready.then(function(reg) {
+      //     reg.pushManager.subscribe({
+      //       userVisibleOnly: true,
+      //       applicationServerKey: "BEihlKsIj93XnvJwx8kgF13l6ZdNJlAyY0zqGA8Tzzq_iYvy1KccHEZCwUKY6L3BPV7qmOkA_9arNjTD_6xYVlE"
+      //     }).then(function(sub) {
+      //       fetch("https://accountant.tubalt.com/api/users/pushsubscribe", {
+      //         method: "POST",
+      //         headers: {
+      //           "Content-Type": "application/json"
+      //         },
+      //         body: JSON.stringify({
+      //           user_id: getUser().user_id,
+      //           pushSubscription: sub.toJSON()
+      //         })
+      //       })
+      //       .then(response => {
+      //         if (response.status === 401) {
+      //           response.json().then(res => alert(res.message));
+      //         } else {
+      //           response.json().then(res => {
+      //             console.log("Success");
+      //           });
+      //         }
+      //       })
+      //       .catch(error => {
+      //         console.log(error);
+      //         alert("Oops! Something went wrong");
+      //       });
+      //     }).catch(function(e) {
+      //       if (Notification.permission === 'denied') {
+      //         console.warn('Permission for notifications was denied');
+      //       } else {
+      //         console.error('Unable to subscribe to push', e);
+      //       }
+      //     });
+      //   });
+      // });
   
       // Manual injection point for manifest files.
       // All assets under build/ and 5MB sizes are precached.
