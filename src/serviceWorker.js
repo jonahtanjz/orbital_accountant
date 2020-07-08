@@ -183,8 +183,7 @@ export function subscribeUser(userid) {
         });
       });
       setTimeout(function() {
-        resolve(false);
-        alert("Please exit incognito mode to use push notification")
+        resolve(null);
       }, 3000);
     } else {
       resolve(false)
@@ -281,8 +280,7 @@ export function pushUnsubscribe(userid) {
       });
     });
     setTimeout(function() {
-      resolve(false);
-      alert("Please exit incognito mode to use push notification")
+      resolve(null);
     }, 3000);
   } else {
     resolve(false)

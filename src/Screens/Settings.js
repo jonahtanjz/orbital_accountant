@@ -86,6 +86,10 @@ class Settings extends React.Component {
         } else {
             notificationState = await subscribeUser(getUser().user_id);
         }
+        if (notificationState === null) {
+            alert("Please exit incognito mode to use push notification");
+            notificationState = false;
+        }
         this.setState({
             notification: notificationState
         })
