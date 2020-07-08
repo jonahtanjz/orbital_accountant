@@ -1,3 +1,6 @@
+import { subscribeUser } from 'serviceWorker';
+import { getUser } from './Utils/Common';
+
 if ("function" === typeof importScripts) {
     importScripts(
       "https://storage.googleapis.com/workbox-cdn/releases/3.5.0/workbox-sw.js"
@@ -31,7 +34,7 @@ if ("function" === typeof importScripts) {
         console.log(body);
         var options = {
           body: body,
-          // icon: 'images/notification-flat.png',
+          icon: './images/favicon.png',
           vibrate: [100, 50, 100],
           data: {
             dateOfArrival: Date.now(),
@@ -66,6 +69,10 @@ if ("function" === typeof importScripts) {
           self.clients.openWindow('https://accountant.tubalt.com');
           notification.close();
         }
+      });
+
+      self.addEventListener('pushsubscriptionchange', function(e) {
+        subscribeUser(getUser().user_id);
       });
   
       // Manual injection point for manifest files.
