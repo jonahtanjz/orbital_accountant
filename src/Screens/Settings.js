@@ -15,7 +15,7 @@ const styles = theme => ({
         marginLeft: "auto",    
     },
     paper: {
-        width: '335px',
+        width: '315px',
         padding: '10px',
     },
     button: {

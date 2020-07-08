@@ -73,11 +73,13 @@ class ViewLedger extends React.Component {
         .then(response => response.json())
         .then(response => {
             console.log(response);
+            let newSelectedName = response.users.map(user => user.name).includes(this.state.selectedName) ? this.state.selectedName : null;
             this.setState({
                 trip : response.trip[0] ,
                 users :response.users ,
                 transactions : response.transactions,
                 currency : response.currency,
+                selectedName: newSelectedName,
                 loaded: true,
             });
         })
