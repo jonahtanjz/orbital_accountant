@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, withStyles, Paper, Grid, IconButton, Typography } from '@material-ui/core';
+import { Button, withStyles, Paper, Grid, IconButton, Typography, Divider } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { ToggleOn, ToggleOff, AlternateEmail } from '@material-ui/icons';
@@ -17,17 +17,23 @@ const styles = theme => ({
     paper: {
         width: '315px',
         padding: '10px',
+        borderRadius: '10px',
+        marginTop: '20px'
     },
     button: {
         width: "100%",
         textAlign:"left",
         justifyContent: "left",
         textTransform: "none",
+        height: "50px"
         
     },
     settingsText: {
-        padding: "8px",
+        padding: "8px"
     },
+    notificationContainer: {
+        height: "52px"
+    }
 });
 
 class Settings extends React.Component {
@@ -85,11 +91,13 @@ class Settings extends React.Component {
                             Change Password
                         </Typography>
                     </Button>
+                    <Divider />
                     <Grid
                         container
                         direction="row"
                         justify="space-between"
                         alignItems="center"
+                        className={classes.notificationContainer}
                     >
                         <Typography className={classes.settingsText}>
                             Push Notifications
