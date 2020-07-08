@@ -16,7 +16,6 @@ if ("function" === typeof importScripts) {
       // manually overriding the skipWaiting();
       self.addEventListener("install", (event) => {
         self.skipWaiting();
-        location.reload();
       });
 
 
@@ -73,6 +72,8 @@ if ("function" === typeof importScripts) {
         if (userStr) return JSON.parse(userStr);
       }
 
+      console.log(getUser().user_id);
+
       self.addEventListener('pushsubscriptionchange', function(e) {
         navigator.serviceWorker.ready.then(function(reg) {
           reg.pushManager.subscribe({
@@ -94,14 +95,12 @@ if ("function" === typeof importScripts) {
                 response.json().then(res => alert(res.message));
               } else {
                 response.json().then(res => {
-                  resolve(true);
                   console.log("Success");
                 });
               }
             })
             .catch(error => {
               console.log(error);
-              resolve(false);
               alert("Oops! Something went wrong");
             });
           }).catch(function(e) {
@@ -110,12 +109,8 @@ if ("function" === typeof importScripts) {
             } else {
               console.error('Unable to subscribe to push', e);
             }
-            resolve(false);
           });
         });
-        setTimeout(function() {
-          resolve(null);
-        }, 3000);
       });
   
       // Manual injection point for manifest files.
