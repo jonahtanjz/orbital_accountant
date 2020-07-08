@@ -1,6 +1,3 @@
-import { subscribeUser } from 'serviceWorker';
-import { getUser } from './Utils/Common';
-
 if ("function" === typeof importScripts) {
     importScripts(
       "https://storage.googleapis.com/workbox-cdn/releases/3.5.0/workbox-sw.js"
@@ -71,8 +68,54 @@ if ("function" === typeof importScripts) {
         }
       });
 
+      function getUser() {
+        const userStr = localStorage.getItem('user');
+        if (userStr) return JSON.parse(userStr);
+      }
+
       self.addEventListener('pushsubscriptionchange', function(e) {
-        subscribeUser(getUser().user_id);
+        navigator.serviceWorker.ready.then(function(reg) {
+          reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: "BEihlKsIj93XnvJwx8kgF13l6ZdNJlAyY0zqGA8Tzzq_iYvy1KccHEZCwUKY6L3BPV7qmOkA_9arNjTD_6xYVlE"
+          }).then(function(sub) {
+            fetch("https://accountant.tubalt.com/api/users/pushsubscribe", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                user_id: getUser().user_id,
+                pushSubscription: sub.toJSON()
+              })
+            })
+            .then(response => {
+              if (response.status === 401) {
+                response.json().then(res => alert(res.message));
+              } else {
+                response.json().then(res => {
+                  resolve(true);
+                  console.log("Success");
+                });
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              resolve(false);
+              alert("Oops! Something went wrong");
+            });
+          }).catch(function(e) {
+            if (Notification.permission === 'denied') {
+              console.warn('Permission for notifications was denied');
+            } else {
+              console.error('Unable to subscribe to push', e);
+            }
+            resolve(false);
+          });
+        });
+        setTimeout(function() {
+          resolve(null);
+        }, 3000);
       });
   
       // Manual injection point for manifest files.
