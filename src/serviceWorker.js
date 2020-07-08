@@ -32,7 +32,7 @@ export function register(config) {
     }
 
     window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+      const swUrl = `${process.env.PUBLIC_URL}/sw.js`;
 
       if (isLocalhost) {
         // This is running on localhost. Let's check if a service worker still exists or not.
@@ -138,4 +138,136 @@ export function unregister() {
         console.error(error.message);
       });
   }
+}
+
+export function subscribeUser(userid) {
+  return new Promise((resolve, reject) => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(function(reg) {
+        reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: "BEihlKsIj93XnvJwx8kgF13l6ZdNJlAyY0zqGA8Tzzq_iYvy1KccHEZCwUKY6L3BPV7qmOkA_9arNjTD_6xYVlE"
+        }).then(function(sub) {
+          fetch("https://accountant.tubalt.com/api/users/pushsubscribe", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              user_id: userid,
+              pushSubscription: sub.toJSON()
+            })
+          })
+          .then(response => {
+            if (response.status === 401) {
+              response.json().then(res => alert(res.message));
+            } else {
+              response.json().then(res => {
+                resolve(true);
+                console.log("Success");
+              });
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            resolve(false);
+            alert("Oops! Something went wrong");
+          });
+        }).catch(function(e) {
+          if (Notification.permission === 'denied') {
+            console.warn('Permission for notifications was denied');
+          } else {
+            console.error('Unable to subscribe to push', e);
+          }
+          resolve(false);
+        });
+      })
+    }
+  });
+}
+
+export function getPushSubscription(userid) {
+  return new Promise((resolve, reject) => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(function(reg) {
+          reg.pushManager.getSubscription().then(function(sub) {
+            if (sub === null) {
+              resolve(false);
+            } else {
+              fetch("https://accountant.tubalt.com/api/users/pushsubscribe", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                user_id: userid,
+                pushSubscription: sub.toJSON()
+              })
+            })
+            .then(response => {
+              if (response.status === 401) {
+                resolve(false);
+                response.json().then(res => alert(res.message));
+              } else {
+                response.json().then(res => {
+                  resolve(true);
+                });
+              }
+            })
+            .catch(error => {
+              console.log(error);
+              resolve(false);
+              alert("Oops! Something went wrong");
+            });
+            }
+          });
+        });
+      }
+  });
+}
+
+export function pushUnsubscribe(userid) {
+  return new Promise((resolve, reject) => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(function(reg) {
+        reg.pushManager.getSubscription().then(function(sub) {
+          if (sub === null) {
+            resolve(false);
+          } else {
+            sub.unsubscribe().then( function() {
+              fetch("https://accountant.tubalt.com/api/users/pushunsubscribe", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                user_id: userid,
+              })
+            })
+              .then(response => {
+                if (response.status === 401) {
+                  response.json().then(res => alert(res.message));
+                } else {
+                  response.json().then(res => {
+                    resolve(false);
+                    console.log("Success Unsub");
+                  });
+                }
+              })
+              .catch(error => {
+                console.log(error);
+                resolve(true);
+                alert("Oops! Something went wrong");
+              })
+          })
+            .catch(error => {
+              console.log(error);
+              resolve(true);
+              alert("Oops! Something went wrong");
+            });
+          }
+      });
+    });
+  }
+});
 }

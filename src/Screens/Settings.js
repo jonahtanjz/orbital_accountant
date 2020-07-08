@@ -2,7 +2,9 @@ import React from 'react';
 import { Button, withStyles, Paper, Grid, IconButton, Typography } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { ToggleOn, ToggleOff } from '@material-ui/icons';
+import { ToggleOn, ToggleOff, AlternateEmail } from '@material-ui/icons';
+import { subscribeUser, getPushSubscription, pushUnsubscribe } from '../serviceWorker';
+import { getUser } from '../Utils/Common';
 
 const styles = theme => ({
     homeContainer: {
@@ -39,8 +41,12 @@ class Settings extends React.Component {
         this.toggleNoti = this.toggleNoti.bind(this);
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.props.functionProps["updatePageName"]("Settings");
+        let notificationState = await getPushSubscription(getUser().user_id);
+        this.setState({
+            notification: notificationState
+        })
     }
 
 
@@ -52,9 +58,15 @@ class Settings extends React.Component {
         this.props.history.push('/changepassword');
     }
     
-    toggleNoti(){
+    async toggleNoti(){
+        let notificationState;
+        if (this.state.notification) {
+            notificationState = await pushUnsubscribe(getUser().user_id);
+        } else {
+            notificationState = await subscribeUser(getUser().user_id);
+        }
         this.setState({
-            notification: !this.state.notification,
+            notification: notificationState
         })
     }
 
