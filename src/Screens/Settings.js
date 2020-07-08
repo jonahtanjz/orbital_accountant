@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, withStyles, Paper, Grid, IconButton, Typography, Divider } from '@material-ui/core';
+import { Button, withStyles, Paper, Grid, IconButton, Typography, Divider, Switch } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { ToggleOn, ToggleOff, AlternateEmail } from '@material-ui/icons';
@@ -102,12 +102,17 @@ class Settings extends React.Component {
                         <Typography className={classes.settingsText}>
                             Push Notifications
                         </Typography>
-                        <IconButton onClick={this.toggleNoti}>
+                        {/* <IconButton onClick={this.toggleNoti}>
                             {(this.state.notification)
                                 ? <ToggleOn color="primary" style={{ fontSize: 40 }}/>
                                 : <ToggleOff style={{ fontSize: 40 }} />
                             }
-                        </IconButton>
+                        </IconButton> */}
+                        <Switch 
+                            checked={this.state.notification}
+                            onChange={this.toggleNoti}
+                            color="primary"
+                        />
                     </Grid>
                 </Paper>
             </div>
