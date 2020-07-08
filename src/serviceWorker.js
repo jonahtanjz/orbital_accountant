@@ -181,7 +181,14 @@ export function subscribeUser(userid) {
           }
           resolve(false);
         });
-      })
+      });
+      setTimeout(function() {
+        resolve(false);
+        alert("Please exit incognito mode to use push notification")
+      }, 3000);
+    } else {
+      resolve(false)
+      alert("Browser does not support push notification");
     }
   });
 }
@@ -222,6 +229,11 @@ export function getPushSubscription(userid) {
             }
           });
         });
+        setTimeout(function() {
+          resolve(false);
+        }, 2000);
+      } else {
+        resolve(false);
       }
   });
 }
@@ -268,6 +280,13 @@ export function pushUnsubscribe(userid) {
           }
       });
     });
+    setTimeout(function() {
+      resolve(false);
+      alert("Please exit incognito mode to use push notification")
+    }, 3000);
+  } else {
+    resolve(false)
+    alert("Browser does not support this feature push notification")
   }
 });
 }

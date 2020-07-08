@@ -39,6 +39,10 @@ const styles = theme => ({
         marginRight: "auto",
         marginTop: "250px",
     },
+    loadingCircleContainer: {
+        width: "100%",
+        textAlign: "center"
+    },
 });
 
 class Settings extends React.Component {
@@ -91,7 +95,9 @@ class Settings extends React.Component {
         const { classes } = this.props;
         if (!this.state.loaded) { 
             return (
-              <CircularProgress className={classes.loadingCircle} />
+                <div className={classes.loadingCircleContainer}>
+                    <CircularProgress className={classes.loadingCircle} />
+                </div>
             );
         }
         return(
