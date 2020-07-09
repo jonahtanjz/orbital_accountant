@@ -16,7 +16,7 @@ const styles = theme => ({
     },
     paper: {
         width: '315px',
-        padding: '10px',
+        padding: '5px 10px',
         borderRadius: '10px',
         marginTop: '20px'
     },
@@ -32,7 +32,8 @@ const styles = theme => ({
         padding: "8px"
     },
     notificationContainer: {
-        height: "52px"
+        height: "50px",
+        paddingTop: "5px"
     },
     loadingCircle: {
         marginLeft: "auto",

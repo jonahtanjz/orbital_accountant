@@ -106,7 +106,7 @@ class TripForm extends React.Component {
           <InputCurrency classes={classes} enterCheck = {this.props.enterCheck} addCurrency = {this.props.addCurrency} />
           <DisplayCurrencies classes={classes} currencies = {this.props.currencies} deleteCurrency = {this.props.deleteCurrency} />
           <br/>
-          <Button className={classes.createTripButton} color="primary" variant="contained" fullWidth size="large" type="submit">Create Trip</Button>
+          <Button className={classes.createTripButton} color="primary" variant="contained" fullWidth type="submit">Create Trip</Button>
         </form>
       </div>
       );

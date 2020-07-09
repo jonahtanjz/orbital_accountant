@@ -10,9 +10,9 @@ const styles = theme => ({
         width: 335,
         backgroundColor : 'white',
         borderRadius: "10px",
-        marginTop: '30px',
+        marginTop: '20px',
         paddingTop: '30px',
-        paddingBottom: '30px',
+        paddingBottom: '25px',
         textAlign: "center",
     },
     page: {
@@ -26,16 +26,14 @@ const styles = theme => ({
         width: 300,
         marginBottom: "10px",
     },
-    button: {
-        border: "none",
-        borderRadius: "5px",
-        width: "300px !important",
-        margin: "auto",
-        fontSize: "15px",
-        fontWeight: "bold",
-        marginBottom: "10px",
-
+    submitButton: {
+        width: "300px",
+        marginTop: '20px'
     },
+    cancelButton: {
+        width: "300px",
+        marginTop: "15px"
+    }
 });
 
 class ChangePassword extends React.Component {
@@ -57,9 +55,6 @@ class ChangePassword extends React.Component {
     }
 
     onSubmit() {
-        console.log(this.state.cPassword);
-        console.log(this.state.newPassword);
-        console.log(this.state.oldPassword);
         if (! this.state.validated) {
             alert("Please ensure both your passwords are the same.");
             return;
@@ -138,9 +133,9 @@ class ChangePassword extends React.Component {
                     <Typography color= "error">
                         {this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}
                     </Typography>   
-                    <Button className={classes.button} color="primary" variant="contained" onClick={this.onSubmit}> Submit </Button>
+                    <Button className={classes.submitButton} color="primary" variant="contained" fullWidth onClick={this.onSubmit}>Submit</Button>
                     <br/>
-                    <Button className={classes.button} color="disabled" variant="contained" onClick={this.onCancel}>Cancel</Button>
+                    <Button className={classes.cancelButton} color="disabled" variant="contained" fullWidth onClick={this.onCancel}>Cancel</Button>
                 </Paper>
             </div>
         );
