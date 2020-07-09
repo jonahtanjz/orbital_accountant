@@ -132,6 +132,7 @@ class App extends Component {
 
     handleLogout = () => {    
       removeUserSession();
+      updateUser("");
     } 
 
     updatePageName(name) {
