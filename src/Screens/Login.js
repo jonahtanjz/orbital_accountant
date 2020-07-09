@@ -5,6 +5,7 @@ import  PropTypes  from 'prop-types';
 import  { Button, TextField, withStyles, Card, CardActions, Grid, CardMedia, CardActionArea, InputAdornment, Typography, IconButton } from '@material-ui/core';
 import { AccountCircle, VpnKey, Visibility, VisibilityOff } from '@material-ui/icons';
 import '../CSS/Login.css';
+import { updateUser } from '../serviceWorker';
 
 const styles = themes => ({
   // textField : {
@@ -84,6 +85,7 @@ class Login extends React.Component {
       } else {
         response.json().then(res => {
           setUserSession(res.token, res.user);
+          updateUser(res.user.user_id);
           this.props.history.push("/home");
         });
       }

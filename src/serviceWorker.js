@@ -288,3 +288,12 @@ export function pushUnsubscribe(userid) {
   }
 });
 }
+
+export function updateUser(userid) {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'UPDATE_USER',
+      user_id: userid
+    });
+  }
+}

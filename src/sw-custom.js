@@ -18,32 +18,43 @@ if ("function" === typeof importScripts) {
         self.skipWaiting();
       });
 
+      let userid = "";
+
+      self.addEventListener('message', (event) => {
+        if (event.data.type === 'UPDATE_USER') {
+          userid = event.data.user_id;
+          console.log(userid);
+        }
+      });
+
 
       self.addEventListener('push', function(e) {
-        var body;
-      
-        if (e.data) {
-          body = e.data.text();
-        } else {
-          body = 'Push message no payload';
+        if (userid !== "") {
+          var body;
+        
+          if (e.data) {
+            body = e.data.text();
+          } else {
+            body = 'Push message no payload';
+          }
+          console.log(body);
+          var options = {
+            body: body,
+            icon: 'favicon.png',
+            vibrate: [100, 50, 100],
+            data: {
+              dateOfArrival: Date.now(),
+              primaryKey: 1
+            },
+            actions: [
+              {action: 'explore', title: 'See more'},
+              {action: 'close', title: 'Later'},
+            ]
+          };
+          e.waitUntil(
+            self.registration.showNotification('Accountant', options)
+          );
         }
-        console.log(body);
-        var options = {
-          body: body,
-          icon: './images/favicon.png',
-          vibrate: [100, 50, 100],
-          data: {
-            dateOfArrival: Date.now(),
-            primaryKey: 1
-          },
-          actions: [
-            {action: 'explore', title: 'See more'},
-            {action: 'close', title: 'Later'},
-          ]
-        };
-        e.waitUntil(
-          self.registration.showNotification('Accountant', options)
-        );
       });
       
       self.addEventListener('notificationclose', function(e) {
@@ -67,44 +78,46 @@ if ("function" === typeof importScripts) {
         }
       });
 
-      // self.addEventListener('pushsubscriptionchange', function(e) {
-      //   navigator.serviceWorker.ready.then(function(reg) {
-      //     reg.pushManager.subscribe({
-      //       userVisibleOnly: true,
-      //       applicationServerKey: "BEihlKsIj93XnvJwx8kgF13l6ZdNJlAyY0zqGA8Tzzq_iYvy1KccHEZCwUKY6L3BPV7qmOkA_9arNjTD_6xYVlE"
-      //     }).then(function(sub) {
-      //       fetch("https://accountant.tubalt.com/api/users/pushsubscribe", {
-      //         method: "POST",
-      //         headers: {
-      //           "Content-Type": "application/json"
-      //         },
-      //         body: JSON.stringify({
-      //           user_id: getUser().user_id,
-      //           pushSubscription: sub.toJSON()
-      //         })
-      //       })
-      //       .then(response => {
-      //         if (response.status === 401) {
-      //           response.json().then(res => alert(res.message));
-      //         } else {
-      //           response.json().then(res => {
-      //             console.log("Success");
-      //           });
-      //         }
-      //       })
-      //       .catch(error => {
-      //         console.log(error);
-      //         alert("Oops! Something went wrong");
-      //       });
-      //     }).catch(function(e) {
-      //       if (Notification.permission === 'denied') {
-      //         console.warn('Permission for notifications was denied');
-      //       } else {
-      //         console.error('Unable to subscribe to push', e);
-      //       }
-      //     });
-      //   });
-      // });
+      self.addEventListener('pushsubscriptionchange', function(e) {
+        if (userid !== "") {
+          navigator.serviceWorker.ready.then(function(reg) {
+            reg.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: "BEihlKsIj93XnvJwx8kgF13l6ZdNJlAyY0zqGA8Tzzq_iYvy1KccHEZCwUKY6L3BPV7qmOkA_9arNjTD_6xYVlE"
+            }).then(function(sub) {
+              fetch("https://accountant.tubalt.com/api/users/pushsubscribe", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  user_id: userid,
+                  pushSubscription: sub.toJSON()
+                })
+              })
+              .then(response => {
+                if (response.status === 401) {
+                  response.json().then(res => alert(res.message));
+                } else {
+                  response.json().then(res => {
+                    console.log("Success");
+                  });
+                }
+              })
+              .catch(error => {
+                console.log(error);
+                alert("Oops! Something went wrong");
+              });
+            }).catch(function(e) {
+              if (Notification.permission === 'denied') {
+                console.warn('Permission for notifications was denied');
+              } else {
+                console.error('Unable to subscribe to push', e);
+              }
+            });
+          });
+        }
+      });
   
       // Manual injection point for manifest files.
       // All assets under build/ and 5MB sizes are precached.
