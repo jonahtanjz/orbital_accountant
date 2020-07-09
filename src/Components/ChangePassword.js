@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, withStyles, TextField, Typography, Paper } from '@material-ui/core';
+import { Button, withStyles, TextField, Typography, Paper, InputAdornment, IconButton } from '@material-ui/core';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { getUser } from '../Utils/Common';
@@ -25,6 +26,7 @@ const styles = theme => ({
     textfield: {
         width: 300,
         marginBottom: "10px",
+        marginTop: "5px"
     },
     submitButton: {
         width: "300px",
@@ -44,10 +46,14 @@ class ChangePassword extends React.Component {
             newPassword : "",
             cPassword : "",
             validated : false,
+            showCurrentPassword: false,
+            showNewPassword: false
         };
         this.onChangeVal = this.onChangeVal.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.onCancel = this.onCancel.bind(this);
+        this.toggleShowCurrentPassword = this.toggleShowCurrentPassword.bind(this);
+        this.toggleShowNewPassword = this.toggleShowNewPassword.bind(this);
     }
 
     componentDidMount() {
@@ -101,6 +107,20 @@ class ChangePassword extends React.Component {
         this.props.history.goBack();
     }
 
+    toggleShowCurrentPassword() {
+        let newState = !this.state.showCurrentPassword;
+        this.setState({
+            showCurrentPassword: newState
+        }); 
+    }
+
+    toggleShowNewPassword() {
+        let newState = !this.state.showNewPassword;
+        this.setState({
+            showNewPassword: newState
+        }); 
+    }
+
     render() {
         const { classes } = this.props;
         return(
@@ -112,7 +132,22 @@ class ChangePassword extends React.Component {
                         onChange={this.onChangeVal} 
                         value={this.state.oldPassword} 
                         name="oldPassword" 
-                        label="Current Password" />
+                        label="Current Password"
+                        InputProps={{ 
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={this.toggleShowCurrentPassword}
+                                        edge="end"
+                                    >
+                                        {this.state.showCurrentPassword ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }} 
+                        type={this.state.showCurrentPassword ? 'text' : 'password'} 
+                    />
                     <br/>
                     <TextField 
                         className={classes.textfield}
@@ -120,16 +155,46 @@ class ChangePassword extends React.Component {
                         onChange={this.onChangeVal} 
                         value={this.state.newPassword} 
                         name="newPassword" 
-                        label="New Password" />
+                        label="New Password" 
+                        InputProps={{ 
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={this.toggleShowNewPassword}
+                                        edge="end"
+                                    >
+                                        {this.state.showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }} 
+                        type={this.state.showNewPassword ? 'text' : 'password'} 
+                    />
                     <br/>
                     <TextField 
                         className={classes.textfield}
                         variant="outlined"
-                        error = { this.state.validated || this.state.cPassword !== ''} 
+                        error = { !this.state.validated && this.state.cPassword !== ''} 
                         onChange={this.onChangeVal} 
                         value={this.state.cPassword} 
                         name="cPassword" 
-                        label="Confirm Password" />
+                        label="Confirm Password" 
+                        InputProps={{ 
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={this.toggleShowNewPassword}
+                                        edge="end"
+                                    >
+                                        {this.state.showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }} 
+                        type={this.state.showNewPassword ? 'text' : 'password'} 
+                    />
                     <Typography color= "error">
                         {this.state.validated || this.state.cPassword === '' ? "" : "Passwords do not match"}
                     </Typography>   
