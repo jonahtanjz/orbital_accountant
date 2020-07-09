@@ -44,7 +44,7 @@ class Home extends React.Component {
 
     handleLogout = () => {    
         removeUserSession();
-        updateUser("");
+        updateUser("-0");
         this.props.history.push('/');
     }
 

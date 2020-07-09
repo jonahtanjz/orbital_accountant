@@ -18,7 +18,7 @@ if ("function" === typeof importScripts) {
         self.skipWaiting();
       });
 
-      let userid = "";
+      let userid = "-0";
 
       self.addEventListener('message', (event) => {
         if (event.data.type === 'UPDATE_USER') {
@@ -29,7 +29,7 @@ if ("function" === typeof importScripts) {
 
 
       self.addEventListener('push', function(e) {
-        if (userid !== "") {
+        if (userid !== "-0") {
           var body;
         
           if (e.data) {
@@ -79,7 +79,7 @@ if ("function" === typeof importScripts) {
       });
 
       self.addEventListener('pushsubscriptionchange', function(e) {
-        if (userid !== "") {
+        if (userid !== "-0") {
           navigator.serviceWorker.ready.then(function(reg) {
             reg.pushManager.subscribe({
               userVisibleOnly: true,
