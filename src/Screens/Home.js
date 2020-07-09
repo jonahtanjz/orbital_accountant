@@ -5,7 +5,6 @@ import ViewTrip from '../Components/ViewTrips';
 import PropTypes from 'prop-types';
 import {Typography, withStyles, Box, Fab} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import { updateUser } from '../serviceWorker';
 
 const styles = theme => ({
     homeContainer: {

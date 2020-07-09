@@ -96,9 +96,11 @@ class ViewTrips extends React.Component {
       }
       let trips = response.trips.filter(trip => trip[0].deleted === 0);
       let newTrips = [];
+      console.log(trips);
       for ( let i = trips.length - 1; i >= 0; i--){
         newTrips.push(trips[i]);
       }
+      console.log(newTrips);
       this.setState({
         trips : newTrips,
         user_id : user,

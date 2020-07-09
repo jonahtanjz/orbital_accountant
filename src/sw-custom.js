@@ -23,7 +23,6 @@ if ("function" === typeof importScripts) {
       self.addEventListener('message', (event) => {
         if (event.data.type === 'UPDATE_USER') {
           userid = event.data.user_id;
-          console.log(userid);
         }
       });
 
