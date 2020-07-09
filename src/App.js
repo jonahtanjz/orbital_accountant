@@ -26,7 +26,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ThreeDRotationSharp } from '@material-ui/icons';
 import { CSVLink } from "react-csv";
 import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
-import { updateUser } from './serviceWorker';
 
 
 const styles = theme => ({
@@ -133,7 +132,6 @@ class App extends Component {
 
     handleLogout = () => {    
       removeUserSession();
-      updateUser("");
     } 
 
     updatePageName(name) {
