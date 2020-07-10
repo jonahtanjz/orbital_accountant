@@ -5,7 +5,7 @@ import PublicRoute from './Utils/PublicRoute';
 import { getToken, getUser, removeUserSession, setUserSession } from './Utils/Common';
 import Login from './Screens/Login';
 import Home from './Screens/Home';
-import Welcome from './Screens/Welcome';
+import Offline from './Screens/Offline';
 import Signup from './Screens/Signup';
 import PastTrips from './Screens/PastTrips';
 import AddTrip from './Components/AddTrip';
@@ -416,6 +416,7 @@ class App extends Component {
                       <PrivateRoute path = "/changepassword" component = {ChangePassword} functionProps={functionProps} />
                       <PublicRoute path="/login" component={Login} functionProps={functionProps} />
                       <PublicRoute path="/signup" component={Signup} functionProps={functionProps}  />
+                      <Route path="/offline" render={(props) => <Offline {...props} functionProps={functionProps} />} />
                     </Switch>
                     <Snackbar open={this.state.successCallback} autoHideDuration={3000} onClose={this.closeSuccessCallback}>
                       <Alert onClose={this.closeSuccessCallback} severity="success">
