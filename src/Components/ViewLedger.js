@@ -36,6 +36,9 @@ const styles = theme => ({
     },
     paymentAmtTitle: {
         wordBreak: "break-word"
+    },
+    tableAmt: {
+        padding: "6px 10px 6px 16px"
     }
   });
 
@@ -298,7 +301,7 @@ class DisplayTable extends React.Component {
 
                 <TableRow key={entry.description}>
                     <TableCell colSpan={3}>{entry.description}</TableCell>
-                    <TableCell align="right">
+                    <TableCell className={this.props.classes.tableAmt} align="right">
                         <Typography color = {valueColor}>
                             {value.toFixed(2)}
                         </Typography>
