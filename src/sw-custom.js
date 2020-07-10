@@ -50,11 +50,11 @@ if ("function" === typeof importScripts) {
           event.respondWith((async () => {
             try {
               // First, try to use the navigation preload response if it's supported.
-              const preloadResponse = await event.preloadResponse;
-              if (preloadResponse) {
-                return preloadResponse;
-              }
-
+              // const preloadResponse = await event.preloadResponse;
+              // if (preloadResponse) {
+              //   return preloadResponse;
+              // }
+              console.log("Testing Offline")
               const networkResponse = await fetch(event.request);
               return networkResponse;
             } catch (error) {
