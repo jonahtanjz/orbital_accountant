@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography, withStyles, Box } from '@material-ui/core';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 
 const styles = theme => ({
     mainContainer: {
@@ -21,6 +22,15 @@ const styles = theme => ({
 class Offline extends React.Component {
     componentDidMount() {
         this.props.functionProps["updatePageName"]("The Accountant");
+        fetch("https://accountant.tubalt.com/api")
+        .then(res => {
+            if (res.status === 200) {
+                this.props.history.push('/');
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
     }
     render() {
         const { classes } = this.props;
@@ -37,4 +47,4 @@ Offline.propTypes = {
     classes: PropTypes.object.isRequired,
 };
  
-export default withStyles(styles)(Offline);
+export default withStyles(styles)(withRouter(Offline));
