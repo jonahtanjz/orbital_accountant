@@ -136,6 +136,9 @@ class AddEntry extends React.Component {
           consume : consume,
           loaded: true,
         })
+      })
+      .catch(err => {
+        this.props.history.push("/offline");
       });
   }
   //Updates description upon change

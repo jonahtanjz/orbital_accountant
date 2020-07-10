@@ -108,6 +108,9 @@ class ViewPastTrips extends React.Component {
         restartTripDialog: newRestartTripDialog,
         loaded: true,
       })
+    })
+    .catch(err => {
+      this.props.history.push("/offline");
     });
   }
 

@@ -108,6 +108,9 @@ class ViewTrips extends React.Component {
         endTripDialog: newEndTripDialog,
         loaded: true,
       })
+    })
+    .catch(err => {
+      this.props.history.push("/offline");
     });
   }
 

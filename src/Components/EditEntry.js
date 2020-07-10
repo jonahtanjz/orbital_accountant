@@ -163,6 +163,9 @@ class EditEntry extends React.Component {
           equal : (response.transactions[0].equal == 1) ? true : false,
           loaded: true, 
         })
+      })
+      .catch(err => {
+        this.props.history.push("/offline");
       });
   }
   //Updates the description upon change
