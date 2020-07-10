@@ -1,6 +1,6 @@
 {
   "short_name": "Accountant",
-  "name": "Accountant",
+  "name": "Brue - The Accountant",
   "icons": [
     {
       "src": "favicon.ico",
@@ -18,9 +18,8 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
-  "theme_color": "#0D3BD6",
-  "background_color": "#6BCEFF",
-  "gcm_sender_id": "87955405541"
+  "theme_color": "#0083e2",
+  "background_color": "#0083e2"
 }
