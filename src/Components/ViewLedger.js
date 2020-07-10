@@ -333,7 +333,7 @@ class DisplayTable extends React.Component {
                                     <TableCell align="center" colSpan={3}>
                                     Description
                                     </TableCell>
-                                    <TableCell align="right">Amount</TableCell>
+                                    <TableCell className={this.props.classes.tableAmt} align="right">Amount</TableCell>
                                     <TableCell/>
                                 </TableRow>
                             </TableHead>
