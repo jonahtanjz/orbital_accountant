@@ -68,6 +68,6 @@ code {
   padding-top: 2px;
 }
 
-p, span {
+p, span, td {
   word-break: break-word;
 }
