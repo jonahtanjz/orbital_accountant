@@ -178,7 +178,7 @@ class EditTrip extends React.Component {
             });
         })
         .catch(err => {
-          this.props.history.push("/offline");
+          this.props.history.push("/offline", {canGoBack: true});
         });
 
     }

@@ -21,11 +21,14 @@ const styles = theme => ({
 
 class Offline extends React.Component {
     componentDidMount() {
-        this.props.functionProps["updatePageName"]("The Accountant");
         fetch("https://accountant.tubalt.com/api")
         .then(res => {
             if (res.status === 200) {
-                this.props.history.push('/');
+                if (this.props.location.state !== undefined && this.props.location.state.canGoBack) {
+                    this.props.history.goBack();
+                } else {
+                    this.props.history.push('/');
+                }
             }
         })
         .catch(err => {

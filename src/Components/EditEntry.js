@@ -165,7 +165,7 @@ class EditEntry extends React.Component {
         })
       })
       .catch(err => {
-        this.props.history.push("/offline");
+        this.props.history.push("/offline", {canGoBack: true});
       });
   }
   //Updates the description upon change

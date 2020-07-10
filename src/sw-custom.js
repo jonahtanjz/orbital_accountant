@@ -90,6 +90,7 @@ if ("function" === typeof importScripts) {
         var options = {
           body: body,
           icon: 'favicon.png',
+          badge: 'badge.png',
           vibrate: [100, 50, 100],
           data: {
             dateOfArrival: Date.now(),
