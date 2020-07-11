@@ -275,7 +275,7 @@ class EditTrip extends React.Component {
       let newCurrencyName = document.getElementById('currency').value;
       let newCurrencyValue = document.getElementById('currencyVal').value;
       if (newCurrencyName === "" || newCurrencyValue === "" || newCurrencyValue == 0) {
-        alert("Please enter a valid currency");
+        this.props.functionProps["toggleAlertBox"]("Invalid currency", "Please enter a valid currency");
         return;
       }
       document.getElementById('currency').value = '';
@@ -283,7 +283,7 @@ class EditTrip extends React.Component {
       let newCurr = [ newCurrencyName, newCurrencyValue]
       console.log(currencies);
       if (currencies.filter(currency => currency.in_trip === 1 && currency.name === newCurrencyName).length > 0){
-        alert("Currency name already exists.")
+        this.props.functionProps["toggleAlertBox"]("Duplicate currencies", "Currency name already exists in this trip.")
         return;
       }
       fetch("https://accountant.tubalt.com/api/trips/addcurrency", {
@@ -319,11 +319,11 @@ class EditTrip extends React.Component {
       let newName = document.getElementById('username').value;
       document.getElementById('username').value = '';
       if (newName === "") {
-        alert("Please enter a name.");
+        this.props.functionProps["toggleAlertBox"]("Name is empty", "Please enter a name.");
         return;
       }
       if (this.state.currentUsers.filter((person) => person.name.toUpperCase() === newName.toUpperCase() && person.in_trip === 1).length !== 0) {
-        alert("Name already included.");
+        this.props.functionProps["toggleAlertBox"]("Duplicate names", "Name already included in this trip.");
         return;
       }
       fetch("https://accountant.tubalt.com/api/users/checkusername", {
@@ -507,7 +507,7 @@ class EditTrip extends React.Component {
     }
     editTripName(e) {
       if (!this.state.editingText) {
-        alert("Please enter a trip name.");
+        this.props.functionProps["toggleAlertBox"]("Trip name is empty", "Please enter a trip name.");
         return null;
       }
       this.setState({
@@ -621,11 +621,11 @@ class EditTrip extends React.Component {
       let link_id = id;
       let userName = this.props.currentUsers.filter((user) => user.id == link_id)[0].name;
       if (this.props.currentUsers.filter(person => person.in_trip === 1).length === 1) {
-        alert("There has to be at least one person in the trip at all times.");
+        this.props.functionProps["toggleAlertBox"]("Unable to remove this user", "There has to be at least one person in the trip at all times.");
         return null;
       }
       if (this.props.currentUsers.filter(person => person.user_id === this.props.owner_id)[0].name === userName) {
-        alert("The owner of the is not allowed to be removed.");
+        this.props.functionProps["toggleAlertBox"]("Owner of this trip", "The owner of the is not allowed to be removed.");
         return null;
       }
       fetch("https://accountant.tubalt.com/api/trips/removeuser", {
@@ -678,11 +678,11 @@ class EditTrip extends React.Component {
       this.toggleEditing(id);
       let newName = this.state.editingText[id];
       if (!newName) {
-        alert("Please enter a valid name.");
+        this.props.functionProps["toggleAlertBox"]("Name is empty", "Please enter a valid name.");
         return null;
       }
       if (this.props.currentUsers.filter(person => person.id !== id).filter(person => person.in_trip === 1 && person.name.toUpperCase() === newName.toUpperCase()).length > 0) {
-        alert("Name already exists");
+        this.props.functionProps["toggleAlertBox"]("Duplicate Names", "Name already exists in this trip.");
         return null;
       }
       fetch("https://accountant.tubalt.com/api/users/checkusername", {
@@ -1049,7 +1049,7 @@ class EditTrip extends React.Component {
       let newName = this.state.editingText[oldName]["newName"];
       let newVal = this.state.editingText[oldName]["newVal"];
       if (! newName || !newVal || newVal == 0) {
-        alert("Please enter a valid currency");
+        this.props.functionProps["toggleAlertBox"]("Invalid currency", "Please enter a valid currency.");
         return null;
       }
       // if (this.props.currencies.filter(currency => currency.in_trip === 1 && currency.name === newName).length > 0) {

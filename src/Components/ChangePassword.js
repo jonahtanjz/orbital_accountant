@@ -61,16 +61,27 @@ class ChangePassword extends React.Component {
     }
 
     onSubmit() {
-        if (! this.state.validated) {
-            alert("Please ensure both your passwords are the same.");
+        if (this.state.oldPassword === "") {
+            this.props.functionProps["toggleAlertBox"]("Current password is empty", "Please enter your current password.");
             return;
         }
+
+        if (this.state.newPassword === "") {
+            this.props.functionProps["toggleAlertBox"]("New password is empty", "Please enter your new password.");
+            return;
+        }
+
+        if (! this.state.validated) {
+            this.props.functionProps["toggleAlertBox"]("Passwords do not match", "Please ensure both your passwords are the same.");
+            return;
+        }
+
         fetch('https://accountant.tubalt.com/api/users/changepassword', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({
                 currentPassword: this.state.oldPassword,
-                newPassword: this.state.newPassword,
+                newPassword: this.state.cPassword,
                 user_id: getUser().user_id,
             })
         })

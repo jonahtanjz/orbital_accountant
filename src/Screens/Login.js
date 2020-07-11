@@ -62,12 +62,12 @@ class Login extends React.Component {
     e.preventDefault();
     //Check for empty username
     if(! this.state.username) {
-      alert("Please enter a Username");
+      this.props.functionProps["toggleAlertBox"]("Username is empty", "Please enter a username.");
       return null;
     }
     //Check for empty password
     if(! this.state.password) {
-      alert("Please enter a Password");
+      this.props.functionProps["toggleAlertBox"]("Password is empty", "Please enter a password.");
       return null;
     }
     fetch('https://accountant.tubalt.com/api/users/signin', {

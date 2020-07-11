@@ -86,6 +86,9 @@ class App extends Component {
         csvHeaders: [],
         csvData: [],
         csvTitle: "",
+        alertBox: false,
+        alertBoxTitle: "",
+        alertBoxMessage: ""
       }
       this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
@@ -102,6 +105,7 @@ class App extends Component {
       this.toggleLedgerMenu = this.toggleLedgerMenu.bind(this);
       this.toggleLinkDialog = this.toggleLinkDialog.bind(this);
       this.updateCSVData = this.updateCSVData.bind(this);
+      this.toggleAlertBox = this.toggleAlertBox.bind(this);
     }
     componentDidMount() {
         const token = getToken();
@@ -239,6 +243,15 @@ class App extends Component {
       });
     }
 
+    toggleAlertBox(title, message) {
+      let newState = !this.state.alertBox;
+      this.setState({
+        alertBox: newState,
+        alertBoxTitle: title,
+        alertBoxMessage: message
+      });
+    }
+
     render() {
         const { classes } = this.props;
         const functionProps = {
@@ -249,6 +262,7 @@ class App extends Component {
           refreshPage: this.state.refreshPage,
           toggleRefreshPage: this.toggleRefreshPage,
           updateCSVData: this.updateCSVData,
+          toggleAlertBox: this.toggleAlertBox,
         }
         return (
             <div className="App">
@@ -427,6 +441,19 @@ class App extends Component {
                         {this.state.failCallbackMessage}
                       </Alert>
                     </Snackbar>
+                    <Dialog open={this.state.alertBox} onClose={() => this.toggleAlertBox("", "")} aria-labelledby="form-dialog-title">
+                      <DialogTitle id="form-dialog-title">{this.state.alertBoxTitle}</DialogTitle>
+                      <DialogContent>
+                        <DialogContentText>
+                          {this.state.alertBoxMessage}
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={() => this.toggleAlertBox("", "")} color="primary" autoFocus>
+                          OK
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
                   </div>
                 </div>
               </BrowserRouter>

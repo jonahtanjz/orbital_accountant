@@ -271,37 +271,37 @@ class AddEntry extends React.Component {
     e.preventDefault();
     //Checking for empty pay
     if (this.state.pay.filter((person)=> person.display).length === 0) {
-      alert("Please select the people who payed.")
+      this.props.functionProps["toggleAlertBox"]("No user selected", "Please select the people who paid.");
       return null;
     }
     //Checking for no amounts entered in pay array
     if (this.state.pay.filter((person)=> person.display && (! person.amount)).length !== 0) {
-      alert("Please enter the amounts for the people who payed.")
+      this.props.functionProps["toggleAlertBox"]("Input amount is empty", "Please enter the amounts for the people who paid.");
       return null;
     }
     //Checking for valid amounts in pay array 
     if (this.state.pay.filter((person) => person.display && this.validateExpression(person.amount)).length !== 0 ) {
-      alert("Please enter a valid expression");
+      this.props.functionProps["toggleAlertBox"]("Invalid expression", "Please enter a valid expression (+, -, *, /).");
       return null;
     }
     //Checking for empty consume
     if (this.state.consume.filter((person)=> person.display).length === 0) {
-      alert("Please select the people who consumed.")
+      this.props.functionProps["toggleAlertBox"]("No user selected", "Please select the people to split between.");
       return null;
     }
     //Checking for no amounts entered in consume array when is not equal 
     if (this.state.consume.filter((person)=> person.display && (! person.amount)).length !== 0 && (! equal)) {
-      alert("Please enter the amounts for people who consumed.")
+      this.props.functionProps["toggleAlertBox"]("Input amount is empty", "Please enter the amounts for people to split between.");
       return null;
     }
     //Checking for valid amounts in consume array 
     if (this.state.consume.filter((person) => person.display && this.validateExpression(person.amount) ).length !== 0  && (! equal)) {
-      alert("Please enter a valid expression");
+      this.props.functionProps["toggleAlertBox"]("Invalid expression", "Please enter a valid expression (+, -, *, /)");
       return null;
     }
     //Checking for empty description
     if (!this.state.desc) {
-      alert("Please enter a transaction description.");
+      this.props.functionProps["toggleAlertBox"]("Description is empty", "Please enter a transaction description.");
       return null;
     }
     //Calculates (if equal) and formats consume array
@@ -322,7 +322,7 @@ class AddEntry extends React.Component {
         newConsume = this.state.consume.filter((person) => person["display"]).map((person) =>[person.name,this.evaluateAmount(person.amount)]);
       }
     } catch (err) {
-      alert("Please enter a valid expression");
+      this.props.functionProps["toggleAlertBox"]("Invalid expression", "Please enter a valid expression (+, -, *, /).");
       return null;
     }
     //Formats pay array
@@ -330,7 +330,7 @@ class AddEntry extends React.Component {
     try {
       newPay = this.state.pay.filter((person) => person["display"]).map((person) => [person.name,this.evaluateAmount(person.amount)])
     } catch (err) {
-      alert("Please enter a valid expression");
+      this.props.functionProps["toggleAlertBox"]("Invalid expression", "Please enter a valid expression (+, -, *, /).");
       return null;
     }
     //Post request

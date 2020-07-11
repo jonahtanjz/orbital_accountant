@@ -95,12 +95,12 @@ class AddTrip extends React.Component {
       e.preventDefault();
       //Check for empty trip name
       if (!this.state.tripName) {
-        alert("Please enter a name for the trip.");
+        this.props.functionProps["toggleAlertBox"]("Trip name is empty", "Please enter a name for the trip.");
         return null;
       }
       //Check for empty users
       if (this.state.currentUsers.length === 0) {
-        alert("Please enter the users for the trip.");
+        this.props.functionProps["toggleAlertBox"]("No users in the trip", "Please enter the users for the trip.");
         return null;
       }
       let users = this.state.currentUsers;
@@ -154,11 +154,11 @@ class AddTrip extends React.Component {
       let newCurrencyName = document.getElementById('currency').value;
       let newCurrencyValue = document.getElementById('currencyVal').value;
       if (newCurrencyName.toUpperCase() === "SGD") {
-        alert("SGD will automatically be added into your currencies.");
+        this.props.functionProps["toggleAlertBox"]("Adding SGD?", "SGD will automatically be added into your currencies.");
         return;
       }
       if (newCurrencyName === "" || newCurrencyValue === "") {
-        alert("Please enter a valid currency");
+        this.props.functionProps["toggleAlertBox"]("Invalid currency", "Please enter a valid currency");
         return;
       }
       document.getElementById('currency').value = '';
@@ -186,11 +186,11 @@ class AddTrip extends React.Component {
       let newName = document.getElementById('username').value;
       document.getElementById('username').value = '';
       if (newName === "") {
-        alert("Please enter a name.");
+        this.props.functionProps["toggleAlertBox"]("Name is empty", "Please enter a name. Can be the username of a user or the name of a non-user");
         return;
       }
       if (curr.includes(newName.toUpperCase())) {
-        alert("Name already included.");
+        this.props.functionProps["toggleAlertBox"]("User already added", "Name already included.");
         return;
       }
       if (newName.toUpperCase() === getUser().username.toUpperCase()) {

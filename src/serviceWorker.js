@@ -160,7 +160,7 @@ export function subscribeUser(userid) {
           })
           .then(response => {
             if (response.status === 401) {
-              response.json().then(res => alert(res.message));
+              resolve(null);
             } else {
               response.json().then(res => {
                 resolve(true);
@@ -210,8 +210,7 @@ export function getPushSubscription(userid) {
             })
             .then(response => {
               if (response.status === 401) {
-                resolve(false);
-                response.json().then(res => alert(res.message));
+                resolve(null);
               } else {
                 response.json().then(res => {
                   resolve(true);
@@ -254,7 +253,7 @@ export function pushUnsubscribe(userid) {
             })
               .then(response => {
                 if (response.status === 401) {
-                  response.json().then(res => alert(res.message));
+                  resolve(null);
                 } else {
                   response.json().then(res => {
                     resolve(false);

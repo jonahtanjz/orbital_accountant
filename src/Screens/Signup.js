@@ -75,16 +75,16 @@ class Signup extends React.Component {
     e.preventDefault();
     //Check for empty username
     if (! this.state.username) {
-      alert("Please enter a username");
+      this.props.functionProps["toggleAlertBox"]("Username is empty", "Please enter a username.");
       return null;
     }
     if (! this.state.password) {
-      alert("Please enter a password");
+      this.props.functionProps["toggleAlertBox"]("Password is empty", "Please enter a password.");
       return null;
     }
     //Check for matching password
     if (! this.state.validated) {
-      alert("Passwords do not match")
+      this.props.functionProps["toggleAlertBox"]("Passwords do not match", "Please ensure both passwords are the same.")
       return null;
     }
 
