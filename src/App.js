@@ -106,6 +106,7 @@ class App extends Component {
       this.toggleLinkDialog = this.toggleLinkDialog.bind(this);
       this.updateCSVData = this.updateCSVData.bind(this);
       this.toggleAlertBox = this.toggleAlertBox.bind(this);
+      this.closeAlertBox = this.closeAlertBox.bind(this);
     }
     componentDidMount() {
         const token = getToken();
@@ -245,10 +246,22 @@ class App extends Component {
 
     toggleAlertBox(title, message) {
       let newState = !this.state.alertBox;
+      if (title === "" && message === "") {
+        this.setState({
+          alertBox: newState,
+        });
+      } else {
+        this.setState({
+          alertBox: newState,
+          alertBoxTitle: title,
+          alertBoxMessage: message
+        });
+      }
+    }
+
+    closeAlertBox() {
       this.setState({
-        alertBox: newState,
-        alertBoxTitle: title,
-        alertBoxMessage: message
+        alertBox: false,
       });
     }
 
@@ -263,6 +276,7 @@ class App extends Component {
           toggleRefreshPage: this.toggleRefreshPage,
           updateCSVData: this.updateCSVData,
           toggleAlertBox: this.toggleAlertBox,
+          closeAlertBox: this.closeAlertBox,
         }
         return (
             <div className="App">

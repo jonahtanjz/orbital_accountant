@@ -51,6 +51,7 @@ class SuggestedPayments extends React.Component {
 
     componentDidMount() {
         this.props.functionProps["updatePageName"]("Suggested Payments");
+        this.props.functionProps["closeAlertBox"]();
         if (!this.props.location.state) {
             this.props.functionProps["toggleFailCallback"]("Invalid link. Please try again.");
             setTimeout(()=>this.props.history.push("/"),3000);

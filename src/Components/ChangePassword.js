@@ -58,6 +58,7 @@ class ChangePassword extends React.Component {
 
     componentDidMount() {
         this.props.functionProps["updatePageName"]("Change Password");
+        this.props.functionProps["closeAlertBox"]();
     }
 
     onSubmit() {

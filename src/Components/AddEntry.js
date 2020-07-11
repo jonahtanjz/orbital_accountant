@@ -112,6 +112,7 @@ class AddEntry extends React.Component {
       });
     }
     this.props.functionProps["updatePageName"]("Add Transactions");
+    this.props.functionProps["closeAlertBox"]();
     fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid="+this.props.location.state.trip_id)
       .then(response => response.json())
       .then(response => {

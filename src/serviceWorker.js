@@ -175,10 +175,11 @@ export function subscribeUser(userid) {
         }).catch(function(e) {
           if (Notification.permission === 'denied') {
             console.warn('Permission for notifications was denied');
+            resolve(false);
           } else {
             console.error('Unable to subscribe to push', e);
           }
-          resolve(false);
+          resolve(null);
         });
       });
       setTimeout(function() {

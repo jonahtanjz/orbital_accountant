@@ -50,6 +50,7 @@ class Login extends React.Component {
 
   componentDidMount() {
     this.props.functionProps["updatePageName"]("Login");
+    this.props.functionProps["closeAlertBox"]();
   }
 
   onChange = (e) => {

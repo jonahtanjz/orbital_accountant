@@ -67,6 +67,7 @@ class ViewLedger extends React.Component {
         }
         const trip_id = (this.props.match.params.trip_id ) ? this.props.match.params.trip_id : this.props.location.state.trip_id;
         this.props.functionProps["updatePageName"]("Ledger");
+        this.props.functionProps["closeAlertBox"]();
         let newData = {
             trip_id: trip_id,
             transaction_id: -1

@@ -21,6 +21,7 @@ const styles = theme => ({
 
 class Offline extends React.Component {
     componentDidMount() {
+        this.props.functionProps["closeAlertBox"]();
         fetch("https://accountant.tubalt.com/api")
         .then(res => {
             if (res.status === 200) {

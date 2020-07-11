@@ -108,6 +108,7 @@ class EditEntry extends React.Component {
       });
     }
     this.props.functionProps["updatePageName"]("Edit Transaction");
+    this.props.functionProps["closeAlertBox"]();
     let newData = {
       trip_id: this.props.location.state.trip_id,
       transaction_id: this.props.location.state.transaction_id

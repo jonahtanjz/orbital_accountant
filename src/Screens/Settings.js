@@ -60,6 +60,7 @@ class Settings extends React.Component {
 
     async componentDidMount() {
         this.props.functionProps["updatePageName"]("Settings");
+        this.props.functionProps["closeAlertBox"]();
         let notificationState = await getPushSubscription(getUser().user_id);
         this.setState({
             notification: notificationState,

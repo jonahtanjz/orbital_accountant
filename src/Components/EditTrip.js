@@ -159,6 +159,7 @@ class EditTrip extends React.Component {
         return;
       }
       this.props.functionProps["updatePageName"]("Edit Trip");
+      this.props.functionProps["closeAlertBox"]();
         const user = getUser();
         this.setState({
             user_id: user.user_id,

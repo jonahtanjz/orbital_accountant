@@ -41,6 +41,7 @@ class AddTrip extends React.Component {
 
     componentDidMount() {
       this.props.functionProps["updatePageName"]("New Trip");
+      this.props.functionProps["closeAlertBox"]();
         const user = getUser();
         this.setState({
             user_id: user.user_id,

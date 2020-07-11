@@ -52,6 +52,7 @@ class Signup extends React.Component {
 
   componentDidMount() {
     this.props.functionProps["updatePageName"]("Sign Up");
+    this.props.functionProps["closeAlertBox"]();
   }
 
   onChange = (e) => {
