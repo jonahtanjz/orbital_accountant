@@ -51,7 +51,7 @@ class PastTrips extends React.Component {
         return (
             <div>
                 <Box display="flex" justifyContent="center" className={classes.homeContainer}>
-                    <ViewPastTrips/>
+                    <ViewPastTrips functionProps={this.props.functionProps} />
                 </Box>
             </div>
           );

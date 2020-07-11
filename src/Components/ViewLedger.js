@@ -362,50 +362,6 @@ class DisplayTable extends React.Component {
     }
 }
 
-class UndoEndTrip extends React.Component {
-    constructor(props) {
-      super(props);
-      this.undoEndTrip = this.undoEndTrip.bind(this);
-    }
-    
-    undoEndTrip(e) {
-      fetch("https://accountant.tubalt.com/api/trips/undoendtrip", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          trip_id : this.props.trip.trip_id,
-        })
-      })
-      .then(response => {
-        if (response.status === 401) {
-          response.json().then(res => alert(res.message));
-        } else {
-          response.json().then(res => {
-            this.props.history.push("/home");
-          });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        alert("Oops! Something went wrong");
-      });
-    } 
-
-    render() {
-        if (this.props.trip.ended == 1) {
-            return(
-            <div>
-                <button class = "button" type = "button" onClick={this.undoEndTrip}>Restart Trip</button>
-            </div>
-            );
-        } else {
-            return null;
-        }
-    }
-}
-
   ViewLedger.propTypes = {
     classes: PropTypes.object.isRequired,
   };

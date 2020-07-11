@@ -80,7 +80,7 @@ class Login extends React.Component {
     })
     .then(response => {
       if (response.status === 401) {
-        response.json().then(res => alert("Username or Password is Wrong."));
+        response.json().then(res => this.props.functionProps["toggleFailCallback"]("Username or Password is Wrong."));
       } else {
         response.json().then(res => {
           setUserSession(res.token, res.user);
@@ -90,7 +90,7 @@ class Login extends React.Component {
     })
     .catch(error => {
       console.log(error);
-      alert("Oops! Something went wrong");
+      this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
     });
   }
   

@@ -51,7 +51,7 @@ class Home extends React.Component {
         return (
             <div>
             <Box display="flex" justifyContent="center" className={classes.homeContainer}>
-                <ViewTrip />
+                <ViewTrip functionProps={this.props.functionProps} />
             </Box>
             <Fab className={classes.fab} color="secondary" onClick={() => this.props.history.push('/addtrip')} aria-label="add">
                 <AddIcon />

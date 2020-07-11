@@ -345,6 +345,9 @@ class EditTrip extends React.Component {
         } else {
           this.addNonOrExistingUser(false, false, newName);
         }
+      })
+      .catch( err => {
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
     }
 
@@ -702,6 +705,9 @@ class EditTrip extends React.Component {
         } else {
           this.addNonOrExistingUser(false, false, newName, id);
         }
+      })
+      .catch( err => {
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
     }
 
@@ -966,6 +972,7 @@ class EditTrip extends React.Component {
     deleteCurrency(e, name) {
       // this.props.deleteCurrency(e);
       e.preventDefault();
+      this.toggleDeleteCurrencyDialog(name);
       fetch("https://accountant.tubalt.com/api/trips/removecurrency", {
         method: "POST",
         headers: {

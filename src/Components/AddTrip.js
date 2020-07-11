@@ -232,6 +232,9 @@ class AddTrip extends React.Component {
             currentUsers : currUsers,
           });
         }
+      })
+      .catch( err => {
+        this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
       });
     }
 

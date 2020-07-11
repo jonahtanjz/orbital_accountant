@@ -88,8 +88,8 @@ class Settings extends React.Component {
             notificationState = await subscribeUser(getUser().user_id);
         }
         if (notificationState === null) {
-            alert("Please exit incognito mode to use push notification");
-            notificationState = false;
+            this.props.functionProps["toggleFailCallback"]("Oops... Something went wrong. Please ensure you have an internet connection and not in incognito mode. Otherwise, your browser does not support push notifications.");
+            notificationState = currentNotificationState;
         }
         this.setState({
             notification: notificationState

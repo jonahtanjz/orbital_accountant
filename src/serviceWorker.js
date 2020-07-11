@@ -170,8 +170,7 @@ export function subscribeUser(userid) {
           })
           .catch(error => {
             console.log(error);
-            resolve(false);
-            alert("Oops! Something went wrong");
+            resolve(null);
           });
         }).catch(function(e) {
           if (Notification.permission === 'denied') {
@@ -186,8 +185,7 @@ export function subscribeUser(userid) {
         resolve(null);
       }, 3000);
     } else {
-      resolve(false)
-      alert("Browser does not support push notification");
+      resolve(null);
     }
   });
 }
@@ -222,8 +220,7 @@ export function getPushSubscription(userid) {
             })
             .catch(error => {
               console.log(error);
-              resolve(false);
-              alert("Oops! Something went wrong");
+              resolve(null);
             });
             }
           });
@@ -267,14 +264,12 @@ export function pushUnsubscribe(userid) {
               })
               .catch(error => {
                 console.log(error);
-                resolve(true);
-                alert("Oops! Something went wrong");
+                resolve(null);
               })
           })
             .catch(error => {
               console.log(error);
-              resolve(true);
-              alert("Oops! Something went wrong");
+              resolve(null);
             });
           }
       });
@@ -283,8 +278,7 @@ export function pushUnsubscribe(userid) {
       resolve(null);
     }, 3000);
   } else {
-    resolve(false)
-    alert("Browser does not support this feature push notification")
+    resolve(null)
   }
 });
 }

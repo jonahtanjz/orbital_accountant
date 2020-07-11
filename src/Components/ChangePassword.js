@@ -86,7 +86,7 @@ class ChangePassword extends React.Component {
         })
         .catch(error => {
           console.log(error);
-          alert("Oops! Something went wrong");
+          this.props.functionProps["toggleFailCallback"]("Oops! Something went wrong");
         });
 
 

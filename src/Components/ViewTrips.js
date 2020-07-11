@@ -131,6 +131,7 @@ class ViewTrips extends React.Component {
   }
 
   deleteSelf(id) {
+    this.handleDeleteDialogClose(id)
     fetch("https://accountant.tubalt.com/api/trips/deletetrip", {
         method: "POST",
         headers: {
@@ -143,7 +144,7 @@ class ViewTrips extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.handleFailCallback(res.message));
         } else {
           response.json().then(res => {
             let trips = res.trips.filter(trip => trip[0].deleted === 0);
@@ -179,6 +180,7 @@ class ViewTrips extends React.Component {
   }
   
   deleteAll(id){
+    this.handleDeleteAllDialogClose(id);
     fetch("https://accountant.tubalt.com/api/trips/deletetripall", {
       method: "POST",
       headers: {
@@ -191,7 +193,7 @@ class ViewTrips extends React.Component {
     })
     .then(response => {
       if (response.status === 401) {
-        response.json().then(res => alert(res.message));
+        response.json().then(res => this.handleFailCallback(res.message));
       } else {
         response.json().then(res => {
           let trips = res.trips.filter(trip => trip[0].deleted === 0);
@@ -213,6 +215,7 @@ class ViewTrips extends React.Component {
   }
 
   endTrip(id) {
+    this.toggleEndTripDialog(id);
     fetch("https://accountant.tubalt.com/api/trips/endtrip", {
       method: "POST",
       headers: {
@@ -225,7 +228,7 @@ class ViewTrips extends React.Component {
     })
     .then(response => {
       if (response.status === 401) {
-        response.json().then(res => alert(res.message));
+        response.json().then(res => this.handleFailCallback(res.message));
       } else {
           response.json().then(res => {
             let trips = res.trips.filter(trip => trip[0].deleted === 0);
@@ -242,7 +245,7 @@ class ViewTrips extends React.Component {
     })
     .catch(error => {
       console.log(error);
-      alert("Oops! Something went wrong");
+      this.handleFailCallback("Oops! Something went wrong");
     });
   } 
 

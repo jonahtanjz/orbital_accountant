@@ -131,6 +131,7 @@ class ViewPastTrips extends React.Component {
   }
 
   deleteSelf(id) {
+    this.handleDeleteDialogClose(id);
     fetch("https://accountant.tubalt.com/api/trips/deletetrip", {
         method: "POST",
         headers: {
@@ -143,7 +144,7 @@ class ViewPastTrips extends React.Component {
       })
       .then(response => {
         if (response.status === 401) {
-          response.json().then(res => alert(res.message));
+          response.json().then(res => this.handleFailCallback(res.message));
         } else {
           response.json().then(res => {
             let trips = res.trips.filter(trip => trip[0].deleted === 0);
@@ -179,6 +180,7 @@ class ViewPastTrips extends React.Component {
   }
   
   deleteAll(id){
+    this.handleDeleteAllDialogClose(id);
     fetch("https://accountant.tubalt.com/api/trips/deletetripall", {
       method: "POST",
       headers: {
@@ -191,7 +193,7 @@ class ViewPastTrips extends React.Component {
     })
     .then(response => {
       if (response.status === 401) {
-        response.json().then(res => alert(res.message));
+        response.json().then(res => this.handleFailCallback(res.message));
       } else {
         response.json().then(res => {
           let trips = res.trips.filter(trip => trip[0].deleted === 0);
@@ -237,6 +239,7 @@ class ViewPastTrips extends React.Component {
   }
 
   restartTrip(id) {
+    this.toggleRestartTripDialog(id);
     fetch("https://accountant.tubalt.com/api/trips/undoendtrip", {
       method: "POST",
       headers: {
@@ -249,7 +252,7 @@ class ViewPastTrips extends React.Component {
     })
     .then(response => {
       if (response.status === 401) {
-        response.json().then(res => alert(res.message));
+        response.json().then(res => this.handleFailCallback(res.message));
       } else {
         response.json().then(res => {
           let trips = res.trips.filter(trip => trip[0].deleted === 0);
@@ -266,7 +269,7 @@ class ViewPastTrips extends React.Component {
     })
     .catch(error => {
       console.log(error);
-      alert("Oops! Something went wrong");
+      this.handleFailCallback("Oops! Something went wrong");
     });
   } 
 
