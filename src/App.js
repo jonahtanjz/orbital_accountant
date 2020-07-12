@@ -471,7 +471,7 @@ class App extends Component {
                   </div>
                 </div>
               </BrowserRouter>
-              <PWAPrompt timesToShow={3} permanentlyHideOnDismiss={false} />
+              <PWAPrompt timesToShow={3} />
             </div>
           );
     }
