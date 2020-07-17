@@ -76,7 +76,7 @@ class ViewLedger extends React.Component {
         fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + trip_id)
         .then(response => response.json())
         .then(response => {
-            console.log(response);
+            // console.log(response);
             let newSelectedName = response.users.map(user => user.name).includes(this.state.selectedName) ? this.state.selectedName : null;
             this.setState({
                 trip : response.trip[0] ,
@@ -119,7 +119,6 @@ class ViewLedger extends React.Component {
                 data[id][entry.payee] += entry.amount;
             })
             data = Object.values(data)
-            console.log(this.state.trip.trip_name);
             this.props.functionProps["updateCSVData"](headers,data,this.state.trip.trip_name);
             this.setState({
                 updatedCSVData: true,

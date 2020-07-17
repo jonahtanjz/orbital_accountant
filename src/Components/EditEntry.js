@@ -310,8 +310,8 @@ class EditEntry extends React.Component {
       this.props.functionProps["toggleAlertBox"]("Invalid expression", "Please enter a valid expression (+, -, *, /).");
       return null;
     }
-    //Checking for empty consume
-    if (this.state.consume.filter((person)=> person.display).length === 0) {
+    //Checking for empty consume and not equal
+    if (this.state.consume.filter((person)=> person.display).length === 0 && !equal) {
       this.props.functionProps["toggleAlertBox"]("No user selected", "Please select the people to split between.");
       return null;
     }
@@ -336,6 +336,12 @@ class EditEntry extends React.Component {
       if (equal) {
         let pay = this.state.pay.slice().filter(person => person["display"]);
         let consume = this.state.consume.slice().filter(person => person["display"]);
+        if (consume.length === 0) {
+          consume = this.state.consume.slice().map(person =>{
+            person.display = true;
+            return person;
+          });
+        }
         let total = 0;
         for(let i = 0; i < pay.length; i++) {
           total = total + this.evaluateAmount(pay[i]["amount"]);

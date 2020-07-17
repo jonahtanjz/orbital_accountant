@@ -60,7 +60,7 @@ class SuggestedPayments extends React.Component {
         fetch("https://accountant.tubalt.com/api/trips/getledger?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
-            console.log(response);
+            // console.log(response);
             this.setState({
                 trip : response.trip[0] ,
                 users :response.users ,
@@ -189,7 +189,6 @@ class SuggestedPayments extends React.Component {
                 } else {
                     obj.amt = copyPayer[i][1];
                 }
-                console.log(obj.amt + obj.amt);
                 copyPayee[j][1] = copyPayee[j][1] - obj.amt;
                 copyPayer[i][1] = copyPayer[i][1] - obj.amt;
                 consolidatedTransactions.push(obj);
