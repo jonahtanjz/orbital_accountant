@@ -16,14 +16,12 @@ import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
 import Settings from './Screens/Settings';
 import ChangePassword from './Components/ChangePassword';
-import ChangeUsername from './Components/ChangeUsername';
-import { AppBar, Toolbar, IconButton, InputAdornment, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField} from '@material-ui/core';
+import { AppBar, Toolbar, IconButton, InputAdornment, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField, Tooltip, ClickAwayListener} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
 import Alert from './Components/Alert';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { ThreeDRotationSharp } from '@material-ui/icons';
 import { CSVLink } from "react-csv";
 import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
 import PWAPrompt from 'react-ios-pwa-prompt';
@@ -64,6 +62,9 @@ const styles = theme => ({
   csvText: {
     textDecoration: "none",
     color: "inherit"
+  },
+  copiedLedgerLinkTextTooltip: {
+    fontSize: "13px"
   }
 });
 
@@ -88,7 +89,8 @@ class App extends Component {
         csvTitle: "",
         alertBox: false,
         alertBoxTitle: "",
-        alertBoxMessage: ""
+        alertBoxMessage: "",
+        copiedLedgerLinkText: false,
       }
       this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
       this.handleDrawerClose = this.handleDrawerClose.bind(this);
@@ -107,6 +109,8 @@ class App extends Component {
       this.updateCSVData = this.updateCSVData.bind(this);
       this.toggleAlertBox = this.toggleAlertBox.bind(this);
       this.closeAlertBox = this.closeAlertBox.bind(this);
+      this.openCopiedLedgerLinkText = this.openCopiedLedgerLinkText.bind(this);
+      this.closeCopiedLedgerLinkText = this.closeCopiedLedgerLinkText.bind(this);
     }
     componentDidMount() {
         const token = getToken();
@@ -232,6 +236,7 @@ class App extends Component {
     }
 
     toggleLinkDialog() {
+      this.closeCopiedLedgerLinkText();
       let newState = !this.state.linkDialog;
       this.setState({ linkDialog: newState });
     }
@@ -262,6 +267,18 @@ class App extends Component {
     closeAlertBox() {
       this.setState({
         alertBox: false,
+      });
+    }
+
+    openCopiedLedgerLinkText() {
+      this.setState({
+        copiedLedgerLinkText: true
+      });
+    }
+
+    closeCopiedLedgerLinkText() {
+      this.setState({
+        copiedLedgerLinkText: false
       });
     }
 
@@ -347,18 +364,34 @@ class App extends Component {
                                     InputProps = {{
                                       endAdornment: 
                                         (<InputAdornment position="end">
-                                          <IconButton
-                                            aria-label="Copy"
-                                            edge="end"
-                                            onClick = {() =>{ 
-                                              let copyText = document.getElementById("ledgerLink")
-                                              copyText.select();
-                                              copyText.setSelectionRange(0, 99999);
-                                              document.execCommand("copy");
-                                              }
-                                            }>
-                                              <AssignmentOutlinedIcon/>
-                                          </IconButton>
+                                          <ClickAwayListener onClickAway={this.closeCopiedLedgerLinkText}>
+                                            <Tooltip 
+                                              arrow 
+                                              placement="top"
+                                              title="Copied"
+                                              open={this.state.copiedLedgerLinkText}
+                                              onClose={this.closeCopiedLedgerLinkText}
+                                              disableHoverListener
+                                              disableFocusListener
+                                              enterTouchDelay="10"
+                                              leaveTouchDelay="10000"
+                                              classes={{ tooltip: classes.copiedLedgerLinkTextTooltip }}
+                                            >
+                                              <IconButton
+                                                aria-label="Copy"
+                                                edge="end"
+                                                onClick = {() =>{ 
+                                                    let copyText = document.getElementById("ledgerLink")
+                                                    copyText.select();
+                                                    copyText.setSelectionRange(0, 99999);
+                                                    document.execCommand("copy");
+                                                    this.openCopiedLedgerLinkText();
+                                                  }
+                                                }>
+                                                  <AssignmentOutlinedIcon/>
+                                              </IconButton>
+                                            </Tooltip>
+                                          </ClickAwayListener>
                                         </InputAdornment>),
                                     }}
                                     value={"https://accountant.tubalt.com/viewledger/" + this.state.trip_id}
@@ -439,7 +472,6 @@ class App extends Component {
                       <PrivateRoute path ="/edittrip" component = {EditTrip} functionProps={functionProps} />
                       <PrivateRoute path="/addentry" component ={AddEntry} functionProps={functionProps} />
                       <PrivateRoute path = "/editentry" component = {EditEntry} functionProps={functionProps} />
-                      <PrivateRoute path = "/changeusername" component = {ChangeUsername} functionProps={functionProps} />
                       <PrivateRoute path = "/changepassword" component = {ChangePassword} functionProps={functionProps} />
                       <PublicRoute path="/login" component={Login} functionProps={functionProps} />
                       <PublicRoute path="/signup" component={Signup} functionProps={functionProps}  />
