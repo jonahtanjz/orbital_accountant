@@ -186,7 +186,6 @@ class AddEntry extends React.Component {
   }
   //Updates display in pay array
   onChangePay(e) {
-    console.log(e.target);
     let pay = this.state.pay.slice();
     pay.forEach((person)=>{
       person["display"] = false;
@@ -211,7 +210,6 @@ class AddEntry extends React.Component {
         });
       }
     }
-    console.log(pay);
     this.setState({
       pay : pay,
     });
@@ -285,8 +283,8 @@ class AddEntry extends React.Component {
       this.props.functionProps["toggleAlertBox"]("Invalid expression", "Please enter a valid expression (+, -, *, /).");
       return null;
     }
-    //Checking for empty consume
-    if (this.state.consume.filter((person)=> person.display).length === 0) {
+    //Checking for empty consume and not equal
+    if (this.state.consume.filter((person)=> person.display).length === 0 && !equal) {
       this.props.functionProps["toggleAlertBox"]("No user selected", "Please select the people to split between.");
       return null;
     }
@@ -311,6 +309,12 @@ class AddEntry extends React.Component {
       if (equal) {
         let pay = this.state.pay.slice().filter(person => person["display"]);
         let consume = this.state.consume.slice().filter(person => person["display"]);
+        if (consume.length === 0) {
+          consume = this.state.consume.slice().map(person =>{
+            person.display = true;
+            return person;
+          });
+        }
         let total = 0;
         for(let i = 0; i < pay.length; i++) {
           total = total + this.evaluateAmount(pay[i]["amount"]);
@@ -629,7 +633,6 @@ class NameList extends React.Component {
             { label: person["name"], value: person["name"] }
         );
     });
-    console.log(value);
     return (
       <div className="multiSelectContainer">
       {(this.props.isMobile)

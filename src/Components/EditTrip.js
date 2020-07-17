@@ -167,7 +167,7 @@ class EditTrip extends React.Component {
         fetch("https://accountant.tubalt.com/api/trips/gettripinfo?tripid=" + this.props.location.state.trip_id)
         .then(response => response.json())
         .then(response => {
-          console.log(response);
+          // console.log(response);
             this.setState({
                 tripName: response.trip[0].trip_name,
                 currentUsers: response.users,
@@ -185,7 +185,6 @@ class EditTrip extends React.Component {
     }
 
     setNewTripInfo(response) {
-      console.log(response);
       this.setState({
         tripName: response.trip[0].trip_name,
         currentUsers: response.users,
@@ -234,32 +233,6 @@ class EditTrip extends React.Component {
     onSubmit(e) {
       e.preventDefault();
       alert("In Progress");
-    //   fetch("https://accountant.tubalt.com/api/trips/newtrip", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify({
-    //       tripName: this.state.tripName,
-    //       users: this.state.currentUsers,
-    //       currency: this.state.currencies,
-    //       user_id: this.state.user_id,
-    //     })
-    //   })
-    //   .then(response => {
-    //     if (response.status === 401) {
-    //       response.json().then(res => alert(res.message));
-    //     } else {
-    //       response.json().then(res => {
-    //         alert("Success");
-    //         this.props.history.push("/home");
-    //       });
-    //     }
-    //   })
-    //   .catch(error => {
-    //     console.log(error);
-    //     alert("Oops! Something went wrong");
-    //   });
   
     }
   
@@ -282,7 +255,6 @@ class EditTrip extends React.Component {
       document.getElementById('currency').value = '';
       document.getElementById('currencyVal').value = '';
       let newCurr = [ newCurrencyName, newCurrencyValue]
-      console.log(currencies);
       if (currencies.filter(currency => currency.in_trip === 1 && currency.name === newCurrencyName).length > 0){
         this.props.functionProps["toggleAlertBox"]("Duplicate currencies", "Currency name already exists in this trip.")
         return;
@@ -298,7 +270,6 @@ class EditTrip extends React.Component {
         })
       })
       .then(response => {
-        console.log("Sent");
         if (response.status === 401) {
           response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
         } else {
@@ -551,7 +522,6 @@ class EditTrip extends React.Component {
                   <EditIcon />
                 </IconButton> 
               </div>
-            //? <div><span>{this.props.tripName}</span> <button type = "button" onClick = {this.toggleEditing}>Edit</button> </div>
 
             : <div>
                 <TextField autoFocus className={this.props.classes.tripNameField} id="tripName" label="Trip Name" variant="outlined" value = {this.state.editingText} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/>
@@ -562,7 +532,6 @@ class EditTrip extends React.Component {
                   <CloseIcon />
                 </IconButton>
               </div>
-            //: <div><input type = "text" id = "tripName" value = {this.state.editingText} onChange = {this.updateTripName} onKeyPress ={this.enterCheck}/> <button type = "button" onClick = {this.editTripName}>Done</button><button type = "button" onClick = {this.toggleEditing}>Cancel</button></div>
           }
         </div>
       );
@@ -971,7 +940,6 @@ class EditTrip extends React.Component {
     }
 
     deleteCurrency(e, name) {
-      // this.props.deleteCurrency(e);
       e.preventDefault();
       this.toggleDeleteCurrencyDialog(name);
       fetch("https://accountant.tubalt.com/api/trips/removecurrency", {
@@ -1004,7 +972,6 @@ class EditTrip extends React.Component {
     toggleEditing(name) {
       let newText = {}
       Object.assign(newText,this.state.editingText);
-      console.log(newText);
       let newEditing = {}
       Object.assign(newEditing, this.state.editing);
       newEditing[name] = !newEditing[name]
@@ -1053,10 +1020,6 @@ class EditTrip extends React.Component {
         this.props.functionProps["toggleAlertBox"]("Invalid currency", "Please enter a valid currency.");
         return null;
       }
-      // if (this.props.currencies.filter(currency => currency.in_trip === 1 && currency.name === newName).length > 0) {
-      //   alert("Currency name already exists.");
-      //   return null;
-      // }
       fetch("https://accountant.tubalt.com/api/trips/edittripcurrency", {
         method: "POST",
         headers: {
@@ -1187,46 +1150,6 @@ class EditTrip extends React.Component {
     }
 
   }
-
-  // class EndTrip extends React.Component {
-  //   constructor(props) {
-  //     super(props);
-  //     this.endTrip = this.endTrip.bind(this);
-  //   }
-    
-  //   endTrip(e) {
-  //     fetch("https://accountant.tubalt.com/api/trips/endtrip", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json"
-  //       },
-  //       body: JSON.stringify({
-  //         trip_id : this.props.trip_id,
-  //       })
-  //     })
-  //     .then(response => {
-  //       if (response.status === 401) {
-  //         response.json().then(res => alert(res.message));
-  //       } else {
-  //         response.json().then(res => {
-  //           this.props.history.push("/home");
-  //         });
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.log(error);
-  //       alert("Oops! Something went wrong");
-  //     });
-  //   } 
-
-  //   render() {
-  //     return(
-  //     <div>
-  //       <Button type = "button" color="primary" variant="contained" size="large" fullWidth onClick={this.endTrip}>End Trip</Button>
-  //     </div>
-  //     );
-  //   }
-  // }
 
   EditTrip.propTypes = {
     classes: PropTypes.object.isRequired,
