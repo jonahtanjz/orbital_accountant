@@ -372,9 +372,9 @@ class App extends Component {
                                               open={this.state.copiedLedgerLinkText}
                                               onClose={this.closeCopiedLedgerLinkText}
                                               disableHoverListener
-                                              disableFocusListener
                                               enterTouchDelay="10"
-                                              leaveTouchDelay="10000"
+                                              leaveTouchDelay="3000"
+                                              leaveDelay="3000"
                                               classes={{ tooltip: classes.copiedLedgerLinkTextTooltip }}
                                             >
                                               <IconButton
