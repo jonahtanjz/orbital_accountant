@@ -35,7 +35,9 @@ const styles = theme => ({
   },
   title: {
     flexGrow: 1,
-    wordBreak: "break-word"
+    wordBreak: "break-word",
+    padding: "10px 0px",
+    lineHeight: "1.2"
   },
   drawerList: {
     width: 280
