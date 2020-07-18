@@ -35,6 +35,7 @@ const styles = theme => ({
   },
   title: {
     flexGrow: 1,
+    wordBreak: "break-word"
   },
   drawerList: {
     width: 280
@@ -332,7 +333,7 @@ class App extends Component {
                               </DialogActions>
                             </Dialog>
                           </React.Fragment>
-                        : (this.state.pageName === "Ledger")
+                        : (this.state.pageName.includes("Ledger"))
                           ? <React.Fragment>
                               <IconButton onClick={this.toggleLedgerMenu}>
                                 <MoreVertIcon className={classes.deleteIcon} />

@@ -65,6 +65,9 @@ const styles = themes => ({
   },
   payerPayeeTitle: {
     marginBottom: "5px"
+  },
+  tripTitle: {
+    marginBottom: "5px"
   }
 });
 
@@ -449,6 +452,9 @@ class EditEntry extends React.Component {
         justify="center"
         alignItems="center"
         >
+        <Grid item>
+          <Typography variant= "h5" align = "center" className={classes.tripTitle}>{this.state.trip.trip_name}</Typography>
+        </Grid>
         <form onSubmit = {this.onSubmit}>
           <Grid item>
             <TextField 

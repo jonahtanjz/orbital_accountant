@@ -67,6 +67,9 @@ const styles = themes => ({
   },
   payerPayeeTitle: {
     marginBottom: "5px"
+  },
+  tripTitle: {
+    marginBottom: "5px"
   }
 });
 
@@ -388,7 +391,7 @@ class AddEntry extends React.Component {
           alignItems="center"
         >
           <Grid item>
-            <Typography variant= "h5" align = "center">{this.state.trip.trip_name}</Typography>
+            <Typography variant= "h5" align = "center" className={classes.tripTitle}>{this.state.trip.trip_name}</Typography>
           </Grid>
           <Grid 
           container
