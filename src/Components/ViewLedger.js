@@ -78,7 +78,6 @@ class ViewLedger extends React.Component {
         .then(response => {
             // console.log(response);
             this.props.functionProps["updatePageName"](response.trip[0].trip_name + " Ledger");
-            document.getElementsByTagName('meta')["description"].content = response.trip[0].trip_name + " Ledger";
             let newSelectedName = response.users.map(user => user.name).includes(this.state.selectedName) ? this.state.selectedName : null;
             this.setState({
                 trip : response.trip[0] ,
