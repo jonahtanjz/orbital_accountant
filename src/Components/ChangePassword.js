@@ -30,11 +30,11 @@ const styles = theme => ({
     },
     submitButton: {
         width: "300px",
-        marginTop: '20px'
+        marginTop: '25px'
     },
     cancelButton: {
         width: "300px",
-        marginTop: "15px"
+        marginTop: "10px"
     }
 });
 
@@ -91,8 +91,8 @@ class ChangePassword extends React.Component {
             response.json().then(res => this.props.functionProps["toggleFailCallback"](res.message));
           } else {
             response.json().then(res => {
-                
-                this.props.functionProps["toggleSuccessCallback"](res.message)    
+                this.props.functionProps["toggleSuccessCallback"](res.message);
+                this.props.history.goBack();    
             });
           }
         })
