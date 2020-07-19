@@ -620,7 +620,7 @@ class CurrencyList extends React.Component {
     }
     return (
       <div className="multiSelectContainer">
-      <InputLabel id="curr-label">Currency</InputLabel>
+      <InputLabel id="curr-label">Currency:</InputLabel>
       {(this.props.isMobile) 
         ? <NativeSelect
         size = "sm"

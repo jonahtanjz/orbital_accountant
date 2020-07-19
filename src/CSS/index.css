@@ -71,3 +71,8 @@ code {
 p, span, td {
   word-break: break-word;
 }
+
+#curr-label {
+  color: rgba(0, 0, 0, 1);
+  margin-bottom: 5px;
+}
