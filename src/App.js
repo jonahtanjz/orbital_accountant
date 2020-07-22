@@ -16,6 +16,7 @@ import EditTrip from './Components/EditTrip';
 import EditEntry from './Components/EditEntry';
 import Settings from './Screens/Settings';
 import ChangePassword from './Components/ChangePassword';
+import HideOnScroll from './Components/HideOnScroll';
 import { AppBar, Toolbar, IconButton, InputAdornment, Typography, withStyles, Button, SwipeableDrawer, List, ListItem, ListItemText, Snackbar, Dialog, DialogActions, DialogTitle, DialogContent, DialogContentText, Divider, Menu, MenuItem, TextField, Tooltip, ClickAwayListener} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import PropTypes from 'prop-types';
@@ -302,115 +303,117 @@ class App extends Component {
             <div className="App">
               <BrowserRouter>
                 <div>
-                <AppBar position="static">
-                  <Toolbar>
-                    { (getToken())
-                      ? <IconButton onClick={this.handleDrawerOpen} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                          <MenuIcon />
-                        </IconButton>
-                      : null
-                    }  
-                    <Typography variant="h6" className={classes.title}>
-                      {this.state.pageName}
-                    </Typography>
-                    { (this.state.pageName === "Edit Transaction")
-                        ? <React.Fragment>
-                            <IconButton onClick={this.toggleDeleteTransactionDialog}>
-                              <DeleteOutlineIcon className={classes.deleteIcon} />
-                            </IconButton>
-                            <Dialog open={this.state.deleteTransactionDialog} onClose={this.toggleDeleteTransactionDialog} aria-labelledby="form-dialog-title">
-                              <DialogTitle id="form-dialog-title">Delete Transaction?</DialogTitle>
-                              <DialogContent>
-                                <DialogContentText>
-                                  Are you sure you want to delete this transaction? This action cannot be undone.
-                                </DialogContentText>
-                              </DialogContent>
-                              <DialogActions>
-                                <Button onClick={this.toggleDeleteTransactionDialog} color="primary">
-                                  No, Cancel
-                                </Button>
-                                <Button onClick={this.deleteTransaction} color="primary" autoFocus>
-                                  Yes, Delete
-                                </Button>
-                              </DialogActions>
-                            </Dialog>
-                          </React.Fragment>
-                        : (this.state.pageName.includes("Ledger"))
+                <HideOnScroll {...this.props}>
+                  <AppBar position="sticky">
+                    <Toolbar>
+                      { (getToken())
+                        ? <IconButton onClick={this.handleDrawerOpen} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                            <MenuIcon />
+                          </IconButton>
+                        : null
+                      }  
+                      <Typography variant="h6" className={classes.title}>
+                        {this.state.pageName}
+                      </Typography>
+                      { (this.state.pageName === "Edit Transaction")
                           ? <React.Fragment>
-                              <IconButton onClick={this.toggleLedgerMenu}>
-                                <MoreVertIcon className={classes.deleteIcon} />
+                              <IconButton onClick={this.toggleDeleteTransactionDialog}>
+                                <DeleteOutlineIcon className={classes.deleteIcon} />
                               </IconButton>
-                              <Menu
-                                anchorEl={this.state.anchorElLedgerMenu}
-                                keepMounted
-                                open={Boolean(this.state.anchorElLedgerMenu)}
-                                onClick={this.toggleLedgerMenu}
-                              >
-                                <MenuItem onClick={this.toggleLinkDialog}>Generate Ledger Link</MenuItem>
-                                <MenuItem onClick={this.toggleLedgerMenu}>
-                                  <CSVLink className={classes.csvText} data={this.state.csvData} headers={this.state.csvHeaders} filename={this.state.csvTitle+".csv"}>
-                                    Export Ledger to CSV
-                                  </CSVLink>
-                                </MenuItem>
-                              </Menu>
-                              <Dialog open={this.state.linkDialog} onClose={this.toggleLinkDialog} aria-labelledby="form-dialog-title">
-                                <DialogTitle id="form-dialog-title">Generate Link</DialogTitle>
+                              <Dialog open={this.state.deleteTransactionDialog} onClose={this.toggleDeleteTransactionDialog} aria-labelledby="form-dialog-title">
+                                <DialogTitle id="form-dialog-title">Delete Transaction?</DialogTitle>
                                 <DialogContent>
                                   <DialogContentText>
-                                    Paste this link in your browser to view the ledgers
+                                    Are you sure you want to delete this transaction? This action cannot be undone.
                                   </DialogContentText>
-                                  <TextField
-                                    id = "ledgerLink"
-                                    margin="dense"
-                                    label="Link"
-                                    fullWidth
-                                    InputProps = {{
-                                      endAdornment: 
-                                        (<InputAdornment position="end">
-                                          <ClickAwayListener onClickAway={this.closeCopiedLedgerLinkText}>
-                                            <Tooltip 
-                                              arrow 
-                                              placement="top"
-                                              title="Copied"
-                                              open={this.state.copiedLedgerLinkText}
-                                              onClose={this.closeCopiedLedgerLinkText}
-                                              disableHoverListener
-                                              enterTouchDelay="10"
-                                              leaveTouchDelay="3000"
-                                              leaveDelay="3000"
-                                              classes={{ tooltip: classes.copiedLedgerLinkTextTooltip }}
-                                            >
-                                              <IconButton
-                                                aria-label="Copy"
-                                                edge="end"
-                                                onClick = {() =>{ 
-                                                    let copyText = document.getElementById("ledgerLink")
-                                                    copyText.select();
-                                                    copyText.setSelectionRange(0, 99999);
-                                                    document.execCommand("copy");
-                                                    this.openCopiedLedgerLinkText();
-                                                  }
-                                                }>
-                                                  <AssignmentOutlinedIcon/>
-                                              </IconButton>
-                                            </Tooltip>
-                                          </ClickAwayListener>
-                                        </InputAdornment>),
-                                    }}
-                                    value={"https://accountant.tubalt.com/viewledger/" + this.state.trip_id}
-                                  />
                                 </DialogContent>
                                 <DialogActions>
-                                  <Button onClick={this.toggleLinkDialog} color="primary">
-                                    OK
+                                  <Button onClick={this.toggleDeleteTransactionDialog} color="primary">
+                                    No, Cancel
+                                  </Button>
+                                  <Button onClick={this.deleteTransaction} color="primary" autoFocus>
+                                    Yes, Delete
                                   </Button>
                                 </DialogActions>
                               </Dialog>
                             </React.Fragment>
-                          : null  
-                    }
-                  </Toolbar>
-                </AppBar>
+                          : (this.state.pageName.includes("Ledger"))
+                            ? <React.Fragment>
+                                <IconButton onClick={this.toggleLedgerMenu}>
+                                  <MoreVertIcon className={classes.deleteIcon} />
+                                </IconButton>
+                                <Menu
+                                  anchorEl={this.state.anchorElLedgerMenu}
+                                  keepMounted
+                                  open={Boolean(this.state.anchorElLedgerMenu)}
+                                  onClick={this.toggleLedgerMenu}
+                                >
+                                  <MenuItem onClick={this.toggleLinkDialog}>Generate Ledger Link</MenuItem>
+                                  <MenuItem onClick={this.toggleLedgerMenu}>
+                                    <CSVLink className={classes.csvText} data={this.state.csvData} headers={this.state.csvHeaders} filename={this.state.csvTitle+".csv"}>
+                                      Export Ledger to CSV
+                                    </CSVLink>
+                                  </MenuItem>
+                                </Menu>
+                                <Dialog open={this.state.linkDialog} onClose={this.toggleLinkDialog} aria-labelledby="form-dialog-title">
+                                  <DialogTitle id="form-dialog-title">Generate Link</DialogTitle>
+                                  <DialogContent>
+                                    <DialogContentText>
+                                      Paste this link in your browser to view the ledgers
+                                    </DialogContentText>
+                                    <TextField
+                                      id = "ledgerLink"
+                                      margin="dense"
+                                      label="Link"
+                                      fullWidth
+                                      InputProps = {{
+                                        endAdornment: 
+                                          (<InputAdornment position="end">
+                                            <ClickAwayListener onClickAway={this.closeCopiedLedgerLinkText}>
+                                              <Tooltip 
+                                                arrow 
+                                                placement="top"
+                                                title="Copied"
+                                                open={this.state.copiedLedgerLinkText}
+                                                onClose={this.closeCopiedLedgerLinkText}
+                                                disableHoverListener
+                                                enterTouchDelay="10"
+                                                leaveTouchDelay="3000"
+                                                leaveDelay="3000"
+                                                classes={{ tooltip: classes.copiedLedgerLinkTextTooltip }}
+                                              >
+                                                <IconButton
+                                                  aria-label="Copy"
+                                                  edge="end"
+                                                  onClick = {() =>{ 
+                                                      let copyText = document.getElementById("ledgerLink")
+                                                      copyText.select();
+                                                      copyText.setSelectionRange(0, 99999);
+                                                      document.execCommand("copy");
+                                                      this.openCopiedLedgerLinkText();
+                                                    }
+                                                  }>
+                                                    <AssignmentOutlinedIcon/>
+                                                </IconButton>
+                                              </Tooltip>
+                                            </ClickAwayListener>
+                                          </InputAdornment>),
+                                      }}
+                                      value={"https://accountant.tubalt.com/viewledger/" + this.state.trip_id}
+                                    />
+                                  </DialogContent>
+                                  <DialogActions>
+                                    <Button onClick={this.toggleLinkDialog} color="primary">
+                                      OK
+                                    </Button>
+                                  </DialogActions>
+                                </Dialog>
+                              </React.Fragment>
+                            : null  
+                      }
+                    </Toolbar>
+                  </AppBar>
+                </HideOnScroll>
                 { (getToken()) 
                   ? <SwipeableDrawer
                       open={this.state.drawerState}
