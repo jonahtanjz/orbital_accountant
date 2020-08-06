@@ -293,7 +293,7 @@ class EditEntry extends React.Component {
   //Validates expressions entered
   validateExpression(exp) {
     let regex = /[^0-9.+*/-/s]/;
-    return regex.test(exp);
+    return regex.test(exp.replace(/\s/g,''));
   }
 
   //Submits Post request to API
