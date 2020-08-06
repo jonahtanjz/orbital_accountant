@@ -265,8 +265,9 @@ class AddEntry extends React.Component {
   };
   //Validates expressions entered
   validateExpression(exp) {
-    let regex = /[^0-9.+*/-/s]/;
-    return regex.test(exp.replace(/\s/g,''));
+    let regex = /[^0-9.+*/-]/;
+    exp = exp === null ? exp : exp.replace(/\s/g,'');
+    return regex.test(exp);
   }
 
   //Submits a post request to API
